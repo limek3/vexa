@@ -1061,7 +1061,7 @@ function CreateModal({ open, onClose, platform }) {
 /* ================== App root ================== */
 const DEFAULT_TWEAKS = /*EDITMODE-BEGIN*/{
   "theme": "light",
-  "accent": "clay",
+  "accent": "plum",
   "density": "default",
   "radius": "default",
   "showSubscriptionBanner": false
@@ -1088,7 +1088,7 @@ function applyDesktopChromeTheme(preferences, options = {}) {
   const root = document.documentElement;
   root.dataset.desktopScreen = 'true';
   root.dataset.theme = theme;
-  root.dataset.accent = preferences?.accent || 'clay';
+  root.dataset.accent = preferences?.accent || 'plum';
   root.dataset.density = preferences?.density || 'default';
   root.dataset.radius = preferences?.radius || 'default';
   root.classList.toggle('dark', theme === 'dark');
@@ -1101,7 +1101,7 @@ function applyDesktopChromeTheme(preferences, options = {}) {
   const desktopRoot = document.querySelector('.cb-desktop-html');
   if (desktopRoot) {
     desktopRoot.setAttribute('data-theme', theme);
-    desktopRoot.setAttribute('data-accent', preferences?.accent || 'clay');
+    desktopRoot.setAttribute('data-accent', preferences?.accent || 'plum');
     desktopRoot.setAttribute('data-density', preferences?.density || 'default');
     desktopRoot.setAttribute('data-radius', preferences?.radius || 'default');
   }
@@ -1401,7 +1401,7 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
           unreadNotifications={(platform.notifications || []).filter((item) => item.unread).length}
           master={platform.master} />
         <GlobalSearchResults query={search} results={searchResults} onPick={pickSearchResult} />
-        <main className={`content ${flush ? 'flush wide' : ''} ${chatPage ? 'chat-content' : ''}`} key={page}>
+        <main className={`content ${flush ? 'flush wide' : ''} ${chatPage ? 'chat-content' : ''}`}>
           <VexaAuthGate>{renderPage()}</VexaAuthGate>
         </main>
       </div>
@@ -1432,10 +1432,10 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
         <TweakSection label="Acc­ent цвет">
           <TweakSelect label="Палитра" value={tweaks.accent}
             options={[
-              {value:'clay',   label:'Глина (тёплый коралл)'},
+              {value:'clay',   label:'Фиолетовый'},
               {value:'sage',   label:'Шалфей (зелёный)'},
               {value:'indigo', label:'Индиго (синий)'},
-              {value:'plum',   label:'Слива (розово-лиловый)'},
+              {value:'plum',   label:'Фиолетовый deep'},
               {value:'amber',  label:'Янтарь (тёплый жёлтый)'},
             ]}
             onChange={v => setDesktopTweak('accent', v)} />

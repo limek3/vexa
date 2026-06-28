@@ -8,7 +8,7 @@ export function DesktopWorkspace({ initialScreen }: { initialScreen: string }) {
 
 export function DesktopBootScreen() {
   return (
-    <div className="cb-desktop-html" data-theme="light" data-accent="clay" data-density="default" data-radius="default">
+    <div className="cb-desktop-html" data-theme="light" data-accent="plum" data-density="default" data-radius="default">
       <div className="boot-exact">
         <div>
           <strong>Рабочий кабинет</strong>

@@ -95,8 +95,9 @@ export function VexaAuthGate({ children }) {
         password,
       };
 
+      const emailRedirectTo = `${window.location.origin}/auth/callback?next=/desktop/dashboard`;
       const result = mode === 'signup'
-        ? await supabase.auth.signUp(credentials)
+        ? await supabase.auth.signUp({ ...credentials, options: { emailRedirectTo } })
         : await supabase.auth.signInWithPassword(credentials);
 
       if (result.error) throw result.error;
@@ -227,12 +228,6 @@ export function VexaAuthGate({ children }) {
           </button>
         </div>
 
-        <div className="vexa-auth-env">
-          <span>Для production нужны:</span>
-          <code>NEXT_PUBLIC_SUPABASE_URL</code>
-          <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code>
-          <code>SUPABASE_SERVICE_ROLE_KEY</code>
-        </div>
       </form>
     </div>
   );

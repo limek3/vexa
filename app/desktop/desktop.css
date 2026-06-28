@@ -4704,13 +4704,13 @@ html[data-clickbook-desktop='true'][data-clickbook-desktop-theme='dark'] body {
   --shadow-lg: 0 24px 54px -26px rgba(0, 0, 0, 0.48) !important;
 }
 
-.cb-desktop-html[data-accent='clay'] { --accent: #F25D73 !important; --accent-hover: #FF6A82 !important; --accent-text: #D83E58 !important; }
+.cb-desktop-html[data-accent='clay'] { --accent: #8B6CFF !important; --accent-hover: #9A80FF !important; --accent-text: #B9AAFF !important; }
 .cb-desktop-html[data-accent='sage'] { --accent: #35B978 !important; --accent-hover: #42CA88 !important; --accent-text: #218C59 !important; }
 .cb-desktop-html[data-accent='indigo'] { --accent: #5B7CFA !important; --accent-hover: #6F8DFF !important; --accent-text: #4B67DA !important; }
 .cb-desktop-html[data-accent='plum'] { --accent: #9B6CFF !important; --accent-hover: #AA80FF !important; --accent-text: #7C4FE0 !important; }
 .cb-desktop-html[data-accent='amber'] { --accent: #D89A32 !important; --accent-hover: #E7AA45 !important; --accent-text: #A56E18 !important; }
 
-.cb-desktop-html[data-theme='dark'][data-accent='clay'] { --accent-text: #FF9AAC !important; }
+.cb-desktop-html[data-theme='dark'][data-accent='clay'] { --accent-text: #C8B1FF !important; }
 .cb-desktop-html[data-theme='dark'][data-accent='sage'] { --accent-text: #83E1B0 !important; }
 .cb-desktop-html[data-theme='dark'][data-accent='indigo'] { --accent-text: #A9BCFF !important; }
 .cb-desktop-html[data-theme='dark'][data-accent='plum'] { --accent-text: #C8B1FF !important; }
@@ -10468,26 +10468,6 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   font: inherit;
   font-weight: 700;
   cursor: pointer;
-}
-
-.cb-desktop-html .vexa-auth-env {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  color: var(--text-3);
-  font-size: 11px;
-}
-
-.cb-desktop-html .vexa-auth-env span {
-  flex-basis: 100%;
-}
-
-.cb-desktop-html .vexa-auth-env code {
-  padding: 4px 6px;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: var(--surface-3);
-  color: var(--text-2);
 }
 
 .cb-desktop-html .vexa-auth-strip {

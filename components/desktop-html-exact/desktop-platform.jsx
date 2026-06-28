@@ -16,7 +16,7 @@ const STORAGE_KEY = 'vexa.desktop.platform.v1';
 
 const DEFAULT_PREFERENCES = {
   theme: 'light',
-  accent: 'clay',
+  accent: 'plum',
   density: 'default',
   radius: 'default',
   showSubscriptionBanner: false,

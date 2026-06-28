@@ -17,7 +17,7 @@ const THEME_INIT = `
     var theme = prefs.theme || 'light';
     root.dataset.desktopScreen = 'true';
     root.dataset.theme = theme;
-    root.dataset.accent = prefs.accent || 'clay';
+    root.dataset.accent = prefs.accent || 'plum';
     root.dataset.density = prefs.density || 'default';
     root.dataset.radius = prefs.radius || 'default';
     root.classList.toggle('dark', theme === 'dark');
@@ -26,6 +26,7 @@ const THEME_INIT = `
   } catch (err) {
     document.documentElement.dataset.desktopScreen = 'true';
     document.documentElement.dataset.theme = 'light';
+    document.documentElement.dataset.accent = 'plum';
     document.documentElement.classList.remove('dark');
     document.documentElement.classList.add('light');
     document.documentElement.style.colorScheme = 'light';
