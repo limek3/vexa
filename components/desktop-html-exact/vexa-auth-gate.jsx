@@ -10,6 +10,8 @@ const supabaseConfigured = Boolean(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
 );
 
+const localDevMode = process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_VEXA_LOCAL_MODE === '1';
+
 function readProfile(payload) {
   const user = payload?.user;
   const meta = user?.user_metadata || {};
@@ -35,7 +37,13 @@ export function VexaAuthGate({ children }) {
 
   const checkSession = async () => {
     if (!supabaseConfigured) {
-      setState('offline');
+      if (localDevMode) {
+        setState('offline');
+        return;
+      }
+
+      setError('missing_supabase_public_env');
+      setState('setup');
       return;
     }
 
