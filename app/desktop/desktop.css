@@ -10338,7 +10338,7 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 .cb-desktop-html .vexa-chart-orb.two {
   right: 6%;
   bottom: -110px;
-  background: #21D07A;
+  background: #B9AAFF;
 }
 
 .cb-desktop-html .vexa-chart-stats {
@@ -10819,6 +10819,190 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .btn:disabled:hover {
   transform: none !important;
+}
+
+/* Vexa polish pass: flat product UI, purple-only accent, styled dropdowns */
+.cb-desktop-html .vexa-page,
+.cb-desktop-html .vexa-page *,
+.cb-desktop-html .vexa-auth-card,
+.cb-desktop-html .vexa-auth-strip {
+  box-shadow: none !important;
+}
+
+.cb-desktop-html .vexa-page :is(.card, .metric, .vexa-card, .vexa-mini, .vexa-insight-card, .vexa-chart-shell, .vexa-chart-tooltip, .input, .select, textarea, select, .input-with-icon, .btn, .badge) {
+  box-shadow: none !important;
+}
+
+.cb-desktop-html .vexa-page .input,
+.cb-desktop-html .vexa-page select.input,
+.cb-desktop-html .vexa-page textarea.input {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
+
+.cb-desktop-html .vexa-page .input:focus,
+.cb-desktop-html .vexa-page select.input:focus,
+.cb-desktop-html .vexa-page textarea.input:focus {
+  border-color: color-mix(in srgb, var(--accent) 58%, var(--line)) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.cb-desktop-html .vexa-page select.input {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-3) 50%),
+    linear-gradient(135deg, var(--text-3) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 13px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px !important;
+}
+
+.cb-desktop-html .vexa-insight-card {
+  background: var(--surface-3) !important;
+}
+
+.cb-desktop-html .vexa-chart-shell {
+  background: var(--surface) !important;
+}
+
+.cb-desktop-html .vexa-chart-shell::after {
+  opacity: .55;
+  mask-image: none;
+}
+
+.cb-desktop-html .vexa-dashboard-wide {
+  margin-top: 18px;
+}
+
+.cb-desktop-html .vexa-dashboard-wide .vexa-section-card {
+  margin-top: 0;
+}
+
+.cb-desktop-html .vexa-split.notifications {
+  grid-template-columns: 430px minmax(0, 1fr);
+}
+
+.cb-desktop-html .vexa-source-picker {
+  position: relative;
+}
+
+.cb-desktop-html .vexa-source-picker > summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.cb-desktop-html .vexa-source-picker > summary::-webkit-details-marker {
+  display: none;
+}
+
+.cb-desktop-html .vexa-source-picker > summary span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cb-desktop-html .vexa-source-picker > summary small {
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cb-desktop-html .vexa-source-picker[open] > summary {
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--line));
+}
+
+.cb-desktop-html .vexa-source-picker-menu {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.cb-desktop-html .vexa-source-picker-title {
+  margin: 2px 2px 6px;
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.cb-desktop-html .vexa-source-option {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cb-desktop-html .vexa-source-option:hover {
+  border-color: var(--line);
+  background: var(--surface-3);
+}
+
+.cb-desktop-html .vexa-source-option > span:nth-child(2) {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cb-desktop-html .vexa-source-option small {
+  color: var(--text-3);
+}
+
+.cb-desktop-html .vexa-source-picker-empty {
+  padding: 14px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.cb-desktop-html .vexa-muted-line {
+  color: var(--accent-text) !important;
+}
+
+.cb-desktop-html .vexa-help-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 28px;
+  color: var(--text-2);
+  font-size: 12.5px;
+}
+
+.cb-desktop-html .vexa-page .progress > span {
+  background: var(--accent) !important;
+}
+
+.cb-desktop-html .vexa-page .metric-delta.up,
+.cb-desktop-html .vexa-page .metric-delta.down {
+  color: var(--accent-text) !important;
 }
 
 @media (max-width: 1260px) {

@@ -1,5 +1,5 @@
-import { DesktopScreenApp } from '@/app/desktop/_components/desktop-entry';
+import { redirect } from 'next/navigation';
 
 export default function DesktopContactsPage() {
-  return <DesktopScreenApp screen="contacts" />;
+  redirect('/desktop/searches');
 }

@@ -20,7 +20,6 @@ const pageToRoute = {
   dashboard: 'dashboard',
   searches: 'searches',
   matches: 'matches',
-  contacts: 'contacts',
   sources: 'sources',
   notifications: 'notifications',
   analytics: 'analytics',
@@ -344,7 +343,6 @@ const routeToPage = {
   dashboard: 'dashboard',
   searches: 'searches',
   matches: 'matches',
-  contacts: 'contacts',
   sources: 'sources',
   notifications: 'notifications',
   analytics: 'analytics',
@@ -398,7 +396,6 @@ const CRUMBS = {
   searches: ['Мониторинг', 'Поиски'],
   matches: ['Мониторинг', 'Совпадения'],
   sources: ['Мониторинг', 'Источники'],
-  contacts: ['Мониторинг', 'Контакты'],
   analytics: ['Мониторинг', 'Аналитика'],
   subscription: ['Аккаунт', 'Подписка'],
   account: ['Аккаунт', 'Настройки'],
@@ -408,10 +405,9 @@ const CRUMBS = {
 const PLATFORM_NAV = [
   { section: 'Мониторинг', items: [
     { id: 'dashboard', label: 'Главная', icon: 'home' },
-    { id: 'searches', label: 'Поиски', icon: 'search', count: 4 },
-    { id: 'matches', label: 'Совпадения', icon: 'inbox', count: 24 },
+    { id: 'searches', label: 'Поиски', icon: 'search' },
+    { id: 'matches', label: 'Совпадения', icon: 'inbox' },
     { id: 'sources', label: 'Источники', icon: 'filter' },
-    { id: 'contacts', label: 'Контакты', icon: 'users' },
     { id: 'analytics', label: 'Аналитика', icon: 'chart' },
   ]},
   { section: 'Аккаунт', items: [
@@ -422,6 +418,24 @@ const PLATFORM_NAV = [
     { id: 'help', label: 'Помощь', icon: 'help' },
   ]},
 ];
+
+const VEXA_NAV_WORKSPACE_STORAGE_KEY = 'vexa.desktop.workspace.v3';
+
+function readVexaNavCounts() {
+  if (typeof window === 'undefined') return {};
+  try {
+    const workspace = JSON.parse(window.localStorage.getItem(VEXA_NAV_WORKSPACE_STORAGE_KEY) || '{}');
+    const searches = Array.isArray(workspace.searches) ? workspace.searches : [];
+    const matches = Array.isArray(workspace.matches) ? workspace.matches : [];
+    return {
+      searches: searches.length,
+      matches: matches.filter((item) => !item.hidden).length,
+      sources: Array.isArray(workspace.sources) ? workspace.sources.length : 0,
+    };
+  } catch {
+    return {};
+  }
+}
 
 const PLATFORM_CRUMBS = Object.fromEntries(
   PLATFORM_NAV.flatMap((section) => section.items.map((item) => [item.id, [section.section, item.label]])),
@@ -707,6 +721,7 @@ function Sidebar({ page, setPage, collapsed }) {
   const sidebarRef = useRef(null);
   const activeItemRef = useRef(null);
   const [indicator, setIndicator] = useState({ top: 0, height: 0, visible: false });
+  const [navCounts, setNavCounts] = useState(readVexaNavCounts);
 
   const measureActiveIndicator = useCallback(() => {
     const sidebar = sidebarRef.current;
@@ -764,6 +779,30 @@ function Sidebar({ page, setPage, collapsed }) {
     };
   }, [measureActiveIndicator]);
 
+  useEffect(() => {
+    const updateCounts = (event) => {
+      if (event?.detail) {
+        const searches = Array.isArray(event.detail.searches) ? event.detail.searches : [];
+        const matches = Array.isArray(event.detail.matches) ? event.detail.matches : [];
+        setNavCounts({
+          searches: searches.length,
+          matches: matches.filter((item) => !item.hidden).length,
+          sources: Array.isArray(event.detail.sources) ? event.detail.sources.length : 0,
+        });
+        return;
+      }
+      setNavCounts(readVexaNavCounts());
+    };
+
+    updateCounts();
+    window.addEventListener('vexa-workspace-updated', updateCounts);
+    window.addEventListener('storage', updateCounts);
+    return () => {
+      window.removeEventListener('vexa-workspace-updated', updateCounts);
+      window.removeEventListener('storage', updateCounts);
+    };
+  }, []);
+
   return (
     <aside
       ref={sidebarRef}
@@ -793,7 +832,7 @@ function Sidebar({ page, setPage, collapsed }) {
               >
                 <Icon name={item.icon} size={15} className="icon" />
                 <span>{item.label}</span>
-                {item.count != null && <span className="count">{item.count}</span>}
+                {navCounts[item.id] > 0 && <span className="count">{navCounts[item.id]}</span>}
               </button>
             );
           })}
@@ -1361,7 +1400,6 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
       case 'searches': return <VexaSearchesPage />;
       case 'matches': return <VexaMatchesPage />;
       case 'sources': return <VexaSourcesPage />;
-      case 'contacts': return <VexaSimplePage id="contacts" go={setPage} />;
       case 'analytics': return <VexaSimplePage id="analytics" go={setPage} />;
       case 'notifications': return <VexaSimplePage id="notifications" go={setPage} />;
       case 'payments': return <VexaSimplePage id="payments" go={setPage} />;
