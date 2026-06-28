@@ -718,7 +718,9 @@ function SmartInsights({ workspace, stats, go, actions }) {
 
 function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete }) {
   const selectedSources = sourceNames(workspace, item.sourceIds || []);
-  const keywords = item.keywords?.length ? item.keywords.slice(0, 3) : ['без ключей'];
+  const keywords = item.keywords?.length ? item.keywords : ['без ключей'];
+  const mainKeyword = keywords[0];
+  const extraKeywords = Math.max(0, keywords.length - 1);
   const limitPct = Math.min(100, Math.round(((Number(item.matchesToday) || 0) / Math.max(1, Number(item.dailyLimit) || 1)) * 100));
 
   return (
@@ -732,7 +734,8 @@ function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete })
             <strong>{item.title}</strong>
           </span>
           <span className="vexa-keyword-line">
-            {keywords.map((keyword) => <span key={keyword}>{keyword}</span>)}
+            <span>{mainKeyword}</span>
+            {extraKeywords > 0 && <sup className="vexa-keyword-more">+{extraKeywords}</sup>}
           </span>
           <span className="section-sub vexa-ellipsis">{selectedSources}</span>
         </span>

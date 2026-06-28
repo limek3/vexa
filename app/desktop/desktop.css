@@ -11062,10 +11062,10 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-search-row {
   display: grid;
-  grid-template-columns: minmax(220px, 1.15fr) minmax(180px, .78fr) 112px minmax(176px, auto);
+  grid-template-columns: minmax(200px, 1fr) minmax(150px, .52fr) minmax(132px, auto) minmax(154px, auto);
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
+  gap: 12px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -11076,9 +11076,9 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 .cb-desktop-html .vexa-search-row-open {
   min-width: 0;
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-columns: 34px minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
+  gap: 11px;
   border: 0;
   background: transparent;
   color: var(--text);
@@ -11098,17 +11098,24 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 .cb-desktop-html .vexa-search-row-body {
   display: grid;
   align-items: start;
-  gap: 6px;
+  gap: 5px;
 }
 
 .cb-desktop-html .vexa-search-row-title {
   justify-content: flex-start;
 }
 
+.cb-desktop-html .vexa-search-row-title strong {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .cb-desktop-html .vexa-search-row-side {
   display: grid;
-  justify-items: center;
-  gap: 8px;
+  justify-items: end;
+  gap: 7px;
 }
 
 .cb-desktop-html .vexa-search-row-badges,
@@ -11116,8 +11123,17 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 5px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.cb-desktop-html .vexa-search-row-badges .badge,
+.cb-desktop-html .vexa-card-badges .badge {
+  min-height: 18px;
+  padding: 2px 7px;
+  font-size: 10px;
+  line-height: 14px;
 }
 
 .cb-desktop-html .vexa-chipline {
@@ -11128,25 +11144,40 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 }
 
 .cb-desktop-html .vexa-keyword-line {
-  flex-wrap: wrap;
+  width: max-content;
+  max-width: 100%;
+  align-items: flex-start;
+  gap: 2px;
+  flex-wrap: nowrap;
 }
 
 .cb-desktop-html .vexa-keyword-line > span {
-  max-width: 160px;
-  padding: 3px 8px;
+  max-width: 128px;
+  padding: 2px 8px;
   border-radius: 999px;
   background: var(--surface-3);
   color: var(--text-2);
+  font-size: 11px;
+  line-height: 18px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.cb-desktop-html .vexa-keyword-more {
+  margin-left: -1px;
+  transform: translateY(-4px);
+  color: var(--accent-text);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .cb-desktop-html .vexa-search-row-health {
   min-width: 0;
   display: grid;
-  gap: 7px;
-  padding: 10px 12px;
+  gap: 6px;
+  padding: 9px 11px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: color-mix(in srgb, var(--surface-2) 78%, transparent);
@@ -11163,17 +11194,18 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 .cb-desktop-html .vexa-health-top span,
 .cb-desktop-html .vexa-health-meta {
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .cb-desktop-html .vexa-health-bar {
-  height: 5px;
+  height: 4px;
 }
 
 .cb-desktop-html .vexa-search-row-stats {
   display: inline-grid;
   grid-template-columns: repeat(2, auto);
-  gap: 14px;
+  justify-content: end;
+  gap: 12px;
   color: var(--text-2);
 }
 
@@ -11185,18 +11217,21 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-search-row-stats span {
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .cb-desktop-html .vexa-search-row > .vexa-row-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(82px, 1fr));
+  grid-template-columns: repeat(2, minmax(72px, 1fr));
   justify-content: end;
-  gap: 8px;
+  gap: 7px;
 }
 
 .cb-desktop-html .vexa-search-row > .vexa-row-actions .btn {
   width: 100%;
+  min-height: 30px;
+  padding-inline: 8px;
+  font-size: 11px;
   justify-content: center;
 }
 
