@@ -1,8 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useApp } from '@/lib/app-context';
-import { buildWorkspaceDatasetFromStored } from '@/lib/workspace-store';
 import {
   APPTS,
   CHATS,
@@ -25,6 +23,10 @@ const DEFAULT_PREFERENCES = {
 };
 
 const RU_MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+
+function buildWorkspaceDatasetFromStored() {
+  return { services: [], clients: [], templates: [], notifications: [] };
+}
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -433,7 +435,7 @@ function bookingValuesFromDraft(draft, service, fallbackDate = '25 мая') {
 }
 
 export function useDesktopPlatform(preferenceDefaults, options = {}) {
-  const app = useApp();
+  const app = {};
   const demoMode = options.demoMode === true;
   const initial = useMemo(() => buildInitialState(preferenceDefaults), [preferenceDefaults]);
   const [remoteThreads, setRemoteThreads] = useState([]);

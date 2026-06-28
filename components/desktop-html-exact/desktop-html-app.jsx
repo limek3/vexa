@@ -7,10 +7,6 @@ import { MASTER, SERVICES, CLIENTS, NOTIFICATIONS } from './desktop-html-data';
 import { Icon, Avatar, Check, SuccessCheck } from './desktop-html-ui';
 import { useDesktopPlatform } from './desktop-platform';
 import { VexaAuthGate } from './vexa-auth-gate';
-import { PublicPage } from './pages/public';
-import { ChatsPage } from './pages/chats';
-import { CalendarPage } from './pages/calendar';
-import { DesktopDashboardTransferPage } from '../desktop-dashboard-transfer/dashboard-embed';
 import {
   VexaDashboardPage,
   VexaMatchesPage,
@@ -49,22 +45,6 @@ const pageToRoute = {
   marketing: 'marketing',
   limits: 'limits',
 };
-
-const VEXA_PAGES = new Set([
-  'dashboard',
-  'searches',
-  'matches',
-  'contacts',
-  'sources',
-  'notifications',
-  'analytics',
-  'payments',
-  'subscription',
-  'settings',
-  'account',
-  'help',
-]);
-
 
 const DESKTOP_MODAL_POSITION_STORAGE_KEY = 'clickbook.desktop.modal.positions.v4';
 
@@ -1394,36 +1374,15 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
       case 'settings':
       case 'account':
         return <VexaSettingsPage />;
-      case 'calendar':  return <CalendarPage platform={platform} setPage={setPage} onCreate={() => setCreateOpen(true)} />;
-      case 'chats':     return <ChatsPage platform={platform} setPage={setPage} onCreate={() => setCreateOpen(true)} onNotif={() => setNotifOpen(true)} onToggleTheme={() => setDesktopTweak('theme', tweaks.theme === 'dark' ? 'light' : 'dark')} theme={tweaks.theme} />;
-      case 'clients':   return <DesktopDashboardTransferPage page="clients" />;
-      case 'services':  return <DesktopDashboardTransferPage page="services" />;
-      case 'public':    return <PublicPage tweaks={tweaks} platform={platform} />;
-      case 'appearance':return <DesktopDashboardTransferPage page="appearance" />;
-      case 'availability':
-      case 'profile':
-      case 'templates':
-      case 'integrations':
-      case 'reviews':
-      case 'finance':
-      case 'marketing':
-      case 'limits':
-        return <DesktopDashboardTransferPage page={page} />;
       case 'help':
         return <VexaSimplePage id="help" go={setPage} />;
-      default: return null;
+      default: return <VexaDashboardPage go={setPage} />;
     }
   };
 
-  // Public preview is full-bleed. Chats stay inside the normal desktop shell,
-  // but force the left navigation into icon-only mode so the chat ecosystem
-  // occupies the main rounded workspace.
-  const chatMode = page === 'chats';
-  const chatPage = page === 'chats';
-  const vexaPage = VEXA_PAGES.has(page);
-  const shellSidebarCollapsed = chatMode || sidebarCollapsed;
-  const flush = page === 'public' || chatMode;
-  const dashboardTransferPage = !vexaPage && page !== 'public' && page !== 'chats' && page !== 'calendar';
+  const shellSidebarCollapsed = sidebarCollapsed;
+  const flush = false;
+  const chatPage = false;
 
   const popupOpen = Boolean(notifOpen || commandOpen || createOpen || search.trim());
 
@@ -1437,7 +1396,7 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
       data-sidebar-collapsed={shellSidebarCollapsed ? 'true' : 'false'}
       data-popup-open={popupOpen ? 'true' : 'false'}
     >
-      <div className={`app ${chatMode ? 'chat-docked-mode' : ''}`} data-screen-label={`Page: ${page}`}>
+      <div className="app" data-screen-label={`Page: ${page}`}>
       <Sidebar page={page} setPage={setPage} collapsed={shellSidebarCollapsed} />
       <div className="main">
         <Topbar page={page} setPage={setPage} search={search} setSearch={setSearch}
@@ -1447,8 +1406,8 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
           unreadNotifications={(platform.notifications || []).filter((item) => item.unread).length}
           master={platform.master} />
         <GlobalSearchResults query={search} results={searchResults} onPick={pickSearchResult} />
-        <main className={`content ${flush ? 'flush wide' : ''} ${chatPage ? 'chat-content' : ''} ${dashboardTransferPage ? 'dashboard-transfer-content' : ''}`} key={page}>
-          {vexaPage ? <VexaAuthGate>{renderPage()}</VexaAuthGate> : renderPage()}
+        <main className={`content ${flush ? 'flush wide' : ''} ${chatPage ? 'chat-content' : ''}`} key={page}>
+          <VexaAuthGate>{renderPage()}</VexaAuthGate>
         </main>
       </div>
       <NotifPanel

@@ -2,10 +2,43 @@ import { NextResponse } from 'next/server';
 
 import { createSupabaseAdminClient } from '@/lib/server/supabase-admin';
 import { requireAuthUser } from '@/lib/server/require-auth-user';
-import { getAppUrl, sendTelegramMessage } from '@/lib/server/telegram-bot';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+function getAppUrl() {
+  return (
+    process.env.APP_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    'http://localhost:3000'
+  ).replace(/\/$/, '');
+}
+
+async function sendTelegramMessage(params: {
+  chatId: number | string;
+  text: string;
+  replyMarkup?: Record<string, unknown>;
+}) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) throw new Error('Missing TELEGRAM_BOT_TOKEN');
+
+  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: params.chatId,
+      text: params.text,
+      disable_web_page_preview: true,
+      ...(params.replyMarkup ? { reply_markup: params.replyMarkup } : {}),
+    }),
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    throw new Error(`telegram_send_failed:${body}`);
+  }
+}
 
 export async function POST() {
   try {

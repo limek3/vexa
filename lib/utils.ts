@@ -1,7 +1,12 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import type { Locale } from '@/lib/i18n';
-import { intlLocaleMap } from '@/lib/i18n';
+
+type Locale = 'ru' | 'en';
+
+const intlLocaleMap: Record<Locale, string> = {
+  ru: 'ru-RU',
+  en: 'en-US',
+};
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
