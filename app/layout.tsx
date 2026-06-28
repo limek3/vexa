@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import Script from 'next/script';
 import './globals.css';
-import { Providers } from '@/components/app/providers';
 
 export const metadata: Metadata = {
   title: {
@@ -42,7 +41,7 @@ export default function RootLayout({
         <Script id="vexa-shell-preferences" strategy="beforeInteractive">
           {`document.documentElement.dataset.vexaDesktop = 'true';`}
         </Script>
-        <Providers>{children}</Providers>
+        {children}
       </body>
     </html>
   );
