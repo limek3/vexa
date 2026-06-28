@@ -11062,9 +11062,9 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-search-row {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) minmax(220px, .65fr) 150px auto;
+  grid-template-columns: minmax(220px, 1.15fr) minmax(180px, .78fr) 112px minmax(176px, auto);
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   padding: 16px 18px;
   border-bottom: 1px solid var(--line);
 }
@@ -11107,7 +11107,7 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-search-row-side {
   display: grid;
-  justify-items: end;
+  justify-items: center;
   gap: 8px;
 }
 
@@ -11173,7 +11173,7 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 .cb-desktop-html .vexa-search-row-stats {
   display: inline-grid;
   grid-template-columns: repeat(2, auto);
-  gap: 18px;
+  gap: 14px;
   color: var(--text-2);
 }
 
@@ -11186,6 +11186,18 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 .cb-desktop-html .vexa-search-row-stats span {
   color: var(--text-3);
   font-size: 11px;
+}
+
+.cb-desktop-html .vexa-search-row > .vexa-row-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(82px, 1fr));
+  justify-content: end;
+  gap: 8px;
+}
+
+.cb-desktop-html .vexa-search-row > .vexa-row-actions .btn {
+  width: 100%;
+  justify-content: center;
 }
 
 .cb-desktop-html .vexa-account-profile {
