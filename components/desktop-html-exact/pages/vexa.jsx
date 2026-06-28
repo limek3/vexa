@@ -719,6 +719,7 @@ function SmartInsights({ workspace, stats, go, actions }) {
 function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete }) {
   const selectedSources = sourceNames(workspace, item.sourceIds || []);
   const keywords = item.keywords?.length ? item.keywords.slice(0, 3) : ['без ключей'];
+  const limitPct = Math.min(100, Math.round(((Number(item.matchesToday) || 0) / Math.max(1, Number(item.dailyLimit) || 1)) * 100));
 
   return (
     <div className="vexa-search-row">
@@ -736,6 +737,17 @@ function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete })
           <span className="section-sub vexa-ellipsis">{selectedSources}</span>
         </span>
       </button>
+      <div className="vexa-search-row-health">
+        <div className="vexa-health-top">
+          <span>Качество</span>
+          <strong>{item.quality || 0}%</strong>
+        </div>
+        <div className="progress vexa-health-bar"><span style={{ width: `${item.quality || 0}%` }} /></div>
+        <div className="vexa-health-meta">
+          <span>{item.lastRun || 'еще не запускался'}</span>
+          <span>{limitPct}% лимита</span>
+        </div>
+      </div>
       <div className="vexa-search-row-side">
         <div className="vexa-search-row-badges">
           {statusBadge(item.status)}
@@ -913,33 +925,49 @@ function matchReason(match) {
 }
 
 function MatchBrief({ match }) {
+  const contact = telegramRef(match);
+  const phone = extractPhone(match.text);
+
   return (
     <div className="vexa-match-brief">
-      <div className="vexa-match-heading">Найдено совпадение</div>
-
-      <div className="vexa-match-section">
-        <span>Данные</span>
-        <div className="vexa-match-quote">
-          <div>Поиск: {match.search}</div>
-          <div>Источник: {match.source}</div>
-          <div>Telegram: {telegramRef(match)}</div>
-          <div>Телефон: {extractPhone(match.text)}</div>
-          <div>Автор: {match.author}</div>
+      <div className="vexa-match-hero">
+        <div className="vexa-match-score">
+          <strong>{match.score}%</strong>
+          <span>точность</span>
+        </div>
+        <div className="vexa-row-main">
+          <div className="vexa-match-heading">Найдено совпадение</div>
+          <div className="section-sub">{match.search} · {match.source} · {match.time}</div>
         </div>
       </div>
 
-      <div className="vexa-match-section">
-        <span>Совпадение</span>
-        <div className="vexa-match-quote">
-          <div>Оценка: {match.score}%</div>
-          <div>Ключ: {match.keyword}</div>
-          <div>Причина: {matchReason(match)}</div>
+      <div className="vexa-match-grid">
+        <div>
+          <span>Поиск</span>
+          <strong>{match.search}</strong>
+        </div>
+        <div>
+          <span>Ключ</span>
+          <strong>{match.keyword}</strong>
+        </div>
+        <div>
+          <span>Контакт</span>
+          <strong>{contact}</strong>
+        </div>
+        <div>
+          <span>Телефон</span>
+          <strong>{phone}</strong>
         </div>
       </div>
 
-      <div className="vexa-match-section">
+      <div className="vexa-match-reason">
+        <span>Почему подошло</span>
+        <strong>{matchReason(match)}</strong>
+      </div>
+
+      <div className="vexa-match-message">
         <span>Сообщение</span>
-        <div className="vexa-match-quote">{match.text}</div>
+        <p>{match.text}</p>
       </div>
     </div>
   );
@@ -1196,6 +1224,20 @@ export function VexaSearchesPage() {
             action={<div className="vexa-card-badges">{statusBadge(selected.status)}<Badge kind="info">{selected.priority}</Badge></div>}
           >
             <div className="col vexa-card-body">
+              <div className="vexa-editor-summary">
+                <div>
+                  <span>Источники</span>
+                  <strong>{sourceCount(selected)}</strong>
+                </div>
+                <div>
+                  <span>Лимит</span>
+                  <strong>{selected.dailyLimit}</strong>
+                </div>
+                <div>
+                  <span>Качество</span>
+                  <strong>{selected.quality || 0}%</strong>
+                </div>
+              </div>
               <label className="field">
                 <span>Название</span>
                 <input className="input" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />

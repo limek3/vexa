@@ -10550,7 +10550,7 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 }
 
 .cb-desktop-html .vexa-split.matches {
-  grid-template-columns: minmax(0, 1fr) 430px;
+  grid-template-columns: minmax(0, 1fr) 520px;
 }
 
 .cb-desktop-html .vexa-split.sources,
@@ -11062,10 +11062,10 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-search-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 142px auto;
+  grid-template-columns: minmax(260px, 1fr) minmax(220px, .65fr) 150px auto;
   align-items: center;
-  gap: 18px;
-  padding: 14px 18px;
+  gap: 16px;
+  padding: 16px 18px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -11142,6 +11142,34 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   white-space: nowrap;
 }
 
+.cb-desktop-html .vexa-search-row-health {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-2) 78%, transparent);
+}
+
+.cb-desktop-html .vexa-health-top,
+.cb-desktop-html .vexa-health-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cb-desktop-html .vexa-health-top span,
+.cb-desktop-html .vexa-health-meta {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.cb-desktop-html .vexa-health-bar {
+  height: 5px;
+}
+
 .cb-desktop-html .vexa-search-row-stats {
   display: inline-grid;
   grid-template-columns: repeat(2, auto);
@@ -11169,6 +11197,26 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface-2);
+}
+
+.cb-desktop-html .vexa-editor-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cb-desktop-html .vexa-editor-summary > div {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.cb-desktop-html .vexa-editor-summary span {
+  color: var(--text-3);
+  font-size: 11px;
 }
 
 .cb-desktop-html .vexa-upload-btn {
@@ -11215,51 +11263,82 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-match-brief {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  background: var(--surface);
+}
+
+.cb-desktop-html .vexa-match-hero {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.cb-desktop-html .vexa-match-score {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+}
+
+.cb-desktop-html .vexa-match-score strong {
+  color: var(--accent-text);
+  font-size: 16px;
+}
+
+.cb-desktop-html .vexa-match-score span,
+.cb-desktop-html .vexa-match-grid span,
+.cb-desktop-html .vexa-match-reason span,
+.cb-desktop-html .vexa-match-message span {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .cb-desktop-html .vexa-match-heading {
-  width: max-content;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--text);
   color: var(--text);
+  font-size: 16px;
   font-weight: 800;
 }
 
-.cb-desktop-html .vexa-match-section {
+.cb-desktop-html .vexa-match-grid {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.cb-desktop-html .vexa-match-section > span {
+.cb-desktop-html .vexa-match-grid > div,
+.cb-desktop-html .vexa-match-reason,
+.cb-desktop-html .vexa-match-message {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.cb-desktop-html .vexa-match-grid strong,
+.cb-desktop-html .vexa-match-reason strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cb-desktop-html .vexa-match-message p {
+  margin: 0;
   color: var(--text);
-  font-weight: 800;
-}
-
-.cb-desktop-html .vexa-match-section > span::before {
-  content: "";
-  display: inline-block;
-  width: 5px;
-  height: 16px;
-  margin-right: 8px;
-  border-radius: 2px;
-  background: var(--accent);
-  vertical-align: -3px;
-}
-
-.cb-desktop-html .vexa-match-quote {
-  width: max-content;
-  max-width: 100%;
-  padding: 9px 11px;
-  border-left: 3px solid var(--accent);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--accent) 10%, var(--surface-3));
-  color: var(--text);
-  white-space: pre-wrap;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .cb-desktop-html .vexa-muted-line {
