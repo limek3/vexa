@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useTheme as useNextTheme } from 'next-themes';
 import { MASTER, SERVICES, CLIENTS, NOTIFICATIONS } from './desktop-html-data';
 import { Icon, Avatar, Check, SuccessCheck } from './desktop-html-ui';
 import { useDesktopPlatform } from './desktop-platform';
@@ -1159,13 +1158,9 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
   }, [setTweak, tweaks]);
   const searchResults = useMemo(() => buildSearchResults(search, platform), [search, platform]);
 
-  // Keep next-themes in sync with the desktop preference so embedded dashboard
-  // pages (which call useTheme() from next-themes) render in the same mode.
-  const { setTheme: setNextTheme } = useNextTheme();
   useLayoutEffect(() => {
     applyDesktopChromeTheme(tweaks);
-    setNextTheme(tweaks.theme === 'dark' ? 'dark' : 'light');
-  }, [tweaks, setNextTheme]);
+  }, [tweaks]);
 
   useEffect(() => {
     const syncPageFromLocation = () => {
