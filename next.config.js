@@ -2,7 +2,6 @@
 const nextConfig = {
   devIndicators: false,
   distDir: process.env.NEXT_DIST_DIR || '.next',
-  output: 'standalone',
   typescript: {
     ignoreBuildErrors: true,
   },
