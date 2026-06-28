@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Btn, Icon } from './desktop-html-ui';
 
+const VEXA_PROFILE_STORAGE_KEY = 'vexa.profile.v1';
+
 const supabaseConfigured = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
     (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
@@ -23,6 +25,16 @@ function readProfile(payload) {
     avatar: meta.telegram_photo_url || meta.avatar_url || '',
     providers: Array.isArray(user?.providers) ? user.providers : [],
   };
+}
+
+function publishProfile(profile) {
+  if (typeof window === 'undefined' || !profile) return;
+  try {
+    window.localStorage.setItem(VEXA_PROFILE_STORAGE_KEY, JSON.stringify(profile));
+  } catch (err) {
+    void err;
+  }
+  window.dispatchEvent(new CustomEvent('vexa-profile-updated', { detail: profile }));
 }
 
 export function VexaAuthGate({ children }) {
@@ -60,7 +72,9 @@ export function VexaAuthGate({ children }) {
       const payload = await response.json().catch(() => ({}));
 
       if (response.ok && payload?.user) {
-        setProfile(readProfile(payload));
+        const nextProfile = readProfile(payload);
+        setProfile(nextProfile);
+        publishProfile(nextProfile);
         setState('ready');
         return;
       }
@@ -126,14 +140,15 @@ export function VexaAuthGate({ children }) {
 
   if (state === 'ready') {
     const telegramConnected = profile?.providers?.includes('telegram') || Boolean(profile?.username);
+    const displayName = profile?.email || profile?.name || 'Vexa user';
 
     return (
       <div>
         <div className="vexa-auth-strip">
           <div className="vexa-auth-user">
-            <span className="vexa-auth-avatar">{profile?.name?.slice(0, 1) || 'V'}</span>
+            <span className="vexa-auth-avatar">{displayName.includes('@') ? displayName.split('@')[0].slice(0, 2).replace(/\W/g, '').toUpperCase() || 'V' : displayName.slice(0, 2).toUpperCase()}</span>
             <span>
-              <strong>{profile?.name}</strong>
+              <strong>{displayName}</strong>
               <small>
                 {profile?.email || 'Email-сессия активна'}
                 {telegramConnected ? ` · Telegram @${profile.username || 'подключен'}` : ' · Telegram не подключен'}

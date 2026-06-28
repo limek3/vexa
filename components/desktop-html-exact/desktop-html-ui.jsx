@@ -123,6 +123,12 @@ export const avatarTint = (s) => {
 };
 export const initials = (name) => {
   if (!name) return '?';
+  if (name.includes('@')) {
+    const local = name.split('@')[0] || name;
+    const parts = local.split(/[._\-\s]+/).filter(Boolean);
+    const value = (parts[0]?.[0] || local[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '');
+    return value.toUpperCase();
+  }
   const parts = name.trim().split(/\s+/);
   return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
 };

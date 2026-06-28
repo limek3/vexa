@@ -843,9 +843,11 @@ function Sidebar({ page, setPage, collapsed }) {
   );
 }
 
-function Topbar({ page, setPage, search, setSearch, onNotif, theme, onToggleTheme, unreadNotifications, master }) {
+function Topbar({ page, setPage, search, setSearch, onNotif, theme, onToggleTheme, unreadNotifications, master, vexaProfile }) {
   const crumbs = PLATFORM_CRUMBS[page] || CRUMBS[page] || ['Кабинет'];
   const isDark = theme === 'dark';
+  const profileName = vexaProfile?.email || vexaProfile?.name || master?.name || MASTER.name;
+  const profileAvatar = vexaProfile?.avatar || '';
   return (
     <header className="topbar">
       <div className="crumbs">
@@ -881,10 +883,10 @@ function Topbar({ page, setPage, search, setSearch, onNotif, theme, onToggleThem
         type="button"
         className="topbar-profile"
         onClick={() => setPage('account')}
-        data-tip={master?.name || 'Профиль'}
+        data-tip={profileName || 'Профиль'}
         aria-label="Профиль аккаунта"
       >
-        <Avatar name={master?.name || MASTER.name} />
+        <Avatar name={profileName} src={profileAvatar} />
       </button>
     </header>
   );
@@ -1148,6 +1150,22 @@ function applyDesktopChromeTheme(preferences, options = {}) {
 
 const DESKTOP_DEMO_LS_KEY = 'clickbook.desktop.mode.v1';
 const DESKTOP_SIDEBAR_COLLAPSED_LS_KEY = 'clickbook.desktop.sidebar-collapsed.v1';
+const VEXA_PROFILE_STORAGE_KEY = 'vexa.profile.v1';
+const VEXA_WORKSPACE_STORAGE_KEY = 'vexa.desktop.workspace.v3';
+
+function readVexaProfile() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const profile = JSON.parse(window.localStorage.getItem(VEXA_PROFILE_STORAGE_KEY) || 'null');
+    const workspace = JSON.parse(window.localStorage.getItem(VEXA_WORKSPACE_STORAGE_KEY) || 'null');
+    const avatar = workspace?.settings?.avatarUrl || profile?.avatar || '';
+    if (profile) return { ...profile, avatar };
+    return avatar ? { name: 'Vexa', email: '', avatar } : null;
+  } catch (err) {
+    void err;
+    return null;
+  }
+}
 
 export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
   useDesktopModalWindowBehavior();
@@ -1177,6 +1195,7 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
+  const [vexaProfile, setVexaProfile] = useState(readVexaProfile);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false;
     try {
@@ -1332,6 +1351,24 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
   }, [platform]);
 
   useEffect(() => {
+    const refreshProfile = (event) => {
+      if (event?.type === 'vexa-profile-updated') {
+        const stored = readVexaProfile();
+        setVexaProfile({ ...(event.detail || {}), avatar: stored?.avatar || event.detail?.avatar || '' });
+        return;
+      }
+      setVexaProfile(readVexaProfile());
+    };
+    refreshProfile();
+    window.addEventListener('vexa-profile-updated', refreshProfile);
+    window.addEventListener('vexa-workspace-updated', refreshProfile);
+    return () => {
+      window.removeEventListener('vexa-profile-updated', refreshProfile);
+      window.removeEventListener('vexa-workspace-updated', refreshProfile);
+    };
+  }, []);
+
+  useEffect(() => {
     const openCommand = () => setCommandOpen(true);
     window.addEventListener('clickbook:open-command-center', openCommand);
     return () => window.removeEventListener('clickbook:open-command-center', openCommand);
@@ -1437,7 +1474,8 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
           theme={tweaks.theme}
           onToggleTheme={() => setDesktopTweak('theme', tweaks.theme === 'dark' ? 'light' : 'dark')}
           unreadNotifications={(platform.notifications || []).filter((item) => item.unread).length}
-          master={platform.master} />
+          master={platform.master}
+          vexaProfile={vexaProfile} />
         <GlobalSearchResults query={search} results={searchResults} onPick={pickSearchResult} />
         <main className={`content ${flush ? 'flush wide' : ''} ${chatPage ? 'chat-content' : ''}`}>
           <VexaAuthGate>{renderPage()}</VexaAuthGate>

@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { Badge, Btn, Card, Icon, Metric, NumberPopIn, Segmented, Switch } from '../desktop-html-ui';
+import { Avatar, Badge, Btn, Card, Icon, Metric, NumberPopIn, Segmented, Switch } from '../desktop-html-ui';
 
 const chartDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
@@ -24,10 +24,25 @@ const plans = [
 ];
 
 const VEXA_WORKSPACE_STORAGE_KEY = 'vexa.desktop.workspace.v3';
+const VEXA_PROFILE_STORAGE_KEY = 'vexa.profile.v1';
+
+const demoMatch = {
+  id: 'demo-match-preview',
+  search: 'Аренда МСК',
+  source: '@Milanka12367',
+  author: 'Сестрёнка',
+  keyword: 'сдам квартиру',
+  score: 82,
+  text: 'Сдаю жилье. Район хороший, можно заехать на этой неделе. Телефон: +79316097555',
+  time: '20:42',
+  status: 'new',
+  sent: false,
+  hidden: false,
+};
 
 const initialWorkspace = {
   searches: [],
-  matches: [],
+  matches: [demoMatch],
   sources: [],
   contacts: [],
   invoices: [],
@@ -45,6 +60,7 @@ const initialWorkspace = {
     end: '07:00',
     timezone: 'Europe/Moscow',
     telegram: '',
+    avatarUrl: '',
   },
   currentPlan: 'free',
   billing: 'month',
@@ -86,7 +102,7 @@ function mergeWorkspace(value) {
     ...initialWorkspace,
     ...value,
     searches: Array.isArray(value.searches) ? value.searches : initialWorkspace.searches,
-    matches: Array.isArray(value.matches) ? value.matches : initialWorkspace.matches,
+    matches: Array.isArray(value.matches) && value.matches.length ? value.matches : initialWorkspace.matches,
     sources: Array.isArray(value.sources) ? value.sources : initialWorkspace.sources,
     contacts: Array.isArray(value.contacts) ? value.contacts : initialWorkspace.contacts,
     invoices: Array.isArray(value.invoices) ? value.invoices : initialWorkspace.invoices,
@@ -350,7 +366,7 @@ function useVexaWorkspace() {
         searches: current.searches.map((item) => item.id === id ? {
           ...item,
           status: item.status === 'active' ? 'paused' : 'active',
-          lastRun: item.status === 'active' ? 'на паузе' : 'только что',
+          lastRun: item.status === 'active' ? 'остановлен' : 'только что',
         } : item),
       }), { title: 'Статус поиска обновлен', icon: 'play' });
     },
@@ -474,7 +490,7 @@ function statusBadge(status) {
   if (status === 'active' || status === 'online') return <Badge kind="success">активен</Badge>;
   if (status === 'good') return <Badge kind="success">подходит</Badge>;
   if (status === 'contacted') return <Badge kind="success">написали</Badge>;
-  if (status === 'paused' || status === 'limited') return <Badge kind="warn">на паузе</Badge>;
+  if (status === 'paused' || status === 'limited') return <Badge kind="warn">остановлен</Badge>;
   if (status === 'blocked' || status === 'bad') return <Badge kind="danger">ошибка</Badge>;
   return <Badge kind="info">новое</Badge>;
 }
@@ -571,6 +587,24 @@ function VexaAnalyticsChart({ data, conversion = 0 }) {
 }
 
 function PageShell({ title, subtitle, actions, children }) {
+  useEffect(() => {
+    const closeFloatingLists = (event) => {
+      document.querySelectorAll('.vexa-select[open], .vexa-source-picker[open]').forEach((node) => {
+        if (!node.contains(event.target)) node.removeAttribute('open');
+      });
+    };
+    const closeOnEscape = (event) => {
+      if (event.key !== 'Escape') return;
+      document.querySelectorAll('.vexa-select[open], .vexa-source-picker[open]').forEach((node) => node.removeAttribute('open'));
+    };
+    document.addEventListener('pointerdown', closeFloatingLists);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeFloatingLists);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, []);
+
   return (
     <div className="vexa-page" data-screen-label={`Vexa ${title}`}>
       <div className="page-head vexa-page-head">
@@ -695,10 +729,6 @@ function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete })
         <span className="vexa-search-row-body">
           <span className="vexa-search-row-title">
             <strong>{item.title}</strong>
-            <span className="vexa-chipline">
-              {statusBadge(item.status)}
-              <Badge kind="info">{item.priority}</Badge>
-            </span>
           </span>
           <span className="vexa-keyword-line">
             {keywords.map((keyword) => <span key={keyword}>{keyword}</span>)}
@@ -706,14 +736,20 @@ function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete })
           <span className="section-sub vexa-ellipsis">{selectedSources}</span>
         </span>
       </button>
-      <div className="vexa-search-row-stats">
-        <div>
-          <strong className="tabular">{sourceCount(item)}</strong>
-          <span>источн.</span>
+      <div className="vexa-search-row-side">
+        <div className="vexa-search-row-badges">
+          {statusBadge(item.status)}
+          <Badge kind="info">{item.priority}</Badge>
         </div>
-        <div>
-          <strong className="tabular">{item.matchesToday}</strong>
-          <span>сегодня</span>
+        <div className="vexa-search-row-stats">
+          <div>
+            <strong className="tabular">{sourceCount(item)}</strong>
+            <span>источн.</span>
+          </div>
+          <div>
+            <strong className="tabular">{item.matchesToday}</strong>
+            <span>сегодня</span>
+          </div>
         </div>
       </div>
       <div className="vexa-row-actions">
@@ -1157,7 +1193,7 @@ export function VexaSearchesPage() {
           <InnerCard
             title="Редактор поиска"
             subtitle="Ключевые слова, минус-слова, источники и лимит проверки"
-            action={statusBadge(selected.status)}
+            action={<div className="vexa-card-badges">{statusBadge(selected.status)}<Badge kind="info">{selected.priority}</Badge></div>}
           >
             <div className="col vexa-card-body">
               <label className="field">
@@ -1608,17 +1644,49 @@ export function VexaSettingsPage() {
   const { workspace, actions, stats } = useVexaWorkspace();
   const telegram = useTelegramNotificationLink();
   const [settings, setSettings] = useState(workspace.settings);
+  const [profile, setProfile] = useState(null);
   const [notice, setNotice] = useState('');
 
   useEffect(() => {
     setSettings(workspace.settings);
   }, [workspace.settings]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      setProfile(JSON.parse(window.localStorage.getItem(VEXA_PROFILE_STORAGE_KEY) || 'null'));
+    } catch (err) {
+      void err;
+    }
+  }, []);
+
   const update = (patch) => setSettings((current) => ({ ...current, ...patch }));
   const save = () => {
     actions.updateSettings(settings);
     setNotice('Настройки сохранены локально и готовы к синхронизации');
     notify('Настройки Vexa сохранены');
+  };
+
+  const applyAvatar = (avatarUrl) => {
+    const next = { ...settings, avatarUrl };
+    setSettings(next);
+    actions.updateSettings({ avatarUrl });
+    setNotice(avatarUrl ? 'Аватарка обновлена' : 'Аватарка удалена');
+    notify(avatarUrl ? 'Аватарка обновлена' : 'Аватарка удалена');
+  };
+
+  const uploadAvatar = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setNotice('Выберите изображение: png, jpg или webp.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => applyAvatar(String(reader.result || ''));
+    reader.onerror = () => setNotice('Не удалось прочитать файл.');
+    reader.readAsDataURL(file);
   };
 
   const sendTelegramTest = async () => {
@@ -1703,6 +1771,20 @@ export function VexaSettingsPage() {
         </InnerCard>
         <InnerCard title="Аккаунт" subtitle="Профиль, экспорт и технические действия">
           <div className="col vexa-card-body">
+            <div className="vexa-account-profile">
+              <Avatar name={profile?.email || profile?.name || 'Vexa'} src={settings.avatarUrl} size="lg" />
+              <div className="vexa-row-main">
+                <strong>{profile?.email || profile?.name || 'Аккаунт Vexa'}</strong>
+                <span className="section-sub">Аватарка используется в верхнем меню приложения.</span>
+              </div>
+              <div className="vexa-form-actions">
+                <label className="vexa-upload-btn">
+                  <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadAvatar} />
+                  Загрузить
+                </label>
+                {settings.avatarUrl ? <Btn kind="secondary" size="sm" onClick={() => applyAvatar('')}>Удалить</Btn> : null}
+              </div>
+            </div>
             <label className="field">
               <span>Часовой пояс</span>
               <input className="input" value={settings.timezone} onChange={(event) => update({ timezone: event.target.value })} />
