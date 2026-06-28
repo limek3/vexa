@@ -683,22 +683,39 @@ function SmartInsights({ workspace, stats, go, actions }) {
 }
 
 function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete }) {
+  const selectedSources = sourceNames(workspace, item.sourceIds || []);
+  const keywords = item.keywords?.length ? item.keywords.slice(0, 3) : ['без ключей'];
+
   return (
-    <div className="li-row vexa-row">
-      <div className="vexa-row-icon">
-        <Icon name="search" size={15} />
-      </div>
-      <div className="vexa-row-main">
-        <div className="vexa-row-title">
-          <strong>{item.title}</strong>
-          {statusBadge(item.status)}
-          <Badge kind="info">{item.priority}</Badge>
+    <div className="vexa-search-row">
+      <button type="button" className="vexa-search-row-open" onClick={() => onOpen(item)}>
+        <span className="vexa-row-icon">
+          <Icon name="search" size={15} />
+        </span>
+        <span className="vexa-search-row-body">
+          <span className="vexa-search-row-title">
+            <strong>{item.title}</strong>
+            <span className="vexa-chipline">
+              {statusBadge(item.status)}
+              <Badge kind="info">{item.priority}</Badge>
+            </span>
+          </span>
+          <span className="vexa-keyword-line">
+            {keywords.map((keyword) => <span key={keyword}>{keyword}</span>)}
+          </span>
+          <span className="section-sub vexa-ellipsis">{selectedSources}</span>
+        </span>
+      </button>
+      <div className="vexa-search-row-stats">
+        <div>
+          <strong className="tabular">{sourceCount(item)}</strong>
+          <span>источн.</span>
         </div>
-        <div className="section-sub">{item.keywords.join(', ')}</div>
-        <div className="section-sub vexa-muted-line">{sourceNames(workspace, item.sourceIds || [])}</div>
+        <div>
+          <strong className="tabular">{item.matchesToday}</strong>
+          <span>сегодня</span>
+        </div>
       </div>
-      <div className="vexa-row-meta tabular">{sourceCount(item)} источн.</div>
-      <div className="vexa-row-meta tabular">{item.matchesToday} сегодня</div>
       <div className="vexa-row-actions">
         <Btn size="sm" kind="secondary" icon="edit" onClick={() => onOpen(item)}>Открыть</Btn>
         <Btn size="sm" kind="secondary" icon={item.status === 'active' ? 'pause' : 'play'} onClick={() => onToggle(item.id)}>
@@ -708,6 +725,36 @@ function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete })
         <Btn size="sm" kind="danger" icon="trash" onClick={() => onDelete(item.id)}>Удалить</Btn>
       </div>
     </div>
+  );
+}
+
+function VexaSelect({ value, options, onChange, placeholder = 'Выбрать' }) {
+  const normalized = options.map((option) => (typeof option === 'string' ? { value: option, label: option } : option));
+  const selected = normalized.find((option) => option.value === value);
+
+  return (
+    <details className="vexa-select">
+      <summary className="vexa-select-trigger">
+        <span>{selected?.label || placeholder}</span>
+        <Icon name="chevron-down" size={14} />
+      </summary>
+      <div className="vexa-select-menu">
+        {normalized.map((option) => (
+          <button
+            type="button"
+            key={option.value}
+            className={`vexa-select-option ${option.value === value ? 'active' : ''}`}
+            onClick={(event) => {
+              onChange?.(option.value);
+              event.currentTarget.closest('details')?.removeAttribute('open');
+            }}
+          >
+            <span>{option.label}</span>
+            {option.value === value && <Icon name="check" size={14} />}
+          </button>
+        ))}
+      </div>
+    </details>
   );
 }
 
@@ -811,6 +858,54 @@ function MatchList({ items, onPick, selectedId, filter, setFilter }) {
         </div>
       )}
     </Card>
+  );
+}
+
+function extractPhone(text = '') {
+  const match = String(text).match(/(?:\+?\d[\d\s().-]{7,}\d)/);
+  return match ? match[0].trim() : 'не найден';
+}
+
+function telegramRef(match) {
+  const candidates = [match?.author, match?.source].filter(Boolean);
+  return candidates.find((item) => String(item).startsWith('@')) || 'не найден';
+}
+
+function matchReason(match) {
+  if (!match?.keyword) return 'сообщение похоже на активный запрос и прошло фильтр';
+  return `ключ “${match.keyword}” найден в сообщении, минус-слова не сработали`;
+}
+
+function MatchBrief({ match }) {
+  return (
+    <div className="vexa-match-brief">
+      <div className="vexa-match-heading">Найдено совпадение</div>
+
+      <div className="vexa-match-section">
+        <span>Данные</span>
+        <div className="vexa-match-quote">
+          <div>Поиск: {match.search}</div>
+          <div>Источник: {match.source}</div>
+          <div>Telegram: {telegramRef(match)}</div>
+          <div>Телефон: {extractPhone(match.text)}</div>
+          <div>Автор: {match.author}</div>
+        </div>
+      </div>
+
+      <div className="vexa-match-section">
+        <span>Совпадение</span>
+        <div className="vexa-match-quote">
+          <div>Оценка: {match.score}%</div>
+          <div>Ключ: {match.keyword}</div>
+          <div>Причина: {matchReason(match)}</div>
+        </div>
+      </div>
+
+      <div className="vexa-match-section">
+        <span>Сообщение</span>
+        <div className="vexa-match-quote">{match.text}</div>
+      </div>
+    </div>
   );
 }
 
@@ -1061,7 +1156,7 @@ export function VexaSearchesPage() {
         {selected ? (
           <InnerCard
             title="Редактор поиска"
-            subtitle="Изменения сохраняются в приложении и готовы для синхронизации с ботом"
+            subtitle="Ключевые слова, минус-слова, источники и лимит проверки"
             action={statusBadge(selected.status)}
           >
             <div className="col vexa-card-body">
@@ -1084,11 +1179,11 @@ export function VexaSearchesPage() {
               <div className="grid-2">
                 <label className="field">
                   <span>Приоритет</span>
-                  <select className="input" value={draft.priority} onChange={(event) => setDraft({ ...draft, priority: event.target.value })}>
-                    <option>Высокий</option>
-                    <option>Средний</option>
-                    <option>Низкий</option>
-                  </select>
+                  <VexaSelect
+                    value={draft.priority}
+                    options={['Высокий', 'Средний', 'Низкий']}
+                    onChange={(priority) => setDraft({ ...draft, priority })}
+                  />
                 </label>
                 <label className="field">
                   <span>Лимит в день</span>
@@ -1142,8 +1237,8 @@ export function VexaMatchesPage() {
   }, [selected, visible]);
 
   const refresh = () => {
-    setNotice('Для загрузки реальных совпадений нужен backend Vexa и подключенный Telegram-бот. Моки не создаются.');
-    notify('Нужен backend для загрузки совпадений');
+    setNotice('Свежие совпадения появятся после подключения серверного сборщика Telegram-сообщений.');
+    notify('Ожидается подключение сборщика совпадений');
   };
 
   const sendReply = () => {
@@ -1198,21 +1293,7 @@ export function VexaMatchesPage() {
         >
           {selected ? (
             <div className="col vexa-card-body">
-              <blockquote className="vexa-quote">{selected.text}</blockquote>
-              <div className="grid-2">
-                <div className="vexa-mini">
-                  <div className="metric-label">Автор</div>
-                  <strong>{selected.author}</strong>
-                </div>
-                <div className="vexa-mini">
-                  <div className="metric-label">Ключ</div>
-                  <strong>{selected.keyword}</strong>
-                </div>
-              </div>
-              <div>
-                <div className="section-title">AI-обоснование</div>
-                <p className="section-sub">Сообщение содержит прямой запрос, совпадает с ключевым словом и не содержит минус-слов. Оценка учитывает источник, свежесть и конкретику.</p>
-              </div>
+              <MatchBrief match={selected} />
               <label className="field">
                 <span>Текст быстрого ответа</span>
                 <textarea className="input" rows={4} value={reply} onChange={(event) => setReply(event.target.value)} />
@@ -1266,6 +1347,7 @@ export function VexaSourcesPage() {
   const [notice, setNotice] = useState('');
   const selected = workspace.sources.find((item) => item.id === selectedId) || workspace.sources[0];
   const visible = workspace.sources.filter((source) => filter === 'all' || source.status === filter);
+  const groupOptions = Array.from(new Set(['Основные', ...sourceGroups(workspace).map((group) => group.name), draft.group].filter(Boolean)));
 
   useEffect(() => {
     if (!selected && workspace.sources[0]) {
@@ -1389,20 +1471,21 @@ export function VexaSourcesPage() {
               <div className="grid-2">
                 <label className="field">
                   <span>Тип</span>
-                  <select className="input" value={draft.type} onChange={(event) => setDraft({ ...draft, type: event.target.value })}>
-                    <option>Канал</option>
-                    <option>Группа</option>
-                    <option>Инвайт</option>
-                  </select>
+                  <VexaSelect
+                    value={draft.type}
+                    options={['Канал', 'Группа', 'Инвайт']}
+                    onChange={(type) => setDraft({ ...draft, type })}
+                  />
                 </label>
                 <label className="field">
                   <span>Тема / список</span>
-                  <input className="input" list="vexa-source-groups" value={draft.group} onChange={(event) => setDraft({ ...draft, group: event.target.value })} />
+                  <VexaSelect
+                    value={draft.group}
+                    options={groupOptions}
+                    onChange={(group) => setDraft({ ...draft, group })}
+                  />
                 </label>
               </div>
-              <datalist id="vexa-source-groups">
-                {sourceGroups(workspace).map((group) => <option key={group.name} value={group.name} />)}
-              </datalist>
               <div className="vexa-detail-grid">
                 <UsageBar label="Ошибки доступа" used={selected.errors} total={5} />
                 <UsageBar label="Привязка к поискам" used={sourceUsage(workspace, selected.id)} total={Math.max(1, workspace.searches.length)} />
@@ -1731,8 +1814,14 @@ function ContactsPage() {
 function AnalyticsPage() {
   const { workspace, actions, stats } = useVexaWorkspace();
   const [period, setPeriod] = useState('week');
+  const [sourcePage, setSourcePage] = useState(1);
   const [notice, setNotice] = useState('');
   const multiplier = period === 'month' ? 4 : 1;
+  const pageSize = 5;
+  const sourcePages = Math.max(1, Math.ceil(workspace.sources.length / pageSize));
+  const currentSourcePage = Math.min(sourcePage, sourcePages);
+  const sourceStart = (currentSourcePage - 1) * pageSize;
+  const visibleSources = workspace.sources.slice(sourceStart, sourceStart + pageSize);
 
   return (
     <PageShell
@@ -1750,10 +1839,10 @@ function AnalyticsPage() {
     >
       <Notice>{notice}</Notice>
       <div className="grid-4 vexa-metrics">
-        <Metric label="Найдено" value={stats.chartData.reduce((sum, item) => sum + item.matches, 0) * multiplier} delta={stats.today ? 'по workspace' : 'нет данных'} deltaKind={stats.today ? 'up' : undefined} />
+        <Metric label="Найдено" value={stats.chartData.reduce((sum, item) => sum + item.matches, 0) * multiplier} delta={stats.today ? 'по кабинету' : 'нет данных'} deltaKind={stats.today ? 'up' : undefined} />
         <Metric label="Отправлено" value={stats.sent * multiplier} delta={`${stats.conversion}% конверсия`} />
         <Metric label="Точность AI" value={workspace.searches.length ? `${Math.round(workspace.searches.reduce((sum, item) => sum + item.quality, 0) / Math.max(1, workspace.searches.length))}%` : '—'} delta={workspace.searches.length ? 'по поискам' : 'нет данных'} />
-        <Metric label="Среднее время" value="—" delta="появится после backend" />
+        <Metric label="Среднее время" value="—" delta="появится после первых совпадений" />
       </div>
       <div className="vexa-split analytics">
         <InnerCard title="Воронка мониторинга" subtitle="От найденного сообщения до контакта">
@@ -1763,15 +1852,29 @@ function AnalyticsPage() {
         </InnerCard>
         <InnerCard title="Лучшие источники" subtitle="Где больше подходящих лидов">
           <div className="col vexa-card-body">
-            {workspace.sources.slice(0, 5).map((source, index) => (
+            {visibleSources.map((source, index) => (
               <div key={source.id} className="vexa-mini">
                 <div className="vexa-row-title">
                   <strong>{source.title}</strong>
-                  <Badge kind="info">#{index + 1}</Badge>
+                  <Badge kind="info">#{sourceStart + index + 1}</Badge>
                 </div>
                 <UsageBar label={source.ref} used={sourceUsage(workspace, source.id)} total={Math.max(1, workspace.searches.length)} />
               </div>
             ))}
+            {workspace.sources.length > pageSize && (
+              <div className="vexa-pagination" aria-label="Страницы источников">
+                {Array.from({ length: sourcePages }, (_, index) => index + 1).map((page) => (
+                  <button
+                    type="button"
+                    key={page}
+                    className={`vexa-page-number ${page === currentSourcePage ? 'active' : ''}`}
+                    onClick={() => setSourcePage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            )}
             {!workspace.sources.length && (
               <div className="vexa-empty">
                 <Icon name="filter" />
@@ -1926,22 +2029,14 @@ function NotificationsPage() {
 }
 
 function HelpPage() {
-  const [checked, setChecked] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [notice, setNotice] = useState('');
   const faq = [
     ['Зачем подключать Telegram?', 'Только для push-уведомлений о совпадениях. Поиски, источники и настройки работают в приложении.'],
     ['Где настраивать поиски?', 'На странице “Поиски”: ключевые слова, минус-слова, лимит и выбранные источники.'],
     ['Что такое источники?', 'Это библиотека каналов/групп, разложенная по темам. В каждом поиске можно выбрать несколько источников.'],
-    ['Почему нет совпадений?', 'Нужны активный поиск, выбранные источники и backend-сборщик Telegram-сообщений.'],
+    ['Почему нет совпадений?', 'Нужны активный поиск, выбранные источники и подключенный сборщик Telegram-сообщений.'],
   ];
-  const rows = [
-    ['Supabase auth', checked ? 'проверено' : 'не проверено'],
-    ['Telegram bot', checked ? 'по env' : 'ожидает'],
-    ['Workspace', checked ? 'готов' : 'ожидает'],
-    ['Платежи', checked ? 'не подключено' : 'не проверено'],
-  ];
-
   const sendFeedback = () => {
     const text = feedback.trim();
     if (!text) {
@@ -1956,7 +2051,7 @@ function HelpPage() {
     <PageShell
       title="Помощь"
       subtitle="FAQ, связь с поддержкой и форма обратной связи."
-      actions={<Btn icon="refresh" kind="primary" onClick={() => { setChecked(true); notify('Диагностика выполнена'); }}>Запустить диагностику</Btn>}
+      actions={<Btn icon="send" kind="primary" onClick={() => openTelegram('@olenchuk_b')}>Написать @olenchuk_b</Btn>}
     >
       <Notice>{notice}</Notice>
       <div className="vexa-split help">
@@ -1992,16 +2087,6 @@ function HelpPage() {
             <div className="vexa-form-actions">
               <Btn kind="secondary" icon="copy" onClick={sendFeedback}>Скопировать</Btn>
               <Btn kind="primary" icon="send" onClick={() => openTelegram('@olenchuk_b')}>Написать в Telegram</Btn>
-            </div>
-            <div className="vexa-mini">
-              <div className="metric-label">Диагностика</div>
-              {rows.map(([name, value]) => (
-                <div className="vexa-help-row" key={name}>
-                  <span>{name}</span>
-                  <Badge kind={checked ? 'success' : 'info'}>{value}</Badge>
-                </div>
-              ))}
-              <Btn size="sm" kind="secondary" icon="copy" onClick={() => copyText(rows.map((row) => row.join(': ')).join('\n'), 'Лог диагностики скопирован')}>Скопировать лог</Btn>
             </div>
           </div>
         </InnerCard>
