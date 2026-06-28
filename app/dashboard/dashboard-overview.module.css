@@ -1,0 +1,219 @@
+.page {
+  --dash-bg: #f7f6f2;
+  --dash-bg-2: #fbfaf7;
+  --dash-text: #111111;
+  --dash-muted: rgba(17, 17, 17, 0.58);
+  --dash-faint: rgba(17, 17, 17, 0.32);
+  --dash-card: #ffffff;
+  --dash-card-solid: #ffffff;
+  --dash-panel: rgba(17, 17, 17, 0.018);
+  --dash-border: #e6e2da;
+  --dash-border-soft: rgba(17, 17, 17, 0.075);
+  --dash-shadow: 0 12px 30px rgba(17, 17, 17, 0.035), 0 1px 2px rgba(17, 17, 17, 0.035);
+  --dash-shadow-soft: 0 8px 22px rgba(17, 17, 17, 0.025), inset 0 1px 0 rgba(255, 255, 255, 0.74);
+  --dash-accent: #7c5cff;
+  --dash-accent-2: #6f54ef;
+  --dash-success: #79a96b;
+  --dash-grid: rgba(0, 0, 0, 0.065);
+  background:
+    radial-gradient(circle at 18% -14%, color-mix(in srgb, var(--dash-accent) 5%, transparent), transparent 34%),
+    radial-gradient(circle at 96% 2%, color-mix(in srgb, var(--dash-success) 4%, transparent), transparent 30%),
+    linear-gradient(180deg, var(--dash-bg-2) 0%, var(--dash-bg) 100%) !important;
+  color: var(--dash-text);
+}
+
+:global(.dark) .page {
+  --dash-bg: #080808;
+  --dash-bg-2: #0b0c10;
+  --dash-text: #f8f7f4;
+  --dash-muted: rgba(248, 247, 244, 0.58);
+  --dash-faint: rgba(248, 247, 244, 0.30);
+  --dash-card: #141414;
+  --dash-card-solid: #141414;
+  --dash-panel: rgba(255, 255, 255, 0.026);
+  --dash-border: rgba(255, 255, 255, 0.08);
+  --dash-border-soft: rgba(255, 255, 255, 0.07);
+  --dash-shadow: none;
+  --dash-shadow-soft: inset 0 1px 0 rgba(255, 255, 255, 0.024);
+  --dash-accent: #8b6cff;
+  --dash-accent-2: #6f8cff;
+  --dash-success: #8fc76b;
+  --dash-grid: rgba(255, 255, 255, 0.065);
+  background:
+    radial-gradient(circle at 14% -10%, color-mix(in srgb, var(--dash-accent) 8%, transparent), transparent 35%),
+    radial-gradient(circle at 94% 0%, color-mix(in srgb, var(--dash-success) 4%, transparent), transparent 34%),
+    linear-gradient(180deg, var(--dash-bg-2) 0%, var(--dash-bg) 100%) !important;
+}
+
+.container {
+  --page-max-width: 1380px;
+}
+
+.pageHeader h1 {
+  letter-spacing: -0.065em;
+}
+
+.text {
+  color: var(--dash-text) !important;
+}
+
+.muted {
+  color: var(--dash-muted) !important;
+}
+
+.faint {
+  color: var(--dash-faint) !important;
+}
+
+.borderTone {
+  border-color: var(--dash-border) !important;
+}
+
+.divideTone > * + * {
+  border-color: var(--dash-border) !important;
+}
+
+.card {
+  border-color: var(--dash-border) !important;
+  background: var(--dash-card) !important;
+  box-shadow: var(--dash-shadow) !important;
+}
+
+:global(.dark) .card {
+  background: #141414 !important;
+}
+
+.hero {
+  background: var(--dash-card) !important;
+}
+
+:global(.dark) .hero {
+  background: #141414 !important;
+}
+
+.cardTitle {
+  border-color: var(--dash-border) !important;
+  background: color-mix(in srgb, var(--dash-card-solid) 88%, transparent);
+}
+
+.panel,
+.heroStat {
+  border-color: var(--dash-border-soft) !important;
+  background: var(--dash-panel) !important;
+  box-shadow: var(--dash-shadow-soft) !important;
+}
+
+:global(.dark) .panel,
+:global(.dark) .heroStat {
+  background: rgba(255, 255, 255, 0.026) !important;
+}
+
+.heroStat {
+  min-height: 70px;
+  overflow: hidden;
+}
+
+.iconBox {
+  border-color: var(--dash-border-soft) !important;
+  background: var(--dash-panel) !important;
+  color: var(--dash-muted) !important;
+}
+
+.linkOrb {
+  border-color: var(--dash-border-soft) !important;
+  color: color-mix(in srgb, var(--dash-accent) 68%, var(--dash-muted)) !important;
+  background: var(--dash-panel) !important;
+  box-shadow: var(--dash-shadow-soft) !important;
+}
+
+:global(.dark) .linkOrb {
+  color: color-mix(in srgb, var(--dash-accent) 38%, var(--dash-muted)) !important;
+  background: rgba(255, 255, 255, 0.026) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.024) !important;
+}
+
+.button {
+  display: inline-flex;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9px;
+  border: 1px solid var(--dash-border-soft);
+  padding-inline: 12px;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+  box-shadow: none !important;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease, opacity 150ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.buttonPrimary {
+  border-color: color-mix(in srgb, var(--dash-accent) 20%, var(--dash-border)) !important;
+  background: color-mix(in srgb, var(--dash-accent) 10%, #ffffff) !important;
+  color: color-mix(in srgb, var(--dash-accent) 74%, #111111) !important;
+}
+
+:global(.dark) .buttonPrimary {
+  background: color-mix(in srgb, var(--dash-accent) 24%, rgba(255, 255, 255, 0.045)) !important;
+  color: color-mix(in srgb, var(--dash-accent) 22%, #ffffff) !important;
+}
+
+.buttonQuiet {
+  background: var(--dash-panel) !important;
+  color: var(--dash-muted) !important;
+}
+
+.buttonQuiet:hover,
+.buttonPrimary:hover {
+  color: var(--dash-text) !important;
+  border-color: color-mix(in srgb, var(--dash-accent) 24%, var(--dash-border)) !important;
+}
+
+.rankBadge {
+  border-color: color-mix(in srgb, var(--dash-accent) 22%, var(--dash-border)) !important;
+  background: color-mix(in srgb, var(--dash-accent) 8%, var(--dash-card-solid)) !important;
+  color: color-mix(in srgb, var(--dash-accent) 78%, var(--dash-text)) !important;
+}
+
+:global(.dark) .rankBadge {
+  background: color-mix(in srgb, var(--dash-accent) 22%, rgba(255, 255, 255, 0.045)) !important;
+  color: color-mix(in srgb, var(--dash-accent) 28%, white) !important;
+}
+
+.statusBadge {
+  border-color: var(--dash-border-soft) !important;
+  background: color-mix(in srgb, var(--dash-success) 7%, var(--dash-panel)) !important;
+}
+
+:global(.dark) .statusBadge {
+  background: color-mix(in srgb, var(--dash-success) 10%, rgba(255, 255, 255, 0.035)) !important;
+}
+
+.page :global(.recharts-wrapper),
+.page :global(.recharts-surface) {
+  outline: none !important;
+}
+
+.page :global(.recharts-cartesian-axis-tick-value) {
+  fill: var(--dash-faint) !important;
+  font-size: 11px;
+}
+
+.page :global(.recharts-tooltip-wrapper *) {
+  font-family: inherit !important;
+}
+
+@media (max-width: 768px) {
+  .container {
+    --page-max-width: 100%;
+  }
+
+  .heroStat {
+    min-height: 66px;
+  }
+}

@@ -1,0 +1,14 @@
+node_modules
+.next
+.next-preview
+.next-sbx
+.next-v*
+.codex_tmp
+.env
+.env.local
+.env.production
+.env*.local
+
+# Electron builds
+release/
+dist-electron/

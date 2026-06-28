@@ -1,0 +1,92 @@
+/*
+ * Styles for pixel-perfect dashboard overlay.
+ *
+ * We render the original 01_dashboard_overview.png screenshot at its native
+ * dimensions (2048×1448) and position interactive hotspots on top of it.
+ * The .stage container scales responsively using a CSS transform so that
+ * the layout fills the available viewport while preserving aspect ratio.
+ */
+
+/* Container for the entire page. Ensures the background colour matches
+ * the design system and provides scroll support if the content overflows. */
+.page {
+  min-height: 100vh;
+  overflow: auto;
+  background: #fbf8f4;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+/* Stage wraps the screenshot and hotspots. It uses a CSS transform to
+ * scale the underlying 2048×1448 reference down to fit the viewport while
+ * maintaining aspect ratio. */
+.stage {
+  position: relative;
+  width: 2048px;
+  height: 1448px;
+  transform-origin: top left;
+}
+
+/* The underlying reference image. Disable pointer events so it doesn’t
+ * intercept clicks intended for hotspots. */
+.image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+  border-radius: 24px;
+  box-shadow: 0 18px 55px rgba(24, 17, 12, 0.055);
+}
+
+/* Base style for all hotspots. Each hotspot is absolutely positioned
+ * relative to .stage using coordinates measured directly from the
+ * 2048×1448 reference. They are initially invisible but gain a subtle
+ * highlight on hover to indicate interactivity. */
+.hotspot {
+  position: absolute;
+  display: block;
+  border-radius: 12px;
+  text-decoration: none;
+}
+.hotspot:hover {
+  background: rgba(255, 100, 78, 0.08);
+  outline: 1px solid rgba(255, 100, 78, 0.22);
+}
+
+/* Top navigation hotspots. These coordinates correspond to the
+ * navigation items across the header from left to right. Adjust these
+ * values if the hotspots don’t perfectly align with the underlying UI. */
+.navOverview   { left: 420px; top: 18px; width: 72px; height: 48px; }
+.navBookings   { left: 525px; top: 18px; width: 80px; height: 48px; }
+.navClients    { left: 640px; top: 18px; width: 92px; height: 48px; }
+.navServices   { left: 766px; top: 18px; width: 82px; height: 48px; }
+.navFinance    { left: 888px; top: 18px; width: 96px; height: 48px; }
+.navAnalytics  { left: 1026px; top: 18px; width: 112px; height: 48px; }
+.navSettings   { left: 1184px; top: 18px; width: 112px; height: 48px; }
+
+/* Button inside the dark revenue card at the top of the hero. */
+.cashButton {
+  left: 64px;
+  top: 558px;
+  width: 198px;
+  height: 54px;
+  border-radius: 14px;
+}
+
+/* Messages card area at the bottom left. */
+.messagesCard {
+  left: 22px;
+  top: 1190px;
+  width: 476px;
+  height: 226px;
+  border-radius: 24px;
+}
+
+/* Add more hotspots here if you’d like other parts of the dashboard
+ * clickable. For example, you could add hotspots over each pipeline stage
+ * or over the charts to provide drill‑down interactions. */

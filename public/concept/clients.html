@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>ClickBook — Клиенты</title>
+<meta name="viewport" content="width=1440">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.seg-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px}
+.seg{padding:16px;border-radius:11px;border:1px solid var(--line);background:var(--paper);cursor:pointer;position:relative}
+.seg.on{border-color:var(--text)}
+.seg .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);font-weight:600;margin-bottom:8px}
+.seg .n{font-size:26px;font-weight:600;letter-spacing:-0.03em;font-variant-numeric:tabular-nums}
+.seg b{font-size:13.5px;display:block;margin-top:6px;font-weight:500}
+.seg span{color:var(--text-3);font-size:11.5px;display:block;margin-top:1px}
+.split{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
+.list-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.score{display:inline-flex;align-items:center;gap:7px;font-weight:500;font-size:12.5px;font-variant-numeric:tabular-nums}
+.score .bar{width:48px;height:5px;background:var(--soft);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.score .bar i{display:block;height:100%;background:var(--text)}
+.tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{font-size:10.5px;padding:2px 7px;border-radius:5px;background:var(--soft);border:1px solid var(--line);color:var(--text-2);letter-spacing:0}
+.tag.vip{background:var(--text);color:#fff;border-color:var(--text)}
+.tag.warn{background:#fdecea;color:var(--bad);border-color:#f3c8c5}
+.tag.gold{background:#fdf3e0;color:var(--warn);border-color:#f3e0b6}
+.profile{position:sticky;top:24px}
+.profile .h{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0 20px;text-align:center;border-bottom:1px solid var(--line)}
+.profile .h .ph{width:68px;height:68px;border-radius:16px;background:var(--soft);border:1px solid var(--line);display:grid;place-items:center;font-weight:600;font-size:20px;color:var(--text-2)}
+.profile .h b{font-size:16px;font-weight:600;margin-top:6px}
+.profile .h .m{color:var(--text-3);font-size:12px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.metric{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+.metric .n{font-size:18px;font-weight:600;letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+.metric span{font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-top:3px;font-weight:600}
+.profile h4{font-size:11px;text-transform:uppercase;color:var(--text-3);letter-spacing:.06em;margin:20px 0 10px;font-weight:600}
+.visits .v{display:flex;justify-content:space-between;font-size:12.5px;padding:8px 0;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.visits .v:last-child{border-bottom:0}
+.visits .v span{color:var(--text-3)}
+.visits .v b{font-weight:500}
+.fav{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}
+.fav:last-child{border-bottom:0}
+.fav span{color:var(--text-3);font-size:11px;font-variant-numeric:tabular-nums}
+.cohort{height:72px;background:var(--soft);border-radius:8px;padding:8px;display:flex;align-items:flex-end;gap:3px;border:1px solid var(--line)}
+.cohort i{flex:1;background:var(--text);border-radius:1px;opacity:.85}
+.note{font-size:12.5px;color:var(--text-2);line-height:1.55;background:var(--soft);padding:12px;border-radius:10px;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><div class="mark"></div><div><b>ClickBook</b><span>Beauty Studio</span></div></div>
+    <nav class="nav">
+      <a href="index.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Главная</a>
+      <a href="bookings.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>Записи<span class="count">12</span></a>
+      <a href="schedule.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>График</a>
+      <a class="active" href="clients.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7"/></svg>Клиенты</a>
+      <a href="chats.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a8 8 0 1 1-3-6.2L21 4l-1 4.5A8 8 0 0 1 21 12z"/></svg>Чаты<span class="count">3</span></a>
+      <div class="group">Управление</div>
+      <a href="#">Услуги</a>
+      <a href="#">Сотрудники</a>
+      <a href="#">Аналитика</a>
+      <a href="#">Настройки</a>
+    </nav>
+    <div class="foot"><div class="av">АК</div><div><b>Анна Кузнецова</b><span>Pro · до 12 авг</span></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div><h1>Клиенты</h1><div class="sub">1 248 всего · 9 новых за неделю · среднее LTV ₽14 200</div></div>
+      <div class="spacer"></div>
+      <div class="search">Имя, телефон, тег<span class="k">⌘K</span></div>
+      <button class="btn">Экспорт CSV</button>
+      <button class="btn primary">+ Добавить</button>
+      <div class="avatar">АК</div>
+    </div>
+
+    <div class="seg-grid">
+      <div class="seg on">
+        <div class="lbl">Сегмент</div>
+        <div class="n">87</div>
+        <b>VIP</b>
+        <span>LTV &gt; ₽50 000</span>
+      </div>
+      <div class="seg">
+        <div class="lbl">Сегмент</div>
+        <div class="n">412</div>
+        <b>Постоянные</b>
+        <span>5+ визитов</span>
+      </div>
+      <div class="seg">
+        <div class="lbl">Сегмент</div>
+        <div class="n">9</div>
+        <b>Новые</b>
+        <span>за 7 дней</span>
+      </div>
+      <div class="seg">
+        <div class="lbl">Сегмент</div>
+        <div class="n">126</div>
+        <b>Спящие</b>
+        <span>нет визита 60+ дней</span>
+      </div>
+      <div class="seg">
+        <div class="lbl">Событие</div>
+        <div class="n">14</div>
+        <b>Дни рождения</b>
+        <span>в этом месяце</span>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="card flush">
+        <div class="list-head">
+          <span class="pill dark">VIP · 87</span>
+          <span class="chip">Все мастера</span>
+          <span class="chip">Все каналы</span>
+          <span class="chip">LTV ↓</span>
+          <div class="spacer"></div>
+          <button class="btn">Рассылка</button>
+          <button class="btn">Назначить тег</button>
+        </div>
+
+        <table>
+          <thead><tr><th></th><th>Клиент</th><th>Контакт</th><th>Визиты</th><th>LTV</th><th>Последний</th><th>Любимый мастер</th><th>Score</th><th>Теги</th></tr></thead>
+          <tbody>
+            <tr class="row-sel" style="background:#fafafb;box-shadow:inset 2px 0 0 var(--text)">
+              <td style="padding-left:18px"><div class="user"><div class="av">ВН</div></div></td>
+              <td><b>Виктория Новикова</b><div style="color:var(--text-3);font-size:11px">28 лет</div></td>
+              <td>+7 905 ••• 42 18<div style="color:var(--text-3);font-size:11px">VK</div></td>
+              <td><b>14</b></td>
+              <td><b>₽142 800</b><div style="color:var(--good);font-size:11px">+₽18k</div></td>
+              <td>17 апр<div style="color:var(--text-3);font-size:11px">сегодня · 11:00</div></td>
+              <td>Дина С.</td>
+              <td><span class="score"><span class="bar"><i style="width:94%"></i></span>94</span></td>
+              <td><div class="tags"><span class="tag vip">VIP</span><span class="tag gold">Аллергия</span></div></td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">ЕБ</div></div></td>
+              <td><b>Елена Беляева</b><div style="color:var(--text-3);font-size:11px">34 года</div></td>
+              <td>+7 916 ••• 11 02<div style="color:var(--text-3);font-size:11px">Telegram</div></td>
+              <td><b>22</b></td>
+              <td><b>₽118 400</b><div style="color:var(--good);font-size:11px">+₽6k</div></td>
+              <td>27 апр<div style="color:var(--text-3);font-size:11px">сегодня · 17:00</div></td>
+              <td>Дина С.</td>
+              <td><span class="score"><span class="bar"><i style="width:88%"></i></span>88</span></td>
+              <td><div class="tags"><span class="tag vip">VIP</span><span class="tag">Стабильная</span></div></td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">КЛ</div></div></td>
+              <td><b>Катя Лебедева</b><div style="color:var(--text-3);font-size:11px">31 год · ДР завтра</div></td>
+              <td>+7 962 ••• 88 47<div style="color:var(--text-3);font-size:11px">Telegram</div></td>
+              <td><b>8</b></td>
+              <td><b>₽98 600</b></td>
+              <td>05 мая<div style="color:var(--text-3);font-size:11px">12 мая · 13:00</div></td>
+              <td>Дина С.</td>
+              <td><span class="score"><span class="bar"><i style="width:82%"></i></span>82</span></td>
+              <td><div class="tags"><span class="tag vip">VIP</span><span class="tag gold">ДР</span></div></td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">ОР</div></div></td>
+              <td><b>Ольга Романова</b><div style="color:var(--text-3);font-size:11px">29 лет</div></td>
+              <td>+7 903 ••• 56 80<div style="color:var(--text-3);font-size:11px">Telegram</div></td>
+              <td><b>5</b></td>
+              <td><b>₽58 200</b></td>
+              <td>02 мая<div style="color:var(--text-3);font-size:11px">сегодня · 09:30</div></td>
+              <td>Мария К.</td>
+              <td><span class="score"><span class="bar"><i style="width:76%"></i></span>76</span></td>
+              <td><div class="tags"><span class="tag vip">VIP</span></div></td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">ИП</div></div></td>
+              <td><b>Ирина Петрова</b><div style="color:var(--text-3);font-size:11px">26 лет</div></td>
+              <td>+7 910 ••• 33 21<div style="color:var(--text-3);font-size:11px">VK</div></td>
+              <td><b>12</b></td>
+              <td><b>₽54 800</b></td>
+              <td>28 апр<div style="color:var(--text-3);font-size:11px">13 мая · 11:30</div></td>
+              <td>Лера М.</td>
+              <td><span class="score"><span class="bar"><i style="width:72%"></i></span>72</span></td>
+              <td><div class="tags"><span class="tag vip">VIP</span></div></td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">МР</div></div></td>
+              <td><b>Марина Родина</b><div style="color:var(--text-3);font-size:11px">42 года</div></td>
+              <td>+7 925 ••• 70 04<div style="color:var(--text-3);font-size:11px">Звонок</div></td>
+              <td><b>11</b></td>
+              <td><b>₽52 100</b><div style="color:var(--bad);font-size:11px">риск ухода</div></td>
+              <td>14 фев<div style="color:var(--text-3);font-size:11px">3 пропуска</div></td>
+              <td>Мария К.</td>
+              <td><span class="score"><span class="bar"><i style="width:38%;background:var(--bad)"></i></span>38</span></td>
+              <td><div class="tags"><span class="tag warn">Риск</span></div></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;color:var(--text-3);font-size:12px;border-top:1px solid var(--line)">
+          <span>1–6 из 87 VIP</span>
+          <div style="display:flex;gap:4px">
+            <button class="chip">←</button>
+            <button class="chip on">1</button><button class="chip">2</button><button class="chip">…</button><button class="chip">15</button>
+            <button class="chip">→</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card profile">
+        <div class="h">
+          <div class="ph">ВН</div>
+          <b>Виктория Новикова</b>
+          <span class="m">28 лет · клиент 2 года 4 мес</span>
+          <div style="display:flex;gap:6px;margin-top:8px;justify-content:center;flex-wrap:wrap">
+            <span class="pill dark">VIP</span>
+            <span class="pill good">Лояльна</span>
+            <span class="pill warn">Аллергия</span>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric"><div class="n">14</div><span>визитов</span></div>
+          <div class="metric"><div class="n">₽142k</div><span>LTV</span></div>
+          <div class="metric"><div class="n">38<span style="font-size:11px;color:var(--text-3);text-transform:none;letter-spacing:0;margin:0;font-weight:400;display:inline"> дн</span></div><span>интервал</span></div>
+        </div>
+
+        <h4>Последние визиты</h4>
+        <div class="visits">
+          <div class="v"><span>17 апр</span><b>AirTouch · ₽11 500</b></div>
+          <div class="v"><span>06 мар</span><b>Стрижка + укладка · ₽3 800</b></div>
+          <div class="v"><span>22 янв</span><b>Окраш. + уход · ₽9 200</b></div>
+          <div class="v"><span>12 дек</span><b>AirTouch · ₽11 500</b></div>
+        </div>
+
+        <h4>Активность · 12 месяцев</h4>
+        <div class="cohort">
+          <i style="height:30%"></i><i style="height:55%"></i><i style="height:40%"></i>
+          <i style="height:70%"></i><i style="height:50%"></i><i style="height:65%"></i>
+          <i style="height:80%"></i><i style="height:45%"></i><i style="height:75%"></i>
+          <i style="height:60%"></i><i style="height:85%"></i><i style="height:90%"></i>
+        </div>
+
+        <h4>Предпочтения</h4>
+        <div class="fav"><div>Дина Соколова</div><span>11 визитов</span></div>
+        <div class="fav"><div>AirTouch окрашивание</div><span>6 раз</span></div>
+        <div class="fav"><div>Утро · 10:00–12:00</div><span>72%</span></div>
+
+        <h4>Заметка мастера</h4>
+        <p class="note">Аллергия на аммиак. Безаммиачная серия. Любит длинные локоны, не любит ждать. Кофе американо без сахара.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px">
+          <button class="btn primary" style="justify-content:center">+ Записать</button>
+          <button class="btn" style="justify-content:center">Открыть чат</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</body></html>

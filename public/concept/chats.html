@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>ClickBook — Чаты</title>
+<meta name="viewport" content="width=1440">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.chat-app{display:grid;grid-template-columns:320px 1fr 320px;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-height:780px}
+.cl-side{border-right:1px solid var(--line);display:flex;flex-direction:column}
+.cl-side .h{padding:14px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.cl-search{display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--text-3)}
+.cl-list{overflow:auto;flex:1;padding:6px 6px}
+.ci{display:flex;gap:11px;padding:11px 10px;border-radius:8px;cursor:pointer;position:relative}
+.ci:hover{background:var(--soft)}
+.ci.on{background:var(--soft)}
+.ci.on::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:2px;background:var(--text);border-radius:2px}
+.ci .av{width:36px;height:36px;border-radius:9px;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center;font-weight:600;color:var(--text-2);font-size:12px;flex-shrink:0;position:relative}
+.ci .body{flex:1;min-width:0}
+.ci .body .row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.ci .body b{font-size:13px;font-weight:500}
+.ci .body .t{font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums}
+.ci .body .row2{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ci .body p{font-size:12px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ci .ch{position:absolute;right:-3px;bottom:-3px;width:14px;height:14px;border-radius:4px;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center;font-size:8px;font-weight:600;color:var(--text-2)}
+.ci .unread{background:var(--text);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px}
+.thread{display:flex;flex-direction:column}
+.th-head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.th-head .av{width:38px;height:38px;border-radius:9px;background:var(--soft);border:1px solid var(--line);display:grid;place-items:center;font-weight:600;color:var(--text-2);font-size:12px}
+.th-head b{font-size:14.5px;font-weight:600}
+.th-head .meta{color:var(--text-3);font-size:12px;display:block;margin-top:2px}
+.th-body{flex:1;padding:24px 28px;overflow:auto;display:flex;flex-direction:column;gap:14px;background:var(--bg)}
+.day{align-self:center;font-size:11px;color:var(--text-3);background:var(--paper);padding:4px 10px;border-radius:99px;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+.msg{max-width:62%;padding:10px 14px;border-radius:12px;font-size:13.5px;line-height:1.5;position:relative;border:1px solid var(--line)}
+.msg .t{display:block;font-size:10.5px;color:var(--text-3);margin-top:4px;font-variant-numeric:tabular-nums}
+.msg.in{background:var(--paper);border-bottom-left-radius:4px;align-self:flex-start}
+.msg.out{background:var(--text);border-color:var(--text);border-bottom-right-radius:4px;align-self:flex-end;color:#fff}
+.msg.out .t{color:rgba(255,255,255,.7)}
+.msg.bot{background:var(--paper);border-style:dashed;align-self:flex-start;color:var(--text-2)}
+.msg.bot .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;font-weight:600;color:var(--text-3)}
+.bk-card{align-self:flex-end;max-width:62%;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.bk-card h5{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:10px;font-weight:600}
+.bk-card .kv{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--line)}
+.bk-card .kv:last-of-type{border-bottom:0}
+.bk-card .kv span:first-child{color:var(--text-3)}
+.bk-card .kv b{font-weight:500;font-variant-numeric:tabular-nums}
+.bk-card .acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+.bk-card .acts .btn{justify-content:center;font-size:12.5px}
+.composer{padding:14px 20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.compose-row{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:8px 12px}
+.compose-row input{flex:1;background:transparent;border:0;color:var(--text);outline:0;font-size:13.5px;font-family:inherit}
+.compose-row input::placeholder{color:var(--text-3)}
+.compose-row .ic{color:var(--text-3);cursor:pointer;padding:2px;width:18px;height:18px}
+.compose-row .send{background:var(--text);border:0;color:#fff;padding:7px 14px;border-radius:7px;font-weight:500;font-size:13px;cursor:pointer;height:30px}
+.ctx{padding:20px;border-left:1px solid var(--line);overflow:auto}
+.ctx .head{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.ctx .head .big{width:60px;height:60px;border-radius:14px;background:var(--soft);border:1px solid var(--line);display:grid;place-items:center;font-weight:600;font-size:16px;color:var(--text-2)}
+.ctx .head b{font-size:15px;font-weight:600;margin-top:4px}
+.ctx .head .m{color:var(--text-3);font-size:12px}
+.ctx h4{font-size:11px;text-transform:uppercase;color:var(--text-3);letter-spacing:.06em;margin:18px 0 10px;font-weight:600}
+.ctx .kv{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--line)}
+.ctx .kv:last-child{border-bottom:0}
+.ctx .kv span{color:var(--text-3)}
+.ctx .kv b{font-weight:500;font-variant-numeric:tabular-nums}
+.next{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px}
+.next b{font-size:13px;display:block;margin-bottom:3px;font-weight:500}
+.next span{color:var(--text-3);font-size:12px}
+.note{font-size:12.5px;color:var(--text-2);line-height:1.55;background:var(--soft);padding:12px;border-radius:10px;border:1px solid var(--line)}
+.ai-hint{margin-top:14px;padding:12px 14px;border:1px solid var(--line);background:var(--paper);border-radius:10px;border-left:2px solid var(--text)}
+.ai-hint .lbl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:6px}
+.ai-hint p{font-size:12.5px;line-height:1.55;color:var(--text-2)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><div class="mark"></div><div><b>ClickBook</b><span>Beauty Studio</span></div></div>
+    <nav class="nav">
+      <a href="index.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Главная</a>
+      <a href="bookings.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>Записи<span class="count">12</span></a>
+      <a href="schedule.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>График</a>
+      <a href="clients.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7"/></svg>Клиенты</a>
+      <a class="active" href="chats.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a8 8 0 1 1-3-6.2L21 4l-1 4.5A8 8 0 0 1 21 12z"/></svg>Чаты<span class="count">3</span></a>
+      <div class="group">Управление</div>
+      <a href="#">Услуги</a>
+      <a href="#">Сотрудники</a>
+      <a href="#">Аналитика</a>
+      <a href="#">Настройки</a>
+    </nav>
+    <div class="foot"><div class="av">АК</div><div><b>Анна Кузнецова</b><span>Pro · до 12 авг</span></div></div>
+  </aside>
+
+  <main class="main" style="padding:24px 24px 24px">
+    <div class="top">
+      <div><h1>Чаты</h1><div class="sub">3 непрочитанных · бот ответил 12 раз за сегодня</div></div>
+      <div class="spacer"></div>
+      <button class="btn">Шаблоны</button>
+      <button class="btn primary">+ Рассылка</button>
+      <div class="avatar">АК</div>
+    </div>
+
+    <div class="chat-app">
+      <aside class="cl-side">
+        <div class="h">
+          <div class="tabs" style="width:100%">
+            <button class="on">Все</button>
+            <button>Непрочит.</button>
+            <button>Бот</button>
+            <button>Архив</button>
+          </div>
+          <div class="cl-search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Поиск по чатам</div>
+        </div>
+        <div class="cl-list">
+          <div class="ci on">
+            <div class="av">ВН<div class="ch">VK</div></div>
+            <div class="body">
+              <div class="row1"><b>Виктория Новикова</b><span class="t">2 мин</span></div>
+              <div class="row2"><p>Можно перенести на 12:00? Пробки</p><span class="unread">2</span></div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="av">ОР<div class="ch">TG</div></div>
+            <div class="body">
+              <div class="row1"><b>Ольга Романова</b><span class="t">14 мин</span></div>
+              <div class="row2"><p>Бот · Подтвердила запись на 09:30</p></div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="av">АЛ<div class="ch">TG</div></div>
+            <div class="body">
+              <div class="row1"><b>Анастасия Лебедева</b><span class="t">38 мин</span></div>
+              <div class="row2"><p>Спасибо большое, до встречи</p><span class="unread">1</span></div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="av">ЕБ<div class="ch">TG</div></div>
+            <div class="body">
+              <div class="row1"><b>Елена Беляева</b><span class="t">1 ч</span></div>
+              <div class="row2"><p>Хочу как в прошлый раз, длина та же</p></div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="av">МР<div class="ch">VK</div></div>
+            <div class="body">
+              <div class="row1"><b>Марина Родина</b><span class="t">2 ч</span></div>
+              <div class="row2"><p>Бот · Напоминание о записи отправлено</p></div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="av">КЛ<div class="ch">TG</div></div>
+            <div class="body">
+              <div class="row1"><b>Катя Лебедева</b><span class="t">вчера</span></div>
+              <div class="row2"><p>Промокод BIRTHDAY15 отправлен</p></div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="av">ИП<div class="ch">VK</div></div>
+            <div class="body">
+              <div class="row1"><b>Ирина Петрова</b><span class="t">вчера</span></div>
+              <div class="row2"><p>Сколько стоит ламинирование?</p></div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="av">+5</div>
+            <div class="body">
+              <div class="row1"><b>5 завершённых диалогов</b><span class="t">10 мая</span></div>
+              <div class="row2"><p>Сохранены в архив</p></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="thread">
+        <div class="th-head">
+          <div class="av">ВН</div>
+          <div>
+            <b>Виктория Новикова</b>
+            <span class="meta">VIP · VK · в сети · сегодня 11:00 — AirTouch окрашивание</span>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn">Позвонить</button>
+          <button class="btn">+ Запись</button>
+          <button class="btn ghost">⋯</button>
+        </div>
+
+        <div class="th-body">
+          <span class="day">Сегодня</span>
+
+          <div class="msg bot">
+            <span class="lbl">Бот · автонапоминание</span>
+            Здравствуйте, Виктория. Напоминаем: сегодня в 11:00 у вас AirTouch окрашивание у Дины. Подтвердите запись, пожалуйста.
+            <span class="t">10:14</span>
+          </div>
+
+          <div class="msg in">Доброе утро<span class="t">10:42</span></div>
+          <div class="msg in">Подтверждаю, но можно сдвинуть на 12:00? Пробки сегодня жуткие.<span class="t">10:42</span></div>
+
+          <div class="msg out">Минуту, проверю расписание Дины.<span class="t">10:43</span></div>
+
+          <div class="bk-card">
+            <h5>Перенос записи</h5>
+            <div class="kv"><span>Услуга</span><b>AirTouch окрашивание</b></div>
+            <div class="kv"><span>Было</span><b style="text-decoration:line-through;color:var(--text-3)">11:00</b></div>
+            <div class="kv"><span>Стало</span><b style="color:var(--good)">12:00 · слот свободен</b></div>
+            <div class="kv"><span>Мастер</span><b>Дина Соколова</b></div>
+            <div class="acts">
+              <button class="btn primary">Перенести</button>
+              <button class="btn">Другое время</button>
+            </div>
+          </div>
+
+          <div class="msg in">Можно перенести на 12:00? Пробки<span class="t">11:01</span></div>
+        </div>
+
+        <div class="composer">
+          <div class="quick">
+            <span class="chip">Перенесла на 12:00</span>
+            <span class="chip">Ждём вас</span>
+            <span class="chip">Прайс</span>
+            <span class="chip">Адрес</span>
+            <span class="chip">+ Шаблон</span>
+          </div>
+          <div class="compose-row">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.5V7a4 4 0 0 0-8 0v8a3 3 0 0 0 6 0V7"/></svg>
+            <input placeholder="Сообщение…" value="Виктория, перенесла вас на 12:00. Дина будет ждать. Хорошей дороги.">
+            <button class="send">Отправить</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="ctx">
+        <div class="head">
+          <div class="big">ВН</div>
+          <b>Виктория Новикова</b>
+          <span class="m">28 лет · +7 905 ••• 42 18</span>
+          <div style="display:flex;gap:6px;margin-top:8px;justify-content:center;flex-wrap:wrap">
+            <span class="pill dark">VIP</span><span class="pill">VK</span><span class="pill good">LTV ₽142k</span>
+          </div>
+        </div>
+
+        <h4>Следующая запись</h4>
+        <div class="next">
+          <b>AirTouch окрашивание</b>
+          <span>11 мая · 11:00 → 12:00 · Дина С.</span>
+        </div>
+
+        <h4>Профиль</h4>
+        <div class="kv"><span>Визитов</span><b>14</b></div>
+        <div class="kv"><span>Сумма</span><b>₽142 800</b></div>
+        <div class="kv"><span>Средний чек</span><b>₽10 200</b></div>
+        <div class="kv"><span>Любимый мастер</span><b>Дина С.</b></div>
+        <div class="kv"><span>Канал</span><b>VK</b></div>
+
+        <h4>Заметки</h4>
+        <div class="note">Не любит ждать. Аллергия на аммиак — использовать безаммиачные. Кофе американо без сахара.</div>
+
+        <div class="ai-hint">
+          <div class="lbl">AI подсказка</div>
+          <p>Виктория обычно бронирует уход за волосами раз в 6 недель. Следующий визит ожидается ~22 июня. Предложить депозит‑бронь?</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</body></html>

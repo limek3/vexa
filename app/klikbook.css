@@ -1,0 +1,376 @@
+/* ============================================================
+   KlikBook editorial light theme — design tokens
+   Reference: docs/DESIGN_SYSTEM.md
+   ============================================================ */
+
+:root[data-klikbook="on"],
+.klikbook-scope {
+  /* Neutrals */
+  --kb-bg: #FBF8F4;
+  --kb-bg-soft: #FFFBF7;
+  --kb-surface: #FFFFFF;
+  --kb-warm-surface: #FFF6EF;
+  --kb-border: #EADFD5;
+  --kb-line: #EEE6DE;
+
+  /* Text */
+  --kb-text: #071B3A;
+  --kb-text-secondary: #556070;
+  --kb-text-muted: #8C8C95;
+  --kb-text-inverse: #F8F6F2;
+
+  /* Brand / action */
+  --kb-coral: #FF644E;
+  --kb-coral-hover: #F55843;
+  --kb-coral-soft: #FFF0E9;
+  --kb-navy: #0A1D37;
+  --kb-navy-deep: #071B3A;
+
+  /* Pastel surfaces */
+  --kb-lavender: #EEE4FF;
+  --kb-lavender-accent: #8B5CF6;
+  --kb-sage: #E5F0DA;
+  --kb-sage-accent: #7AA269;
+  --kb-peach: #FBE7DC;
+  --kb-peach-accent: #E89B7A;
+  --kb-cream: #FFF4D8;
+  --kb-cream-accent: #D8AB46;
+  --kb-sky: #EAF2FF;
+  --kb-sky-accent: #5C8DE0;
+
+  /* Status */
+  --kb-status-confirmed: #7AA269;
+  --kb-status-confirmed-bg: #E5F0DA;
+  --kb-status-pending: #D8AB46;
+  --kb-status-pending-bg: #FFF4D8;
+  --kb-status-cancelled: #E26A57;
+  --kb-status-cancelled-bg: #FBE2DA;
+  --kb-status-completed: #8B5CF6;
+  --kb-status-completed-bg: #EEE4FF;
+
+  /* Radii */
+  --kb-radius-shell: 28px;
+  --kb-radius-card: 22px;
+  --kb-radius-control: 16px;
+  --kb-radius-pill: 9999px;
+
+  /* Shadow */
+  --kb-shadow-card: 0 1px 0 rgba(7, 27, 58, 0.04), 0 12px 28px -18px rgba(7, 27, 58, 0.10);
+  --kb-shadow-elev: 0 18px 48px -24px rgba(7, 27, 58, 0.18);
+  --kb-shadow-dark: 0 24px 60px -24px rgba(7, 27, 58, 0.55);
+
+  /* Type */
+  --kb-font-display: var(--font-cormorant), 'Cormorant Garamond', 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --kb-font-sans: var(--font-golos-ui), 'Golos UI', Inter, system-ui, -apple-system, sans-serif;
+}
+
+.klikbook-scope {
+  background: var(--kb-bg);
+  color: var(--kb-text);
+  font-family: var(--kb-font-sans);
+  letter-spacing: -0.005em;
+}
+
+.klikbook-scope ::selection {
+  background: var(--kb-coral-soft);
+  color: var(--kb-navy);
+}
+
+/* === Surfaces === */
+.kb-shell {
+  background: var(--kb-bg);
+  min-height: 100vh;
+}
+
+.kb-card {
+  background: var(--kb-surface);
+  border: 1px solid var(--kb-border);
+  border-radius: var(--kb-radius-card);
+  box-shadow: var(--kb-shadow-card);
+}
+
+.kb-card-soft {
+  background: var(--kb-warm-surface);
+  border: 1px solid var(--kb-border);
+  border-radius: var(--kb-radius-card);
+}
+
+.kb-card-dark {
+  background: var(--kb-navy-deep);
+  color: var(--kb-text-inverse);
+  border-radius: var(--kb-radius-card);
+  box-shadow: var(--kb-shadow-dark);
+}
+
+.kb-card-dark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(60% 80% at 100% 0%, rgba(140, 180, 255, 0.06), transparent 60%);
+}
+
+/* === Typography === */
+.kb-display {
+  font-family: var(--kb-font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--kb-text);
+}
+
+.kb-h1 { font-size: clamp(36px, 5vw, 64px); }
+.kb-h2 { font-size: clamp(28px, 3.5vw, 44px); }
+.kb-h3 { font-size: clamp(22px, 2.5vw, 32px); }
+
+.kb-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--kb-text-muted);
+  font-weight: 500;
+}
+
+.kb-metric {
+  font-family: var(--kb-font-sans);
+  font-weight: 600;
+  font-feature-settings: 'tnum';
+  letter-spacing: -0.02em;
+}
+
+/* === Buttons === */
+.kb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--kb-radius-control);
+  transition: all 160ms ease-out;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.kb-btn-primary {
+  background: var(--kb-coral);
+  color: #FFFFFF;
+  border: 1px solid var(--kb-coral);
+}
+.kb-btn-primary:hover { background: var(--kb-coral-hover); border-color: var(--kb-coral-hover); }
+
+.kb-btn-navy {
+  background: var(--kb-navy);
+  color: var(--kb-text-inverse);
+  border: 1px solid var(--kb-navy);
+}
+.kb-btn-navy:hover { background: var(--kb-navy-deep); }
+
+.kb-btn-outline {
+  background: transparent;
+  color: var(--kb-text);
+  border: 1px solid var(--kb-border);
+}
+.kb-btn-outline:hover { background: var(--kb-warm-surface); }
+
+.kb-btn-ghost {
+  background: transparent;
+  color: var(--kb-text-secondary);
+  border: 1px solid transparent;
+}
+.kb-btn-ghost:hover { background: var(--kb-warm-surface); color: var(--kb-text); }
+
+/* === Chips / pills === */
+.kb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--kb-radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.kb-chip-default {
+  background: var(--kb-warm-surface);
+  color: var(--kb-text-secondary);
+  border-color: var(--kb-border);
+}
+
+.kb-chip-active {
+  background: var(--kb-navy);
+  color: var(--kb-text-inverse);
+}
+
+.kb-chip-confirmed { background: var(--kb-status-confirmed-bg); color: var(--kb-status-confirmed); }
+.kb-chip-pending   { background: var(--kb-status-pending-bg);   color: #8a6b1f; }
+.kb-chip-cancelled { background: var(--kb-status-cancelled-bg); color: var(--kb-status-cancelled); }
+.kb-chip-completed { background: var(--kb-status-completed-bg); color: var(--kb-status-completed); }
+
+/* === Inputs === */
+.kb-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: var(--kb-radius-control);
+  border: 1px solid var(--kb-border);
+  background: var(--kb-surface);
+  color: var(--kb-text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 140ms ease;
+}
+.kb-input::placeholder { color: var(--kb-text-muted); }
+.kb-input:focus { border-color: var(--kb-navy); box-shadow: 0 0 0 3px rgba(7, 27, 58, 0.08); }
+
+.kb-input-warm {
+  background: var(--kb-warm-surface);
+}
+
+/* === Pastel icon tile === */
+.kb-icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+.kb-icon-tile-lavender { background: var(--kb-lavender); color: var(--kb-lavender-accent); }
+.kb-icon-tile-sage     { background: var(--kb-sage);     color: var(--kb-sage-accent); }
+.kb-icon-tile-peach    { background: var(--kb-peach);    color: var(--kb-peach-accent); }
+.kb-icon-tile-cream    { background: var(--kb-cream);    color: var(--kb-cream-accent); }
+.kb-icon-tile-sky      { background: var(--kb-sky);      color: var(--kb-sky-accent); }
+.kb-icon-tile-coral    { background: var(--kb-coral-soft); color: var(--kb-coral); }
+
+/* === Top nav === */
+.kb-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(251, 248, 244, 0.85);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid var(--kb-line);
+}
+
+.kb-nav-link {
+  position: relative;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--kb-text-secondary);
+  transition: color 120ms ease;
+}
+.kb-nav-link:hover { color: var(--kb-text); }
+.kb-nav-link[data-active="true"] {
+  color: var(--kb-text);
+  font-weight: 500;
+}
+.kb-nav-link[data-active="true"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--kb-coral);
+  transform: translateX(-50%);
+}
+
+/* === Tables === */
+.kb-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.kb-table thead th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--kb-text-muted);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--kb-line);
+  background: transparent;
+}
+.kb-table tbody td {
+  padding: 16px;
+  border-bottom: 1px solid var(--kb-line);
+  font-size: 14px;
+  color: var(--kb-text);
+  vertical-align: middle;
+}
+.kb-table tbody tr:hover {
+  background: var(--kb-warm-surface);
+}
+.kb-table tbody tr.kb-row-active {
+  background: var(--kb-coral-soft);
+}
+
+/* === Drawer === */
+.kb-drawer {
+  background: var(--kb-surface);
+  border-left: 1px solid var(--kb-border);
+  border-radius: var(--kb-radius-shell) 0 0 var(--kb-radius-shell);
+  box-shadow: var(--kb-shadow-elev);
+}
+
+/* === Dot ornaments === */
+.kb-orn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--kb-radius-pill);
+  background: var(--kb-coral);
+  display: inline-block;
+}
+
+/* === Avatar === */
+.kb-avatar {
+  border-radius: var(--kb-radius-pill);
+  border: 2px solid var(--kb-surface);
+  box-shadow: 0 0 0 1px var(--kb-border);
+  object-fit: cover;
+  background: var(--kb-warm-surface);
+}
+
+/* === Misc === */
+.kb-divider {
+  height: 1px;
+  background: var(--kb-line);
+  border: 0;
+}
+
+.kb-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.kb-scrollbar::-webkit-scrollbar-thumb { background: var(--kb-border); border-radius: 4px; }
+.kb-scrollbar::-webkit-scrollbar-track { background: transparent; }
+
+/* === Utility colour aliases for inline className composition === */
+.kb-bg          { background-color: var(--kb-bg); }
+.kb-bg-soft     { background-color: var(--kb-bg-soft); }
+.kb-bg-surface  { background-color: var(--kb-surface); }
+.kb-bg-warm     { background-color: var(--kb-warm-surface); }
+.kb-bg-navy     { background-color: var(--kb-navy-deep); color: var(--kb-text-inverse); }
+.kb-bg-coral    { background-color: var(--kb-coral); color: #fff; }
+.kb-bg-coral-soft { background-color: var(--kb-coral-soft); }
+.kb-bg-lavender { background-color: var(--kb-lavender); }
+.kb-bg-sage     { background-color: var(--kb-sage); }
+.kb-bg-peach    { background-color: var(--kb-peach); }
+.kb-bg-cream    { background-color: var(--kb-cream); }
+.kb-bg-sky      { background-color: var(--kb-sky); }
+
+.kb-text        { color: var(--kb-text); }
+.kb-text-2      { color: var(--kb-text-secondary); }
+.kb-text-muted  { color: var(--kb-text-muted); }
+.kb-text-inverse{ color: var(--kb-text-inverse); }
+.kb-text-coral  { color: var(--kb-coral); }
+.kb-text-navy   { color: var(--kb-navy-deep); }
+
+.kb-border      { border-color: var(--kb-border); }
+.kb-border-line { border-color: var(--kb-line); }

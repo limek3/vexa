@@ -1,0 +1,1 @@
+Golos UI font files are intentionally not committed here. Copy your licensed Golos UI .ttf files into this folder if you want local @font-face loading. The app already uses the CSS stack: Golos UI, Golos Text, system-ui.

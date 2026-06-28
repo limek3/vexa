@@ -1,0 +1,85 @@
+services:
+  - type: web
+    name: clickbook
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: npm run start:render
+    healthCheckPath: /login
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: KEY_VAULTS_SECRET
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+        sync: false
+      - key: TELEGRAM_SUPPORT_CHAT_ID
+        sync: false
+      - key: NEXT_PUBLIC_SUPPORT_TELEGRAM_URL
+        sync: false
+      - key: VK_ID_CLIENT_ID
+        sync: false
+      - key: VK_ID_CLIENT_SECRET
+        sync: false
+      - key: VK_ID_REDIRECT_URI
+        sync: false
+      - key: VK_BOT_GROUP_ID
+        sync: false
+      - key: VK_BOT_ACCESS_TOKEN
+        sync: false
+      - key: VK_BOT_SECRET
+        sync: false
+      - key: VK_BOT_CONFIRMATION_CODE
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_VK_BOT_GROUP_ID
+        sync: false
+      - key: NEXT_PUBLIC_VK_BOT_SCREEN_NAME
+        sync: false
+      - key: VK_BOT_SCREEN_NAME
+        sync: false
+      - key: VK_CALLBACK_SECRET
+        sync: false
+      - key: VK_CALLBACK_CONFIRMATION_CODE
+        sync: false
+      - key: VK_GROUP_ID
+        sync: false
+      - key: VK_GROUP_ACCESS_TOKEN
+        sync: false
+      - key: VK_GROUP_SCREEN_NAME
+        sync: false
+      - key: VK_CLIENT_ID
+        sync: false
+      - key: VK_CLIENT_SECRET
+        sync: false
+      - key: VK_REDIRECT_URI
+        sync: false
+      - key: VK_SCOPE
+        sync: false
+      - key: CLICKBOOK_DISABLE_SINGLE_WORKSPACE_REPAIR
+        sync: false

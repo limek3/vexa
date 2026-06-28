@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>ClickBook — Записи</title>
+<meta name="viewport" content="width=1440">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.split{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--text-3);padding-bottom:14px}
+.legend .pill{font-size:11px}
+.amount{font-weight:600;font-variant-numeric:tabular-nums}
+.row-sel td{background:#fafafb;box-shadow:inset 2px 0 0 var(--text)}
+.detail{position:sticky;top:24px}
+.detail .head{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.detail .head .ph{width:48px;height:48px;border-radius:12px;background:var(--soft);border:1px solid var(--line);display:grid;place-items:center;color:var(--text-2);font-weight:600;font-size:14px}
+.detail .head b{font-size:15px;font-weight:600;display:block}
+.detail .head .meta{color:var(--text-3);font-size:12px;display:block;margin-top:2px}
+.detail h4{font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}
+.kv span:first-child{color:var(--text-3)}
+.kv b{font-weight:500;font-variant-numeric:tabular-nums}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.events .ev{display:flex;gap:14px;padding:8px 0;font-size:12px;color:var(--text-2);border-bottom:1px solid var(--line)}
+.events .ev:last-child{border-bottom:0}
+.events .ev .t{width:54px;color:var(--text);font-weight:500;font-size:12px;flex-shrink:0;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><div class="mark"></div><div><b>ClickBook</b><span>Beauty Studio</span></div></div>
+    <nav class="nav">
+      <a href="index.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Главная</a>
+      <a class="active" href="bookings.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>Записи<span class="count">12</span></a>
+      <a href="schedule.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>График</a>
+      <a href="clients.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7"/></svg>Клиенты</a>
+      <a href="chats.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a8 8 0 1 1-3-6.2L21 4l-1 4.5A8 8 0 0 1 21 12z"/></svg>Чаты<span class="count">3</span></a>
+      <div class="group">Управление</div>
+      <a href="#">Услуги</a>
+      <a href="#">Сотрудники</a>
+      <a href="#">Аналитика</a>
+      <a href="#">Настройки</a>
+    </nav>
+    <div class="foot"><div class="av">АК</div><div><b>Анна Кузнецова</b><span>Pro · до 12 авг</span></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div><h1>Записи</h1><div class="sub">47 на неделе · 12 ожидают подтверждения</div></div>
+      <div class="spacer"></div>
+      <div class="search">Имя, телефон, услуга<span class="k">⌘K</span></div>
+      <button class="btn">Экспорт</button>
+      <button class="btn primary">+ Новая запись</button>
+      <div class="avatar">АК</div>
+    </div>
+
+    <div class="kpis" style="margin-bottom:18px">
+      <div class="card kpi"><h5>Сегодня</h5><div class="v">4</div><div class="delta">3 подтверждены</div></div>
+      <div class="card kpi"><h5>Завтра</h5><div class="v">7</div><div class="delta">5 подтверждены</div></div>
+      <div class="card kpi"><h5>Не подтверждены</h5><div class="v">3</div><div class="delta"><span class="dn">истекают через 2 ч</span></div></div>
+      <div class="card kpi"><h5>Выручка · неделя</h5><div class="v">₽184k</div><div class="delta"><span class="up">+18%</span> к прошл.</div></div>
+    </div>
+
+    <div class="split">
+      <div class="card flush">
+        <div style="padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div class="tabs">
+            <button class="on">Все · 47</button>
+            <button>Сегодня · 4</button>
+            <button>Завтра · 7</button>
+            <button>Не подтв. · 3</button>
+            <button>Архив</button>
+          </div>
+          <div class="spacer"></div>
+          <span class="chip on">11–17 мая</span>
+          <span class="chip">Все мастера</span>
+          <span class="chip">Все услуги</span>
+        </div>
+
+        <div style="padding:14px 18px 0">
+          <div class="legend">
+            <span class="pill good"><span class="dot"></span>Подтверждена</span>
+            <span class="pill warn"><span class="dot"></span>Ожидает</span>
+            <span class="pill brand"><span class="dot"></span>Оплачено</span>
+            <span class="pill bad"><span class="dot"></span>Отмена</span>
+          </div>
+        </div>
+
+        <table>
+          <thead><tr><th></th><th>Клиент</th><th>Услуга</th><th>Мастер</th><th>Дата · время</th><th>Сумма</th><th>Статус</th><th>Канал</th></tr></thead>
+          <tbody>
+            <tr class="row-sel">
+              <td style="padding-left:18px"><div class="user"><div class="av">ВН</div></div></td>
+              <td><b>Виктория Новикова</b><div class="sub" style="color:var(--text-3);font-size:11px">VIP · 14 визитов</div></td>
+              <td>AirTouch окрашивание</td>
+              <td>Дина С.</td>
+              <td><b>11 мая</b><div style="color:var(--text-3);font-size:11px">11:00 · 3 ч</div></td>
+              <td class="amount">₽12 500</td>
+              <td><span class="pill warn"><span class="dot"></span>Ожидает</span></td>
+              <td>VK</td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">ОР</div></div></td>
+              <td><b>Ольга Романова</b><div style="color:var(--text-3);font-size:11px">5 визитов</div></td>
+              <td>Маникюр + покрытие</td>
+              <td>Мария К.</td>
+              <td><b>11 мая</b><div style="color:var(--text-3);font-size:11px">09:30 · 90 мин</div></td>
+              <td class="amount">₽3 200</td>
+              <td><span class="pill good"><span class="dot"></span>Подтв.</span></td>
+              <td>Telegram</td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">АЛ</div></div></td>
+              <td><b>Анастасия Лебедева</b><div style="color:var(--text-3);font-size:11px">Новый клиент</div></td>
+              <td>Брови · форма + краска</td>
+              <td>Лера М.</td>
+              <td><b>11 мая</b><div style="color:var(--text-3);font-size:11px">14:30 · 60 мин</div></td>
+              <td class="amount">₽1 800</td>
+              <td><span class="pill brand"><span class="dot"></span>Оплачено</span></td>
+              <td>Сайт</td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">ЕБ</div></div></td>
+              <td><b>Елена Беляева</b><div style="color:var(--text-3);font-size:11px">22 визита</div></td>
+              <td>Стрижка + укладка</td>
+              <td>Дина С.</td>
+              <td><b>11 мая</b><div style="color:var(--text-3);font-size:11px">17:00 · 75 мин</div></td>
+              <td class="amount">₽2 800</td>
+              <td><span class="pill good"><span class="dot"></span>Подтв.</span></td>
+              <td>Telegram</td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">МР</div></div></td>
+              <td><b>Марина Родина</b><div style="color:var(--text-3);font-size:11px">3 пропуска</div></td>
+              <td>Педикюр</td>
+              <td>Мария К.</td>
+              <td><b>12 мая</b><div style="color:var(--text-3);font-size:11px">10:00 · 90 мин</div></td>
+              <td class="amount">₽2 600</td>
+              <td><span class="pill warn"><span class="dot"></span>Ожидает</span></td>
+              <td>Звонок</td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">КЛ</div></div></td>
+              <td><b>Катя Лебедева</b><div style="color:var(--text-3);font-size:11px">8 визитов</div></td>
+              <td>Окрашивание корней</td>
+              <td>Дина С.</td>
+              <td><b>12 мая</b><div style="color:var(--text-3);font-size:11px">13:00 · 2 ч</div></td>
+              <td class="amount">₽5 600</td>
+              <td><span class="pill good"><span class="dot"></span>Подтв.</span></td>
+              <td>Telegram</td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">ИП</div></div></td>
+              <td><b>Ирина Петрова</b><div style="color:var(--text-3);font-size:11px">12 визитов</div></td>
+              <td>Ламинирование ресниц</td>
+              <td>Лера М.</td>
+              <td><b>13 мая</b><div style="color:var(--text-3);font-size:11px">11:30 · 90 мин</div></td>
+              <td class="amount">₽3 400</td>
+              <td><span class="pill brand"><span class="dot"></span>Оплачено</span></td>
+              <td>VK</td>
+            </tr>
+            <tr>
+              <td style="padding-left:18px"><div class="user"><div class="av">СГ</div></div></td>
+              <td><b>Светлана Глазова</b><div style="color:var(--text-3);font-size:11px">1 визит</div></td>
+              <td>Консультация</td>
+              <td>Анна (вы)</td>
+              <td><b>13 мая</b><div style="color:var(--text-3);font-size:11px">16:00 · 30 мин</div></td>
+              <td class="amount">—</td>
+              <td><span class="pill bad"><span class="dot"></span>Отмена</span></td>
+              <td>Сайт</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;color:var(--text-3);font-size:12px;border-top:1px solid var(--line)">
+          <span>1–8 из 47</span>
+          <div style="display:flex;gap:4px">
+            <button class="chip">←</button>
+            <button class="chip on">1</button><button class="chip">2</button><button class="chip">3</button>
+            <button class="chip">→</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card detail">
+        <div class="head">
+          <div class="ph">ВН</div>
+          <div>
+            <b>Виктория Новикова</b>
+            <span class="meta">VIP · 14 визитов · LTV ₽142 800</span>
+            <div style="margin-top:8px"><span class="pill warn"><span class="dot"></span>Ожидает подтв.</span> <span class="pill">VK</span></div>
+          </div>
+        </div>
+
+        <h4>Услуга</h4>
+        <div class="kv"><span>Что</span><b>AirTouch окрашивание</b></div>
+        <div class="kv"><span>Мастер</span><b>Дина Соколова</b></div>
+        <div class="kv"><span>Когда</span><b>11 мая · 11:00–14:00</b></div>
+        <div class="kv"><span>Длительность</span><b>3 часа</b></div>
+
+        <h4>Оплата</h4>
+        <div class="kv"><span>Услуга</span><b>₽11 500</b></div>
+        <div class="kv"><span>Тонирование</span><b>₽1 000</b></div>
+        <div class="kv"><span>Итого</span><b>₽12 500</b></div>
+        <div class="kv"><span>Депозит</span><b style="color:var(--good)">₽3 000 · оплачен</b></div>
+
+        <h4>История</h4>
+        <div class="events">
+          <div class="ev"><span class="t">10:42</span>Клиент создал запись через VK</div>
+          <div class="ev"><span class="t">10:43</span>Депозит ₽3 000 списан</div>
+          <div class="ev"><span class="t">11:10</span>Бот отправил напоминание</div>
+          <div class="ev"><span class="t">сейчас</span>Ожидаем подтверждения</div>
+        </div>
+
+        <div class="acts">
+          <button class="btn primary" style="justify-content:center">Подтвердить</button>
+          <button class="btn" style="justify-content:center">Перенести</button>
+          <button class="btn" style="justify-content:center">Открыть чат</button>
+          <button class="btn" style="justify-content:center;color:var(--bad)">Отменить</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</body></html>

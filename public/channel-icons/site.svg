@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Website">
+  <defs>
+    <linearGradient id="siteGradient" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6D78FF"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="32" fill="url(#siteGradient)"/>
+  <path d="M32 13.5a18.5 18.5 0 1 0 0 37 18.5 18.5 0 0 0 0-37Zm12.5 15.4h-7.1a29 29 0 0 0-2.1-9.2 14.2 14.2 0 0 1 9.2 9.2ZM32 17.3c1.2 1.8 2.5 5.5 2.9 11.6h-5.8c.4-6.1 1.7-9.8 2.9-11.6Zm-2.9 18h5.8c-.4 6.1-1.7 9.8-2.9 11.6-1.2-1.8-2.5-5.5-2.9-11.6Zm-.4-15.6a29 29 0 0 0-2.1 9.2h-7.1a14.2 14.2 0 0 1 9.2-9.2Zm-10.2 15.6h8.1a29 29 0 0 0 2.1 9.2 14.2 14.2 0 0 1-10.2-9.2Zm16.8 9.2a29 29 0 0 0 2.1-9.2h8.1a14.2 14.2 0 0 1-10.2 9.2Z" fill="#fff"/>
+</svg>
