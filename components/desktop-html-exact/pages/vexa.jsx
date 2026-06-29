@@ -750,7 +750,7 @@ function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete })
           <span className="section-sub vexa-ellipsis">{selectedSources}</span>
         </span>
       </button>
-      <div className="vexa-search-row-health">
+      <div className="vexa-search-row-health" aria-label={`Качество фильтра ${item.quality || 0}%`}>
         <div className="vexa-health-top">
           <span>Качество</span>
           <strong>{item.quality || 0}%</strong>
@@ -777,7 +777,7 @@ function SearchRow({ item, workspace, onOpen, onToggle, onDuplicate, onDelete })
           </div>
         </div>
       </div>
-      <div className="vexa-row-actions">
+      <div className="vexa-row-actions vexa-search-row-actions">
         <Btn size="sm" kind="secondary" icon="edit" onClick={() => onOpen(item)}>Открыть</Btn>
         <Btn size="sm" kind="secondary" icon={item.status === 'active' ? 'pause' : 'play'} onClick={() => onToggle(item.id)}>
           {item.status === 'active' ? 'Пауза' : 'Запуск'}
@@ -1213,7 +1213,7 @@ export function VexaSearchesPage() {
         <Metric label="Лимит поиска" value={`${Math.round((workspace.searches.length / stats.plan.searches) * 100)}%`} delta={stats.plan.name} />
         <Metric label="Среднее качество" value={`${Math.round(workspace.searches.reduce((sum, item) => sum + item.quality, 0) / Math.max(1, workspace.searches.length))}%`} delta="AI-фильтр" deltaKind="up" />
       </div>
-      <div className="vexa-split">
+      <div className="vexa-split searches">
         <Card flush className="vexa-card">
           <div className="card-head vexa-card-head">
             <div className="input-with-icon vexa-search-input">
@@ -1245,9 +1245,10 @@ export function VexaSearchesPage() {
           <InnerCard
             title="Редактор поиска"
             subtitle="Ключевые слова, минус-слова, источники и лимит проверки"
+            className="vexa-editor-card"
             action={<div className="vexa-card-badges">{statusBadge(selected.status)}<Badge kind="info">{selected.priority}</Badge></div>}
           >
-            <div className="col vexa-card-body">
+            <div className="col vexa-card-body vexa-editor-body">
               <div className="vexa-editor-summary">
                 <div>
                   <span>Источники</span>
@@ -1262,43 +1263,64 @@ export function VexaSearchesPage() {
                   <strong>{selected.quality || 0}%</strong>
                 </div>
               </div>
-              <label className="field">
-                <span>Название</span>
-                <input className="input" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
-              </label>
-              <label className="field">
-                <span>Ключевые слова</span>
-                <textarea className="input" rows={4} value={draft.keywords} onChange={(event) => setDraft({ ...draft, keywords: event.target.value })} />
-              </label>
-              <label className="field">
-                <span>Минус-слова</span>
-                <textarea className="input" rows={3} value={draft.minus} onChange={(event) => setDraft({ ...draft, minus: event.target.value })} />
-              </label>
-              <label className="field">
-                <span>Источники</span>
-                <SourcePicker workspace={workspace} value={draft.sourceIds} onChange={(sourceIds) => setDraft({ ...draft, sourceIds })} />
-              </label>
-              <div className="grid-2">
-                <label className="field">
-                  <span>Приоритет</span>
-                  <VexaSelect
-                    value={draft.priority}
-                    options={['Высокий', 'Средний', 'Низкий']}
-                    onChange={(priority) => setDraft({ ...draft, priority })}
-                  />
-                </label>
-                <label className="field">
-                  <span>Лимит в день</span>
-                  <input className="input" type="number" value={draft.dailyLimit} onChange={(event) => setDraft({ ...draft, dailyLimit: event.target.value })} />
-                </label>
-              </div>
-              <div className="li-row vexa-row compact">
-                <div>
-                  <strong>Умное сопоставление</strong>
-                  <div className="section-sub">Формы слов, похожие формулировки и смысловые совпадения</div>
+              <div className="vexa-form-section">
+                <div className="vexa-form-section-head">
+                  <strong>Основное</strong>
+                  <span>Название кампании и дневной контроль</span>
                 </div>
-                <Switch on={draft.smart} onChange={(smart) => setDraft({ ...draft, smart })} />
+                <label className="field">
+                  <span>Название</span>
+                  <input className="input" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
+                </label>
+                <div className="grid-2">
+                  <label className="field">
+                    <span>Приоритет</span>
+                    <VexaSelect
+                      value={draft.priority}
+                      options={['Высокий', 'Средний', 'Низкий']}
+                      onChange={(priority) => setDraft({ ...draft, priority })}
+                    />
+                  </label>
+                  <label className="field">
+                    <span>Лимит в день</span>
+                    <input className="input" type="number" value={draft.dailyLimit} onChange={(event) => setDraft({ ...draft, dailyLimit: event.target.value })} />
+                  </label>
+                </div>
               </div>
+
+              <div className="vexa-form-section">
+                <div className="vexa-form-section-head">
+                  <strong>Фильтр</strong>
+                  <span>Что считать совпадением и что исключать</span>
+                </div>
+                <label className="field">
+                  <span>Ключевые слова</span>
+                  <textarea className="input" rows={4} value={draft.keywords} onChange={(event) => setDraft({ ...draft, keywords: event.target.value })} />
+                </label>
+                <label className="field">
+                  <span>Минус-слова</span>
+                  <textarea className="input" rows={3} value={draft.minus} onChange={(event) => setDraft({ ...draft, minus: event.target.value })} />
+                </label>
+                <div className="li-row vexa-row compact">
+                  <div>
+                    <strong>Умное сопоставление</strong>
+                    <div className="section-sub">Формы слов, похожие формулировки и смысловые совпадения</div>
+                  </div>
+                  <Switch on={draft.smart} onChange={(smart) => setDraft({ ...draft, smart })} />
+                </div>
+              </div>
+
+              <div className="vexa-form-section">
+                <div className="vexa-form-section-head">
+                  <strong>Источники</strong>
+                  <span>Каналы и темы, где будет работать поиск</span>
+                </div>
+                <label className="field">
+                  <span>Выбранные источники</span>
+                  <SourcePicker workspace={workspace} value={draft.sourceIds} onChange={(sourceIds) => setDraft({ ...draft, sourceIds })} />
+                </label>
+              </div>
+
               <div className="vexa-detail-grid">
                 <UsageBar label="Качество фильтра" used={selected.quality} total={100} />
                 <UsageBar label="Лимит поиска" used={selected.matchesToday} total={selected.dailyLimit} />
@@ -1311,7 +1333,7 @@ export function VexaSearchesPage() {
             </div>
           </InnerCard>
         ) : (
-          <InnerCard title="Редактор поиска" subtitle="Создайте первый поиск, чтобы настроить ключи и источники">
+          <InnerCard className="vexa-editor-card" title="Редактор поиска" subtitle="Создайте первый поиск, чтобы настроить ключи и источники">
             <div className="vexa-empty">
               <Icon name="search" />
               <strong>Поисков пока нет</strong>
@@ -1578,9 +1600,10 @@ export function VexaSourcesPage() {
           <InnerCard
             title="Настройка источника"
             subtitle={`${selected.checked} · скорость: ${selected.speed}`}
+            className="vexa-editor-card"
             action={statusBadge(selected.status)}
           >
-            <div className="col vexa-card-body">
+            <div className="col vexa-card-body vexa-editor-body">
               <label className="field">
                 <span>Название</span>
                 <input className="input" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
@@ -1619,7 +1642,7 @@ export function VexaSourcesPage() {
             </div>
           </InnerCard>
         ) : (
-          <InnerCard title="Настройка источника" subtitle="Подключите Telegram-канал, группу или invite-ссылку">
+          <InnerCard className="vexa-editor-card" title="Настройка источника" subtitle="Подключите Telegram-канал, группу или invite-ссылку">
             <div className="vexa-empty">
               <Icon name="filter" />
               <strong>Источников пока нет</strong>
