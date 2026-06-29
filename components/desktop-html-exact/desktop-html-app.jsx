@@ -932,7 +932,7 @@ function Topbar({ page, setPage, search, setSearch, onNotif, onCreate, theme, on
         <input className="input" placeholder={isVexaPage ? "Поиск поисков, источников, совпадений…" : "Поиск клиентов, записей, услуг…"} value={search} onChange={e => setSearch(e.target.value)} />
         <span className="kbd">/</span>
       </div>
-      <DemoModeToggle demoMode={demoMode} onChange={onDemoModeChange} />
+      {!isVexaPage ? <DemoModeToggle demoMode={demoMode} onChange={onDemoModeChange} /> : null}
       <button
         className="btn btn-ghost icon"
         onClick={onToggleTheme}

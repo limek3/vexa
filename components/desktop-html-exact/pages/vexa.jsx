@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Badge, Btn, Card, Icon, Metric, Segmented, Switch } from '../desktop-html-ui';
 
-const VEXA_WORKSPACE_STORAGE_KEY = 'vexa.telegram.monitoring.workspace.v8';
+const VEXA_WORKSPACE_STORAGE_KEY = 'vexa.telegram.monitoring.workspace.v9';
 const VEXA_PROFILE_STORAGE_KEY = 'vexa.profile.v1';
 
 const SOURCE_TYPES = ['Канал', 'Группа', 'Комментарии', 'Invite-ссылка'];
@@ -807,6 +807,7 @@ function ImportantNote({ compact = false }) {
 
 
 function ProductHero({ profile, workspace, stats, onNewSearch, onSources, onExport }) {
+  void profile;
   const summary = [
     { label: 'Активные поиски', value: workspace.searches.length, meta: `${stats.activeSearches} запущено` },
     { label: 'Ключевые фразы', value: stats.totalKeywords, meta: `${stats.totalMinus} минус-слов` },
@@ -829,11 +830,6 @@ function ProductHero({ profile, workspace, stats, onNewSearch, onSources, onExpo
           <Btn kind="primary" icon="plus" onClick={onNewSearch}>Создать поиск</Btn>
           <Btn kind="secondary" icon="filter" onClick={onSources}>Настроить источники</Btn>
           <Btn kind="secondary" icon="arrow-down" onClick={onExport}>Экспорт JSON</Btn>
-        </div>
-        <div className="vexa3-operator">
-          <img src="/vexa-logo.png" alt="" />
-          <span>{profile?.email || workspace.settings.owner || 'Оператор Vexa'}</span>
-          <small>{workspace.settings.timezone}</small>
         </div>
       </div>
       <div className="vexa3-hero-side">
@@ -1071,21 +1067,24 @@ function SearchQuality({ draft }) {
   );
 }
 
+
 function SearchRow({ search, workspace, active, onOpen, onToggle, onDuplicate, onDelete, onTest }) {
+  const sourcesLabel = sourceNames(workspace, search.sourceIds || []);
+  const minusCount = search.minus?.length || 0;
   return (
     <div className={`vexa3-search-row ${active ? 'active' : ''}`}>
       <button type="button" className="vexa3-row-mainbutton" onClick={() => onOpen(search)}>
         <span className="vexa3-row-icon"><Icon name="search" size={15} /></span>
         <span className="vexa3-row-content">
-          <span className="vexa3-row-title"><strong>{search.title}</strong>{statusBadge(search.status)}{priorityBadge(search.priority)}</span>
-          <span className="vexa3-keywords">{(search.keywords || []).slice(0, 3).map((item) => <i key={item}>{item}</i>)}{(search.keywords || []).length > 3 ? <i>+{search.keywords.length - 3}</i> : null}</span>
-          <small>{sourceNames(workspace, search.sourceIds || [])}</small>
+          <span className="vexa3-row-title"><strong>{search.title}</strong>{statusBadge(search.status)}</span>
+          <span className="vexa3-keywords">{(search.keywords || []).slice(0, 4).map((item) => <i key={item}>{item}</i>)}{(search.keywords || []).length > 4 ? <i>+{search.keywords.length - 4}</i> : null}</span>
+          <small>{sourcesLabel}</small>
         </span>
       </button>
-      <div className="vexa3-row-health">
-        <div><span>Фильтр</span><strong>{search.quality || 0}%</strong></div>
-        <div className="progress"><span style={{ width: `${search.quality || 0}%` }} /></div>
-        <small>порог {search.minScore || 70}% · {search.matchesToday || 0}/{search.dailyLimit || 50} сегодня</small>
+      <div className="vexa3-row-summary">
+        <span><strong>{search.dailyLimit || 50}</strong><small>лимит в день</small></span>
+        <span><strong>{(search.sourceIds || []).length}</strong><small>источника</small></span>
+        <span><strong>{minusCount}</strong><small>минус-слов</small></span>
       </div>
       <div className="vexa3-row-actions">
         <Btn size="sm" kind="secondary" icon={search.status === 'active' ? 'pause' : 'play'} onClick={() => onToggle(search.id)}>{search.status === 'active' ? 'Пауза' : 'Старт'}</Btn>
@@ -1204,7 +1203,7 @@ export function VexaSearchesPage() {
     const keywords = sanitizeLines(draft.keywordsText, 32, 96);
     const minus = sanitizeLines(draft.minusText, 32, 96);
     const sourceIds = Array.isArray(draft.sourceIds) ? draft.sourceIds : [];
-    const minScore = Math.max(35, Math.min(95, Number(draft.minScore) || 70));
+    const minScore = 70;
 
     if (!title) return setNotice('Назовите поиск: например “Заявки на услуги”, “Вакансии”, “Упоминания бренда”.');
     if (!keywords.length) return setNotice('Добавьте хотя бы одну ключевую фразу. Рабочий минимум для пилота — 3–7 фраз.');
@@ -1213,26 +1212,26 @@ export function VexaSearchesPage() {
     const next = {
       id: draft.id || selected?.id || safeId('srch'),
       title,
-      goal: draft.goal || 'Заявки и лиды',
+      goal: 'Мониторинг Telegram',
       status,
-      priority: draft.priority || 'Средний',
-      delivery: draft.delivery || 'telegram',
+      priority: 'Средний',
+      delivery: 'telegram',
       dailyLimit: Math.max(10, Math.min(500, Number(draft.dailyLimit) || 50)),
       minScore,
-      mode: draft.mode || 'phrase',
-      botChannel: cleanText(draft.botChannel, 48) || 'личный чат Vexa-бота',
+      mode: 'phrase',
+      botChannel: 'личный чат Vexa-бота',
       keywords,
       minus,
       sourceIds,
       matchesToday: Number(selected?.matchesToday) || 0,
-      quality: estimateQuality({ keywords, minus, sourceIds, minScore, mode: draft.mode }),
+      quality: estimateQuality({ keywords, minus, sourceIds, minScore, mode: 'phrase' }),
       lastRun: status === 'active' ? 'ждет новые публикации' : 'на паузе',
     };
 
     actions.upsertSearch(next);
     setSelectedId(next.id);
     setDraft(toSearchDraft(next));
-    setNotice(`Поиск “${next.title}” сохранен. Новые совпадения будут попадать в ленту и правила доставки.`);
+    setNotice(`Поиск “${next.title}” сохранен. Новые совпадения будут появляться в разделе “Совпадения”.`);
   };
 
   const duplicate = (search) => {
@@ -1265,8 +1264,6 @@ export function VexaSearchesPage() {
       <ImportantNote />
       {notice ? <div className={`vexa3-inline-notice ${notice.includes('тестовое') || notice.includes('тестовое совпадение') ? 'vexa3-test-notice' : ''}`}><Icon name={notice.includes('тестовое') ? 'inbox' : 'info'} size={14} />{notice}</div> : null}
       <MetricGrid workspace={workspace} stats={stats} />
-      <HealthPanel stats={stats} />
-
       <div className="vexa3-layout vexa3-layout-searches">
         <Card flush className="vexa3-card">
           <SectionTitle
@@ -1300,35 +1297,20 @@ export function VexaSearchesPage() {
         </Card>
 
         <Card className="vexa3-card vexa3-editor">
-          <SectionTitle title="Конструктор поиска" subtitle="Фразы, исключения, источники, скоринг и правила доставки." />
-          <div className="vexa3-editor-body">
+          
+          <SectionTitle title="Конструктор поиска" subtitle="Название, статус, источники, ключевые фразы, минус-слова и дневной лимит." />
+          <div className="vexa3-editor-body vexa3-search-form-clean">
             <label className="field"><span>Название</span><input className="input" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Например: заявки на услуги" /></label>
             <div className="grid-2">
-              <label className="field"><span>Сценарий</span><select className="input" value={draft.goal} onChange={(event) => setDraft({ ...draft, goal: event.target.value })}>{SEARCH_GOALS.map((goal) => <option key={goal} value={goal}>{goal}</option>)}</select></label>
-              <label className="field"><span>Приоритет</span><select className="input" value={draft.priority} onChange={(event) => setDraft({ ...draft, priority: event.target.value })}>{['Низкий', 'Средний', 'Высокий'].map((priority) => <option key={priority} value={priority}>{priority}</option>)}</select></label>
+              <label className="field"><span>Статус</span><select className="input" value={draft.status || 'active'} onChange={(event) => setDraft({ ...draft, status: event.target.value })}><option value="active">Активен</option><option value="paused">Пауза</option></select></label>
+              <label className="field"><span>Лимит в день</span><input className="input" type="number" min="10" max="500" value={draft.dailyLimit} onChange={(event) => setDraft({ ...draft, dailyLimit: event.target.value })} /></label>
             </div>
-            <div className="grid-2">
-              <label className="field"><span>Режим совпадения</span><select className="input" value={draft.mode} onChange={(event) => setDraft({ ...draft, mode: event.target.value })}><option value="phrase">Фразы как написаны</option><option value="contains">Содержит слова</option><option value="strict">Строгий фильтр</option></select></label>
-              <label className="field"><span>Минимальный скоринг</span><input className="input" type="number" min="35" max="95" value={draft.minScore} onChange={(event) => setDraft({ ...draft, minScore: event.target.value })} /></label>
-            </div>
+            <label className="field"><span>Telegram-источники</span><SourcePicker workspace={workspace} value={draft.sourceIds} onChange={(sourceIds) => setDraft({ ...draft, sourceIds })} /></label>
             <PhraseEditor label="Ключевые слова и фразы" value={draft.keywordsText} onChange={(keywordsText) => setDraft({ ...draft, keywordsText })} placeholder={'нужен подрядчик\nищу специалиста\nкто может сделать\nнужна консультация'} />
             <PhraseEditor label="Минус-слова" kind="minus" value={draft.minusText} onChange={(minusText) => setDraft({ ...draft, minusText })} placeholder={'бесплатно\nрозыгрыш\nстажировка\nбез бюджета'} />
-            <label className="field"><span>Telegram-источники</span><SourcePicker workspace={workspace} value={draft.sourceIds} onChange={(sourceIds) => setDraft({ ...draft, sourceIds })} /></label>
-            <div className="grid-2">
-              <label className="field"><span>Лимит в день</span><input className="input" type="number" min="10" max="500" value={draft.dailyLimit} onChange={(event) => setDraft({ ...draft, dailyLimit: event.target.value })} /></label>
-              <label className="field"><span>Доставка</span><select className="input" value={draft.delivery} onChange={(event) => setDraft({ ...draft, delivery: event.target.value })}><option value="telegram">Сразу через Vexa-бота</option><option value="digest">Сводкой через Vexa-бота</option><option value="feed">Только в ленту</option></select></label>
-            </div>
-            <label className="field"><span>Канал доставки</span><input className="input" value={draft.botChannel} onChange={(event) => setDraft({ ...draft, botChannel: event.target.value })} placeholder="личный чат Vexa-бота / команда / сводка" /></label>
-            <SearchQuality draft={draft} />
             <div className="vexa3-form-actions"><Btn kind="secondary" onClick={() => setDraft(toSearchDraft(selected))}>Отмена</Btn><Btn kind="secondary" icon="pause" onClick={() => saveSearch('paused')}>Сохранить на паузе</Btn><Btn kind="primary" icon="check" onClick={() => saveSearch('active')}>Сохранить и запустить</Btn></div>
           </div>
         </Card>
-      </div>
-
-      <div className="vexa3-lower-grid">
-        <TemplatesPanel onApply={applyTemplate} />
-        <SearchAnalyzer workspace={workspace} selected={selected} onCreateMatch={createTestMatch} />
-        <MonitoringOpsPanel workspace={workspace} stats={stats} selected={selected} />
       </div>
     </PageShell>
   );
@@ -1354,16 +1336,15 @@ function MatchRow({ match, active, onOpen }) {
   );
 }
 
-function BotPreview({ match }) {
-  if (!match) return null;
-  return (
-    <div className="vexa3-bot-preview">
-      <div><Icon name="send" size={15} /><strong>Превью сообщения в Vexa-боте</strong></div>
-      <p><b>{match.search}</b> · {match.score}%</p>
-      <p>{match.text}</p>
-      <small>{match.source} · причина: {match.keyword}</small>
-    </div>
-  );
+
+function matchTelegram(match) {
+  if (match?.telegram) return match.telegram;
+  if (String(match?.author || '').startsWith('@')) return match.author;
+  return 'не указан';
+}
+
+function matchPhone(match) {
+  return match?.phone || 'не указан';
 }
 
 export function VexaMatchesPage() {
@@ -1372,7 +1353,6 @@ export function VexaMatchesPage() {
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState('');
   const [notice, setNotice] = useState('');
-  const [learningPhrase, setLearningPhrase] = useState('');
 
   const visibleMatches = workspace.matches.filter((match) => !match.hidden);
   const filtered = visibleMatches.filter((match) => {
@@ -1400,27 +1380,18 @@ export function VexaMatchesPage() {
 
   const qualify = (match) => {
     actions.updateMatch(match.id, { status: 'qualified' }, { title: 'Совпадение отмечено подходящим', body: match.keyword, icon: 'check' });
-    setNotice('Совпадение отмечено подходящим. Такие действия нужны для обучения фильтров и будущей аналитики качества.');
+    setNotice('Совпадение отмечено подходящим. Оно останется в аналитике качества источников.');
   };
 
   const reject = (match) => {
     actions.updateMatch(match.id, { status: 'rejected' }, { title: 'Совпадение отклонено', body: match.keyword, icon: 'x' });
-    setLearningPhrase(match.keyword || '');
-    setNotice('Совпадение отклонено. Добавьте шумную формулировку в минус-слова поиска, если она будет повторяться.');
+    setNotice('Совпадение отклонено и помечено как шум.');
   };
 
   const hide = (match) => {
     actions.updateMatch(match.id, { hidden: true }, { title: 'Совпадение скрыто', body: match.keyword, icon: 'trash' });
     setSelectedId(filtered.find((item) => item.id !== match.id)?.id || '');
     setNotice('Сообщение скрыто из рабочей ленты.');
-  };
-
-  const addLearning = (type) => {
-    if (!selected) return;
-    const phrase = learningPhrase || selected.keyword;
-    actions.addPhraseToSearch(selected.searchId, type, phrase);
-    setNotice(type === 'minus' ? `Фраза “${phrase}” добавлена в минус-слова поиска.` : `Фраза “${phrase}” добавлена в ключевые слова поиска.`);
-    setLearningPhrase('');
   };
 
   return (
@@ -1451,25 +1422,26 @@ export function VexaMatchesPage() {
                 <div className="vexa3-message-head"><span className="vexa3-score big">{selected.score}%</span><div><strong>{selected.keyword}</strong><small>{selected.intent} · {selected.time}</small></div></div>
                 <p>{selected.text}</p>
               </div>
-              <div className="vexa3-detail-grid">
-                <div><span>Почему попало</span><strong>{selected.reason}</strong></div>
-                <div><span>Следующий шаг</span><strong>{selected.nextStep}</strong></div>
-                <div><span>Источник</span><strong>{selected.sourceType} · {selected.source}</strong></div>
-                <div><span>Автор</span><strong>{selected.author}</strong></div>
-              </div>
-              <BotPreview match={selected} />
-              <div className="vexa3-learning-box">
-                <label className="field"><span>Обучение фильтра</span><input className="input" value={learningPhrase} onChange={(event) => setLearningPhrase(event.target.value)} placeholder={selected.keyword || 'фраза для ключей или минус-слов'} /></label>
-                <div className="vexa3-form-actions"><Btn kind="secondary" icon="plus" onClick={() => addLearning('keyword')}>В ключи</Btn><Btn kind="secondary" icon="minus" onClick={() => addLearning('minus')}>В минус-слова</Btn></div>
-              </div>
-              <div className="vexa3-form-actions">
-                <Btn kind="secondary" icon="copy" onClick={() => copyText(selected.text, 'Текст совпадения скопирован')}>Скопировать</Btn>
-                <Btn kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(selected.source)}>Открыть источник</Btn>
-                <Btn kind="secondary" icon="check" onClick={() => qualify(selected)}>Подходит</Btn>
-                <Btn kind="secondary" icon="x" onClick={() => reject(selected)}>Отклонить</Btn>
-                <Btn kind="primary" icon="send" onClick={() => sendToBot(selected)} disabled={selected.sent}>В личку</Btn>
-                <Btn kind="danger" icon="trash" onClick={() => hide(selected)}>Скрыть</Btn>
-              </div>
+<div className="vexa3-detail-grid vexa3-match-fields">
+  <div><span>Поиск</span><strong>{selected.search}</strong></div>
+  <div><span>Источник</span><strong>{selected.sourceType} · {selected.source}</strong></div>
+  <div><span>Telegram</span><strong>{matchTelegram(selected)}</strong></div>
+  <div><span>Телефон</span><strong>{matchPhone(selected)}</strong></div>
+  <div><span>Автор</span><strong>{selected.author || 'не указан'}</strong></div>
+  <div><span>Ключевая фраза</span><strong>{selected.keyword}</strong></div>
+</div>
+<div className="vexa3-message-meta">
+  <div><span>Почему попало</span><strong>{selected.reason}</strong></div>
+  <div><span>Что сделать</span><strong>{selected.nextStep}</strong></div>
+</div>
+<div className="vexa3-form-actions">
+  <Btn kind="secondary" icon="copy" onClick={() => copyText(selected.text, 'Текст совпадения скопирован')}>Скопировать</Btn>
+  <Btn kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(selected.source)}>Открыть источник</Btn>
+  <Btn kind="secondary" icon="check" onClick={() => qualify(selected)}>Подходит</Btn>
+  <Btn kind="secondary" icon="x" onClick={() => reject(selected)}>Отклонить</Btn>
+  <Btn kind="primary" icon="send" onClick={() => sendToBot(selected)} disabled={selected.sent}>В личку</Btn>
+  <Btn kind="danger" icon="trash" onClick={() => hide(selected)}>Скрыть</Btn>
+</div>
             </div>
           ) : <div className="vexa3-empty"><Icon name="inbox" /><strong>Выберите сообщение</strong><span>Здесь будет причина попадания и быстрые действия.</span></div>}
         </Card>
@@ -1569,7 +1541,7 @@ export function VexaSourcesPage() {
   const selected = workspace.sources.find((source) => source.id === selectedId) || workspace.sources[0];
   const [draft, setDraft] = useState(() => toSourceDraft(selected));
   const [notice, setNotice] = useState('');
-  const [bulkText, setBulkText] = useState('@new_channel | Новый канал | Канал | Лиды\nhttps://t.me/+invite_hash | Закрытый чат | Invite-ссылка | Пилот');
+  const [bulkText] = useState('@new_channel | Новый канал | Канал | Лиды\nhttps://t.me/+invite_hash | Закрытый чат | Invite-ссылка | Пилот');
 
   useEffect(() => {
     if (!selected && workspace.sources[0]) {
@@ -1615,7 +1587,7 @@ export function VexaSourcesPage() {
   };
 
   const saveSource = () => {
-    const unsafe = [validateSafeText('Название источника', draft.title), validateSafeText('Ссылка источника', draft.ref), validateSafeText('Тема источника', draft.group), validateSafeText('Заметка', draft.note)].find(Boolean);
+    const unsafe = [validateSafeText('Название источника', draft.title), validateSafeText('Ссылка источника', draft.ref), validateSafeText('Заметка', draft.note)].find(Boolean);
     if (unsafe) return setNotice(unsafe);
     const title = cleanText(draft.title, 88);
     const ref = normalizeRef(draft.ref);
@@ -1627,11 +1599,11 @@ export function VexaSourcesPage() {
       title,
       ref,
       type: draft.type || 'Канал',
-      group: cleanText(draft.group, 56) || 'Основные',
+      group: topicFilter !== 'all' ? topicFilter : (selected?.group || draft.group || 'Основные'),
       status: draft.status || 'limited',
       trust: Math.max(0, Math.min(100, Number(draft.trust) || 70)),
-      language: cleanText(draft.language, 24) || 'RU',
-      cadence: cleanText(draft.cadence, 48) || 'постоянно',
+      language: selected?.language || 'RU',
+      cadence: selected?.cadence || 'автоматически',
       access: draft.status === 'online' ? 'доступ есть' : draft.status === 'blocked' ? 'нет доступа' : 'нужна проверка доступа',
       connectedAt: draft.status === 'online' ? 'подключен сейчас' : 'ожидает подключения',
       lastSeen: draft.status === 'online' ? 'только что' : 'не проверялся',
@@ -1664,7 +1636,7 @@ export function VexaSourcesPage() {
       <ImportantNote compact />
       {notice ? <div className="vexa3-inline-notice"><Icon name="info" size={14} />{notice}</div> : null}
       <div className="grid-4 vexa3-metrics"><Metric label="Источников" value={workspace.sources.length} delta="каналы, группы, комментарии" /><Metric label="Онлайн" value={stats.onlineSources} delta="готовы к мониторингу" deltaKind="up" /><Metric label="Требуют доступа" value={stats.sourceWarnings} delta="проверить права" deltaKind={stats.sourceWarnings ? 'down' : 'up'} /><Metric label="Привязок" value={stats.attachedSources} delta="в активных поисках" /></div>
-      <div className="vexa3-source-types"><div><Icon name="page" /><strong>Каналы</strong><span>Наш мониторинг читает новые посты в публичных и доступных каналах.</span></div><div><Icon name="users" /><strong>Группы</strong><span>Новые сообщения в чатах, где появляются лиды, кандидаты и обсуждения.</span></div><div><Icon name="chat" /><strong>Комментарии</strong><span>Ответы под постами, где часто появляются запросы и упоминания.</span></div><div><Icon name="link" /><strong>Invite</strong><span>Закрытые источники: сначала проверяем доступ, потом мониторим новые сообщения.</span></div></div>
+
       <SourceTopicBar topics={sourceTopics} value={topicFilter} onChange={setTopicFilter} onCreate={createTopic} />
 
       <div className="vexa3-layout vexa3-layout-sources">
@@ -1677,21 +1649,28 @@ export function VexaSourcesPage() {
         </Card>
 
         <Card className="vexa3-card vexa3-editor">
-          <SectionTitle title="Настройка источника" subtitle={selected ? `${selected.access || 'статус неизвестен'} · ${selected.coverage || 'после подключения'}` : 'Добавьте Telegram-ссылку'} right={selected ? statusBadge(selected.status) : null} />
-          <div className="vexa3-editor-body">
-            <label className="field"><span>Название</span><input className="input" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Например: нишевые чаты по дизайну" /></label>
-            <label className="field"><span>Ссылка, @username или invite</span><input className="input" value={draft.ref} onChange={(event) => setDraft({ ...draft, ref: event.target.value })} placeholder="@channel или https://t.me/..." /></label>
-            <div className="grid-2"><label className="field"><span>Тип</span><select className="input" value={draft.type} onChange={(event) => setDraft({ ...draft, type: event.target.value })}>{SOURCE_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}</select></label><label className="field"><span>Список / тема</span><input className="input" value={draft.group} onChange={(event) => setDraft({ ...draft, group: event.target.value })} placeholder="Лиды и услуги" /></label></div>
-            <div className="grid-2"><label className="field"><span>Статус</span><select className="input" value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value })}>{SOURCE_STATUSES.map((status) => <option key={status} value={status}>{statusLabel(status)}</option>)}</select></label><label className="field"><span>Доверие источника, %</span><input className="input" type="number" min="0" max="100" value={draft.trust} onChange={(event) => setDraft({ ...draft, trust: event.target.value })} /></label></div>
-            <div className="grid-2"><label className="field"><span>Язык</span><input className="input" value={draft.language} onChange={(event) => setDraft({ ...draft, language: event.target.value })} placeholder="RU / EN" /></label><label className="field"><span>Частота проверки</span><input className="input" value={draft.cadence} onChange={(event) => setDraft({ ...draft, cadence: event.target.value })} placeholder="постоянно / после проверки" /></label></div>
-            <label className="field"><span>Заметка</span><textarea className="input" rows={4} value={draft.note} onChange={(event) => setDraft({ ...draft, note: event.target.value })} placeholder="Что здесь ищем и почему источник важен" /></label>
-            <div className="vexa3-source-checklist"><div><Icon name="shield" size={14} /><span>Старые сообщения не импортируются.</span></div><div><Icon name="clock" size={14} /><span>Наш мониторинг начинает читать источник после подключения.</span></div><div><Icon name="send" size={14} /><span>Найденные совпадения попадают в приложение и в личку через Vexa-бота.</span></div></div>
-            <div className="vexa3-form-actions"><Btn kind="secondary" onClick={() => setDraft(toSourceDraft(selected))}>Отмена</Btn>{selected?.ref ? <Btn kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(selected.ref)}>Открыть</Btn> : null}<Btn kind="primary" icon="check" onClick={saveSource}>Сохранить</Btn></div>
-          </div>
+          
+<SectionTitle title="Настройка источника" subtitle="Наш мониторинг читает из источника новые сообщения после проверки доступа." right={selected ? statusBadge(selected.status) : null} />
+<div className="vexa3-editor-body vexa3-source-form-clean">
+  <label className="field"><span>Название</span><input className="input" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Например: нишевые чаты по дизайну" /></label>
+  <label className="field"><span>Ссылка, @username или invite</span><input className="input" value={draft.ref} onChange={(event) => setDraft({ ...draft, ref: event.target.value })} placeholder="@channel или https://t.me/..." /></label>
+  <div className="grid-2"><label className="field"><span>Тип</span><select className="input" value={draft.type} onChange={(event) => setDraft({ ...draft, type: event.target.value })}>{SOURCE_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}</select></label><label className="field"><span>Статус</span><select className="input" value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value })}>{SOURCE_STATUSES.map((status) => <option key={status} value={status}>{statusLabel(status)}</option>)}</select></label></div>
+  <label className="field"><span>Доверие источника, %</span><input className="input" type="number" min="0" max="100" value={draft.trust} readOnly /><small>Это значение определяет наш бот по стабильности доступа и качеству совпадений.</small></label>
+  <label className="field"><span>Заметка</span><textarea className="input" rows={4} value={draft.note} onChange={(event) => setDraft({ ...draft, note: event.target.value })} placeholder="Что здесь ищем и почему источник важен" /></label>
+  <div className="vexa3-form-actions"><Btn kind="secondary" onClick={() => setDraft(toSourceDraft(selected))}>Отмена</Btn>{selected?.ref ? <Btn kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(selected.ref)}>Открыть</Btn> : null}<Btn kind="primary" icon="check" onClick={saveSource}>Сохранить</Btn></div>
+</div>
         </Card>
       </div>
 
-      <Card className="vexa3-card vexa3-bulk"><SectionTitle title="Массовый импорт" subtitle="Формат строки: ссылка | название | тип | группа. Источники добавляются как требующие проверки доступа." /><label className="field"><span>Список источников</span><textarea className="input" rows={5} value={bulkText} onChange={(event) => setBulkText(event.target.value)} /></label><div className="vexa3-form-actions"><Btn kind="secondary" icon="copy" onClick={() => copyText(bulkText, 'Список источников скопирован')}>Скопировать</Btn><Btn kind="primary" icon="plus" onClick={importBulk}>Импортировать</Btn></div></Card>
+      
+<Card className="vexa3-card vexa3-bulk vexa3-dev-block">
+  <SectionTitle title="Массовый импорт" subtitle="Будет доступен после подключения серверной проверки источников." />
+  <div className="vexa3-dev-content" aria-hidden="true">
+    <label className="field"><span>Список источников</span><textarea className="input" rows={5} value={bulkText} readOnly /></label>
+    <div className="vexa3-form-actions"><Btn kind="secondary" icon="copy" disabled>Скопировать</Btn><Btn kind="primary" icon="plus" disabled>Импортировать</Btn></div>
+  </div>
+  <div className="vexa3-dev-overlay"><strong>В разработке</strong><span>Массовый импорт будет включен после серверной валидации ссылок и доступа.</span></div>
+</Card>
     </PageShell>
   );
 }
