@@ -80,14 +80,6 @@ function getAssetDataUrl(filename, mime = 'image/png') {
 
 function createSplashHtml() {
   const logoSrc = getAssetDataUrl('icon.png');
-  const messages = [
-    'Настраиваем интерфейс...',
-    'Синхронизируем данные...',
-    'Загружаем поиски...',
-    'Проверяем источники...',
-    'Готовим рабочее место...',
-    'Почти готово...',
-  ];
 
   return `<!doctype html>
 <html lang="ru">
@@ -96,22 +88,11 @@ function createSplashHtml() {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Vexa</title>
   <style>
-    @property --ai-angle {
-      syntax: '<angle>';
-      initial-value: 0deg;
-      inherits: false;
-    }
-
     :root {
       color-scheme: light;
-      --bg: #f3f4f7;
-      --card: #ffffff;
-      --brand: #1f2540;
-      --muted: #8b94a8;
-      --track: #e8eaef;
-      --c1: 91, 124, 255;
-      --c2: 140, 91, 255;
-      --c3: 255, 91, 158;
+      --purple: #7b4dff;
+      --text: #20242e;
+      --muted: #727889;
     }
 
     * { box-sizing: border-box; }
@@ -123,9 +104,9 @@ function createSplashHtml() {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: transparent;
-      color: var(--brand);
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #faf9f7;
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       user-select: none;
@@ -133,244 +114,329 @@ function createSplashHtml() {
     }
 
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .splash {
-      width: min(520px, calc(100vw - 40px));
-      padding: 56px 48px 44px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 28px;
-      border: 1px solid rgba(230, 232, 238, 0.78);
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(var(--c1), 0.055), transparent 46%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.94));
-      box-shadow:
-        0 1px 2px rgba(20, 30, 60, 0.04),
-        0 18px 40px -12px rgba(20, 30, 60, 0.08);
-      backdrop-filter: blur(18px) saturate(145%);
-      -webkit-backdrop-filter: blur(18px) saturate(145%);
+      display: grid;
+      grid-template-columns: 42.5% 57.5%;
+      border-radius: 20px;
       -webkit-app-region: drag;
     }
 
-    .ai-logo-wrap {
-      --size: 128px;
-      --radius: 28px;
-      --border: 3px;
-      --speed: 2.6s;
+    .splash {
+      display: contents;
+    }
 
-      position: relative;
-      width: var(--size);
-      height: var(--size);
-      padding: var(--border);
-      isolation: isolate;
-      border-radius: var(--radius);
+    .brand-panel {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto auto;
+      gap: 34px;
+      padding: 58px 54px 42px;
       background:
-        conic-gradient(
-          from var(--ai-angle),
-          rgba(var(--c1), 0) 0deg,
-          rgba(var(--c1), 0) 220deg,
-          rgba(var(--c1), 0.35) 250deg,
-          rgba(var(--c1), 0.90) 285deg,
-          rgba(var(--c2), 1) 315deg,
-          rgba(var(--c3), 1) 345deg,
-          rgba(var(--c3), 0) 360deg
-        );
-      animation: ai-flow var(--speed) linear infinite;
+        radial-gradient(circle at 24% 0%, rgba(124, 92, 255, .17), transparent 36%),
+        radial-gradient(circle at 84% 100%, rgba(124, 92, 255, .13), transparent 42%),
+        linear-gradient(140deg, #10141d 0%, #171b26 56%, #202036 100%);
+      color: #f7f7fb;
     }
 
-    @keyframes ai-flow { to { --ai-angle: 360deg; } }
-
-    @supports not (background: conic-gradient(from 0deg, red, red)) {
-      .ai-logo-wrap { animation: ai-rotate var(--speed) linear infinite; }
-    }
-
-    @keyframes ai-rotate { to { transform: rotate(360deg); } }
-
-    .ai-logo-wrap::before {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      z-index: -1;
-      border-radius: calc(var(--radius) + 4px);
-      background: inherit;
-      filter: blur(10px);
-      opacity: 0.45;
-      pointer-events: none;
-    }
-
-    .ai-logo {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      display: flex;
+    .logo {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-radius: calc(var(--radius) - var(--border));
-      background: #1f2540;
+      gap: 16px;
+      color: #fff;
+      font-size: 42px;
+      font-weight: 750;
+      letter-spacing: -0.055em;
     }
 
-    .ai-logo img {
-      display: block;
-      width: 100%;
-      height: 100%;
+    .logo img {
+      width: 58px;
+      height: 58px;
+      border-radius: 15px;
       object-fit: cover;
-      border-radius: inherit;
     }
 
-    .brand {
+    .copy {
+      display: grid;
+      gap: 18px;
+    }
+
+    .copy h1 {
       margin: 0;
-      color: var(--brand);
-      font-size: 28px;
-      font-weight: 700;
+      color: #fff;
+      font-size: 32px;
+      line-height: 1.32;
+      letter-spacing: -0.045em;
+    }
+
+    .copy p {
+      margin: 0;
+      color: rgba(247,247,251,.68);
+      font-size: 17px;
+      line-height: 1.62;
+    }
+
+    .features {
+      display: grid;
+      align-content: start;
+      gap: 26px;
+      padding-top: 2px;
+    }
+
+    .feature {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .feature-icon {
+      color: #9b6cff;
+      font-size: 22px;
       line-height: 1;
-      letter-spacing: -0.02em;
+    }
+
+    .feature strong {
+      display: block;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 650;
+      margin-bottom: 7px;
+    }
+
+    .feature span {
+      color: rgba(247,247,251,.58);
+      font-size: 13px;
+      line-height: 1.45;
     }
 
     .status {
-      min-height: 20px;
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,.12);
+      color: rgba(247,247,251,.58);
+      font-size: 13px;
+    }
+
+    .status b {
       display: inline-flex;
-      margin-top: -12px;
-      color: var(--muted);
-      font-size: 14px;
+      align-items: center;
+      gap: 10px;
+      color: rgba(247,247,251,.86);
       font-weight: 500;
-      line-height: 1.35;
-      white-space: pre;
     }
 
-    .status .ai-char {
-      display: inline-block;
-      will-change: transform, opacity, filter;
+    .dot {
+      width: 21px;
+      height: 21px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #43d17b 0 28%, rgba(67, 209, 123, .24) 30% 100%);
+      box-shadow: 0 0 20px rgba(67, 209, 123, .24);
     }
 
-    @keyframes ai-char-in {
-      0% { transform: translateY(6px); opacity: 0; filter: blur(2px); }
-      100% { transform: translateY(0); opacity: 1; filter: blur(0); }
+    .footer {
+      display: grid;
+      gap: 14px;
+      color: rgba(247,247,251,.44);
+      font-size: 12px;
     }
 
-    @keyframes ai-char-out {
-      0% { transform: translateY(0); opacity: 1; filter: blur(0); }
-      100% { transform: translateY(-6px); opacity: 0; filter: blur(2px); }
-    }
-
-    .ai-char.in { animation: ai-char-in 450ms cubic-bezier(0.34, 1.45, 0.64, 1) both; }
-    .ai-char.out { animation: ai-char-out 300ms cubic-bezier(0.4, 0, 0.6, 1) both; }
-
-    .progress {
-      position: relative;
-      width: 240px;
-      height: 3px;
-      margin-top: 4px;
-      overflow: hidden;
-      border-radius: 2px;
-      background: var(--track);
-    }
-
-    .progress::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: -40%;
-      width: 40%;
-      border-radius: inherit;
+    .form-stage {
+      display: grid;
+      place-items: center;
+      padding: 72px;
       background:
-        linear-gradient(
-          90deg,
-          transparent,
-          rgba(var(--c1), 1),
-          rgba(var(--c2), 1),
-          rgba(var(--c3), 1),
-          transparent
-        );
-      animation: progress-run 1.8s cubic-bezier(0.65, 0.05, 0.36, 1) infinite;
+        radial-gradient(circle at 50% 30%, rgba(124, 92, 255, .05), transparent 38%),
+        #faf9f7;
     }
 
-    @keyframes progress-run {
-      0% { left: -40%; }
-      100% { left: 100%; }
+    .card {
+      width: min(100%, 490px);
+      display: grid;
+      gap: 20px;
+      padding: 46px;
+      border: 1px solid rgba(28,32,42,.11);
+      border-radius: 8px;
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 18px 52px rgba(20,24,34,.045);
+      backdrop-filter: blur(12px);
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .ai-logo-wrap,
-      .ai-char.in,
-      .ai-char.out,
-      .progress::before {
-        animation: none !important;
-      }
+    .card-head {
+      display: grid;
+      gap: 9px;
+      text-align: center;
+    }
+
+    .card h2 {
+      margin: 0;
+      color: #20242e;
+      font-size: 28px;
+      line-height: 1.15;
+      letter-spacing: -0.045em;
+    }
+
+    .card p {
+      margin: 0;
+      color: #727889;
+      font-size: 15px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 50px;
+      overflow: hidden;
+      border: 1px solid rgba(28,32,42,.15);
+      border-radius: 7px;
+      background: rgba(255,255,255,.58);
+    }
+
+    .tabs span {
+      display: grid;
+      place-items: center;
+      color: #6c7280;
+      font-size: 15px;
+      font-weight: 650;
+      border-right: 1px solid rgba(28,32,42,.11);
+    }
+
+    .tabs span:first-child {
+      color: var(--purple);
+      background: rgba(255,255,255,.72);
+      box-shadow: inset 0 0 0 1.5px #8b63ff;
+    }
+
+    label {
+      display: grid;
+      gap: 10px;
+      color: #4b5160;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .input {
+      height: 58px;
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      border: 1px solid rgba(28,32,42,.12);
+      border-radius: 7px;
+      background: rgba(255,255,255,.66);
+      color: #9aa1af;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #858b99;
+      font-size: 14px;
+    }
+
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .box {
+      width: 22px;
+      height: 22px;
+      border: 1px solid rgba(28,32,42,.25);
+      border-radius: 4px;
+      background: rgba(255,255,255,.65);
+    }
+
+    .link { color: var(--purple); font-weight: 700; }
+
+    .primary {
+      height: 58px;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      border-radius: 7px;
+      background: linear-gradient(180deg, #814fff, #641ee8);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .divider {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 20px;
+      color: #a0a5b0;
+      font-size: 14px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      height: 1px;
+      background: rgba(28,32,42,.11);
+    }
+
+    .create {
+      text-align: center;
+      color: var(--purple);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+      body { grid-template-columns: 1fr; overflow: auto; }
+      .brand-panel { padding: 30px; gap: 20px; }
+      .features, .footer { display: none; }
+      .form-stage { padding: 28px; }
     }
   </style>
 </head>
 <body>
   <div class="splash">
-    <div class="ai-logo-wrap">
-      <div class="ai-logo">
-        <img src="${logoSrc}" alt="Vexa" />
+    <section class="brand-panel">
+      <div class="logo"><img src="${logoSrc}" alt="Vexa" /><span>vexa</span></div>
+      <div class="copy">
+        <h1>Командный центр<br />мониторинга лидов в Telegram</h1>
+        <p>Находите клиентов. Отвечайте вовремя. Увеличивайте конверсию.</p>
       </div>
-    </div>
-
-    <h1 class="brand">Vexa</h1>
-    <span class="status" id="status"></span>
-    <div class="progress" aria-hidden="true"></div>
+      <div class="features">
+        <div class="feature"><div class="feature-icon">⌕</div><div><strong>Мониторинг групп и каналов</strong><span>Отслеживайте новые лиды в реальном времени</span></div></div>
+        <div class="feature"><div class="feature-icon">✦</div><div><strong>AI-фильтрация и обучение</strong><span>Отсекайте спам и фокусируйтесь на целевом</span></div></div>
+        <div class="feature"><div class="feature-icon">▣</div><div><strong>Быстрые ответы из единого окна</strong><span>Отвечайте быстрее, не переключаясь</span></div></div>
+        <div class="feature"><div class="feature-icon">▥</div><div><strong>Аналитика и отчёты</strong><span>Смотрите, что работает, и масштабируйте результат</span></div></div>
+      </div>
+      <div class="status"><b><i class="dot"></i>Система работает</b><span>Все сервисы доступны</span></div>
+      <div class="footer"><span>© 2024 Vexa. Все права защищены.</span><span>Политика конфиденциальности · Пользовательское соглашение</span></div>
+    </section>
+    <section class="form-stage">
+      <div class="card">
+        <div class="card-head">
+          <h2>Добро пожаловать в Vexa</h2>
+          <p>Войдите в аккаунт, чтобы продолжить</p>
+        </div>
+        <div class="tabs"><span>Email</span><span>Код из Telegram</span></div>
+        <label>Email<div class="input"><span>✉</span><span>name@company.com</span></div></label>
+        <label>Пароль<div class="input"><span>▣</span><span>Введите пароль</span><span>◉</span></div></label>
+        <div class="options"><span class="check"><i class="box"></i>Запомнить меня</span><span class="link">Забыли пароль?</span></div>
+        <div class="primary">Войти</div>
+        <div class="divider"><span>или</span></div>
+        <div class="create">Создать аккаунт</div>
+      </div>
+    </section>
   </div>
-
-  <script>
-    const messages = ${JSON.stringify(messages)};
-    const container = document.getElementById('status');
-    const HOLD_MS = 2200;
-    const CHAR_STEP = 18;
-    const OUT_MS = 300;
-    let idx = 0;
-
-    function renderChars(text) {
-      container.innerHTML = '';
-      Array.from(text).forEach((ch, i) => {
-        const span = document.createElement('span');
-        span.className = 'ai-char in';
-        span.style.animationDelay = (i * CHAR_STEP) + 'ms';
-        span.textContent = ch === ' ' ? '\\u00A0' : ch;
-        container.appendChild(span);
-      });
-    }
-
-    function animateOut() {
-      container.querySelectorAll('.ai-char').forEach((char, i) => {
-        char.classList.remove('in');
-        char.style.animationDelay = (i * (CHAR_STEP * 0.6)) + 'ms';
-        void char.offsetWidth;
-        char.classList.add('out');
-      });
-    }
-
-    function tick() {
-      const text = messages[idx];
-      renderChars(text);
-      setTimeout(animateOut, HOLD_MS);
-      const next = HOLD_MS + OUT_MS + text.length * (CHAR_STEP * 0.6);
-      setTimeout(() => {
-        idx = (idx + 1) % messages.length;
-        tick();
-      }, next);
-    }
-
-    tick();
-  </script>
 </body>
 </html>`;
 }
 function createSplashWindow() {
   const iconPath = path.join(__dirname, 'assets', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
   const workArea = screen.getPrimaryDisplay().workAreaSize;
-  const splashWidth = Math.min(620, Math.max(580, workArea.width - 96));
-  const splashHeight = Math.min(460, Math.max(430, workArea.height - 96));
+  const splashWidth = Math.min(1280, Math.max(980, workArea.width - 120));
+  const splashHeight = Math.min(820, Math.max(700, workArea.height - 120));
 
   const splash = new BrowserWindow({
     width: splashWidth,

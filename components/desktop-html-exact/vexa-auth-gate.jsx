@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Btn } from './desktop-html-ui';
+import { Btn, Icon } from './desktop-html-ui';
 
 const VEXA_PROFILE_STORAGE_KEY = 'vexa.profile.v1';
 
@@ -93,6 +93,51 @@ function publishProfile(profile) {
   window.dispatchEvent(new CustomEvent('vexa-profile-updated', { detail: profile }));
 }
 
+function AuthBrandPanel() {
+  const features = [
+    ['search', 'Мониторинг групп и каналов', 'Отслеживайте новые лиды в реальном времени'],
+    ['sparkle', 'AI-фильтрация и обучение', 'Отсекайте спам и фокусируйтесь на целевом'],
+    ['inbox', 'Быстрые ответы из единого окна', 'Отвечайте быстрее, не переключаясь'],
+    ['chart', 'Аналитика и отчёты', 'Смотрите, что работает, и масштабируйте результат'],
+  ];
+
+  return (
+    <aside className="vexa-auth-brand">
+      <div className="vexa-auth-brand-logo">
+        <img src="/vexa-logo.png" alt="Vexa" />
+        <span>vexa</span>
+      </div>
+
+      <div className="vexa-auth-brand-copy">
+        <h2>Командный центр<br />мониторинга лидов в Telegram</h2>
+        <p>Находите клиентов. Отвечайте вовремя. Увеличивайте конверсию.</p>
+      </div>
+
+      <div className="vexa-auth-feature-list">
+        {features.map(([icon, title, text]) => (
+          <div className="vexa-auth-feature" key={title}>
+            <Icon name={icon} size={21} />
+            <span>
+              <strong>{title}</strong>
+              <small>{text}</small>
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="vexa-auth-brand-status">
+        <span><i />Система работает</span>
+        <span>Все сервисы доступны</span>
+      </div>
+
+      <div className="vexa-auth-brand-footer">
+        <span>© 2024 Vexa. Все права защищены.</span>
+        <span>Политика конфиденциальности · Пользовательское соглашение</span>
+      </div>
+    </aside>
+  );
+}
+
 export function VexaAuthGate({ children }) {
   const [state, setState] = useState('loading');
   const [profile, setProfile] = useState(null);
@@ -102,6 +147,9 @@ export function VexaAuthGate({ children }) {
   const [password, setPassword] = useState('');
   const [authBusy, setAuthBusy] = useState(false);
   const [authNotice, setAuthNotice] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(false);
+  const [authMethod, setAuthMethod] = useState('email');
 
   const checkSession = async () => {
     if (!supabaseConfigured) {
@@ -253,11 +301,14 @@ export function VexaAuthGate({ children }) {
   if (state === 'loading') {
     return (
       <div className="vexa-auth-screen">
-        <div className="vexa-auth-card">
-          <div className="vexa-auth-mark"><img src="/vexa-logo.png" alt="Vexa" /></div>
-          <h1>Проверяем сессию</h1>
-          <p>Если вход уже был выполнен, кабинет откроется автоматически.</p>
-        </div>
+        <AuthBrandPanel />
+        <section className="vexa-auth-stage">
+          <div className="vexa-auth-card vexa-auth-card-loading">
+            <div className="vexa-auth-mark"><img src="/vexa-logo.png" alt="Vexa" /></div>
+            <h1>Проверяем сессию</h1>
+            <p>Если вход уже был выполнен, кабинет откроется автоматически.</p>
+          </div>
+        </section>
       </div>
     );
   }
@@ -282,62 +333,96 @@ export function VexaAuthGate({ children }) {
 
   return (
     <div className="vexa-auth-screen">
-      <form className="vexa-auth-card" onSubmit={submitEmailAuth}>
-        <div className="vexa-auth-mark"><img src="/vexa-logo.png" alt="Vexa" /></div>
-        <h1>{mode === 'signup' ? 'Создать аккаунт' : mode === 'reset' ? 'Восстановить пароль' : 'Войти в Vexa'}</h1>
-        <p>{mode === 'reset' ? 'Введите email. Мы отправим письмо для восстановления доступа.' : 'Email — основной вход в приложение. Telegram подключается позже только для уведомлений о совпадениях.'}</p>
-
-        {state === 'setup' ? (
-          <div className="vexa-auth-warning">
-            <strong>Авторизация не настроена</strong>
-            <span>Нужны переменные Supabase. Сервер вернул: {error}</span>
+      <AuthBrandPanel />
+      <section className="vexa-auth-stage">
+        <form className="vexa-auth-card" onSubmit={submitEmailAuth}>
+          <div className="vexa-auth-card-head">
+            <h1>{mode === 'signup' ? 'Создать аккаунт' : mode === 'reset' ? 'Восстановить пароль' : 'Добро пожаловать в Vexa'}</h1>
+            <p>{mode === 'reset' ? 'Введите email. Мы отправим письмо для восстановления доступа.' : 'Войдите в аккаунт, чтобы продолжить'}</p>
           </div>
-        ) : null}
 
-        {error ? (
-          <div className="vexa-auth-warning">
-            <strong>Не удалось войти</strong>
-            <span>{translateAuthError(error)}</span>
-          </div>
-        ) : null}
+          {mode !== 'reset' ? (
+            <div className="vexa-auth-tabs" role="tablist" aria-label="Способ входа">
+              <button type="button" className={authMethod === 'email' ? 'active' : ''} onClick={() => setAuthMethod('email')}>Email</button>
+              <button type="button" className={authMethod === 'telegram' ? 'active' : ''} onClick={() => setAuthMethod('telegram')}>Код из Telegram</button>
+            </div>
+          ) : null}
 
-        {authNotice ? (
-          <div className="vexa-auth-success">
-            <strong>Готово</strong>
-            <span>{authNotice}</span>
-          </div>
-        ) : null}
+          {authMethod === 'telegram' && mode !== 'reset' ? (
+            <div className="vexa-auth-success">
+              <strong>Telegram подключается после входа</strong>
+              <span>Основной вход сейчас через email. Telegram будет использоваться для уведомлений о совпадениях.</span>
+            </div>
+          ) : null}
 
-        <label className="field">
-          <span>Email</span>
-          <input className="input" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
-        </label>
+          {state === 'setup' ? (
+            <div className="vexa-auth-warning">
+              <strong>Авторизация не настроена</strong>
+              <span>Нужны переменные Supabase. Сервер вернул: {error}</span>
+            </div>
+          ) : null}
 
-        {mode !== 'reset' ? (
-          <label className="field">
-            <span>Пароль</span>
-            <input className="input" type="password" autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} maxLength={64} required />
-            <small className="vexa-auth-hint">8-64 символа. Код и SQL-команды в полях приложения запрещены.</small>
+          {error ? (
+            <div className="vexa-auth-warning">
+              <strong>Не удалось войти</strong>
+              <span>{translateAuthError(error)}</span>
+            </div>
+          ) : null}
+
+          {authNotice ? (
+            <div className="vexa-auth-success">
+              <strong>Готово</strong>
+              <span>{authNotice}</span>
+            </div>
+          ) : null}
+
+          <label className="field vexa-auth-field">
+            <span>Email</span>
+            <div className="vexa-auth-input">
+              <Icon name="mail" size={19} />
+              <input type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@company.com" required />
+            </div>
           </label>
-        ) : null}
 
-        <Btn kind="primary" icon="mail" type="submit" disabled={authBusy}>
-          {authBusy ? 'Подождите...' : mode === 'signup' ? 'Зарегистрироваться' : mode === 'reset' ? 'Отправить письмо' : 'Войти'}
-        </Btn>
+          {mode !== 'reset' ? (
+            <label className="field vexa-auth-field">
+              <span>Пароль</span>
+              <div className="vexa-auth-input">
+                <Icon name="shield" size={19} />
+                <input type={showPassword ? 'text' : 'password'} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Введите пароль" minLength={8} maxLength={64} required />
+                <button type="button" className="vexa-auth-eye" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}>
+                  <Icon name={showPassword ? 'eye-off' : 'eye'} size={19} />
+                </button>
+              </div>
+            </label>
+          ) : null}
 
-        <div className="vexa-auth-switch">
-          {mode === 'signup' ? 'Уже есть аккаунт?' : mode === 'reset' ? 'Вспомнили пароль?' : 'Еще нет аккаунта?'}
-          <button type="button" onClick={() => { setMode(mode === 'signup' || mode === 'reset' ? 'signin' : 'signup'); setError(''); setAuthNotice(''); }}>
-            {mode === 'signup' || mode === 'reset' ? 'Войти' : 'Создать'}
-          </button>
-        </div>
-        {mode === 'signin' ? (
-          <button type="button" className="vexa-auth-link" onClick={() => { setMode('reset'); setError(''); setAuthNotice(''); }}>
-            Забыли пароль?
-          </button>
-        ) : null}
+          {mode === 'signin' ? (
+            <div className="vexa-auth-options">
+              <label className="vexa-auth-checkbox">
+                <input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
+                <span>Запомнить меня</span>
+              </label>
+              <button type="button" className="vexa-auth-link" onClick={() => { setMode('reset'); setError(''); setAuthNotice(''); }}>
+                Забыли пароль?
+              </button>
+            </div>
+          ) : null}
 
-      </form>
+          <Btn kind="primary" type="submit" disabled={authBusy}>
+            {authBusy ? 'Подождите...' : mode === 'signup' ? 'Создать аккаунт' : mode === 'reset' ? 'Отправить письмо' : 'Войти'}
+          </Btn>
+
+          <div className="vexa-auth-divider"><span>или</span></div>
+
+          <div className="vexa-auth-switch">
+            {mode === 'signup' ? 'Уже есть аккаунт?' : mode === 'reset' ? 'Вспомнили пароль?' : 'Нет аккаунта?'}
+            <button type="button" onClick={() => { setMode(mode === 'signup' || mode === 'reset' ? 'signin' : 'signup'); setError(''); setAuthNotice(''); }}>
+              {mode === 'signup' || mode === 'reset' ? 'Войти' : 'Создать аккаунт'}
+            </button>
+          </div>
+        </form>
+      </section>
     </div>
   );
 }
