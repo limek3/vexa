@@ -123,12 +123,6 @@ export const avatarTint = (s) => {
 };
 export const initials = (name) => {
   if (!name) return '?';
-  if (name.includes('@')) {
-    const local = name.split('@')[0] || name;
-    const parts = local.split(/[._\-\s]+/).filter(Boolean);
-    const value = (parts[0]?.[0] || local[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '');
-    return value.toUpperCase();
-  }
   const parts = name.trim().split(/\s+/);
   return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
 };
@@ -158,11 +152,30 @@ function readableActionLabel(children, icon) {
   return icon ? `Действие ${icon}` : 'Действие';
 }
 
+function reportDesktopButtonError(error, actionLabel) {
+  const message = error instanceof Error ? error.message : String(error || 'button_action_failed');
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('clickbook-desktop-action', {
+      detail: { label: `${actionLabel}: ${message}` },
+    }));
+  }
+  if (typeof console !== 'undefined') console.error('[desktop button action failed]', error);
+}
+
 export const Btn = ({ children, kind = 'secondary', size, icon, onClick, className = '', type = 'button', ...rest }) => {
   const actionLabel = rest['aria-label'] || rest['data-tip'] || readableActionLabel(children, icon);
   const handleClick = (event) => {
+    if (rest.disabled) return;
+
     if (onClick) {
-      onClick(event);
+      try {
+        const result = onClick(event);
+        if (result && typeof result.then === 'function') {
+          result.catch((error) => reportDesktopButtonError(error, actionLabel));
+        }
+      } catch (error) {
+        reportDesktopButtonError(error, actionLabel);
+      }
       return;
     }
     if (rest['data-record-action'] && typeof window !== 'undefined') {

@@ -1,12 +1,16 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { VexaAuthGate } from '@/components/desktop-html-exact/vexa-auth-gate';
 
 type DesktopScreen =
   | 'dashboard'
   | 'searches'
   | 'matches'
-  | 'contacts'
+  | 'vexa-sources'
+  | 'vexa-settings'
+  | 'vexa-testing'
+  | 'vexa-help'
   | 'schedule'
   | 'clients'
   | 'chats'
@@ -43,5 +47,9 @@ const DesktopWorkspace = dynamic(
 );
 
 export function DesktopScreenApp({ screen }: { screen: DesktopScreen }) {
-  return <DesktopWorkspace initialScreen={screen} />;
+  return (
+    <VexaAuthGate>
+      <DesktopWorkspace initialScreen={screen} />
+    </VexaAuthGate>
+  );
 }

@@ -1,18 +1,18 @@
-/* Mock data for Vexa Desktop */
+/* Mock data for КликБук */
 
 export const MASTER = {
-  name: 'Иван Петров',
-  profession: 'Vexa workspace',
-  initials: 'IP',
-  city: 'Москва',
-  studio: 'Telegram monitoring workspace',
-  about: 'Vexa отслеживает Telegram-источники по ключевым словам и присылает только полезные совпадения.',
-  phone: '',
-  email: 'ivan@vexa.app',
-  username: 'ivan_vexa',
-  publicUrl: 'vexa.app/desktop',
-  reviews: 0,
-  rating: 5,
+  name: 'Алиса Корнеева',
+  profession: 'Колорист, парикмахер-стилист',
+  initials: 'АК',
+  city: 'Санкт-Петербург',
+  studio: 'Студия Lumen, ул. Рубинштейна 5',
+  about: 'Работаю с цветом 9 лет. Тёплые натуральные оттенки, аккуратные стрижки, бережный уход. Спокойная атмосфера, без спешки.',
+  phone: '+7 (921) 884 12 02',
+  email: 'a.korneeva@кликбук.рф',
+  username: 'alisa',
+  publicUrl: 'кликбук.рф/alisa',
+  reviews: 247,
+  rating: 4.94,
 };
 
 export const STATUSES = {
@@ -144,10 +144,10 @@ export const QUICK_REPLIES = [
 ];
 
 export const NOTIFICATIONS = [
-  { id: 'n1', kind: 'new',   icon: 'inbox',    title: 'Новое совпадение',     body: 'Аренда Москва · 92% · @novostroy_msk', time: '4 мин назад', unread: true },
-  { id: 'n2', kind: 'chat',  icon: 'search',   title: 'Поиск обновлен',       body: 'Ремонт квартир получил 31 совпадение сегодня.', time: '20 мин назад', unread: true },
-  { id: 'n3', kind: 'cancel',icon: 'filter',   title: 'Источник требует доступа', body: 'Закрытый чат недоступен сервисному аккаунту.', time: '2 ч назад',  unread: false },
-  { id: 'n4', kind: 'info',  icon: 'crown',    title: 'Лимит тарифа',         body: 'Использовано 214 из 1500 сообщений на сегодня.', time: 'утром', unread: false },
+  { id: 'n1', kind: 'new',   icon: 'plus',     title: 'Новая запись',         body: 'Софья Журавлёва — стрижка, 26 мая 16:00', time: '14 мин назад', unread: true },
+  { id: 'n2', kind: 'chat',  icon: 'chat',     title: 'Сообщение от Софьи',   body: '«Спасибо! А можно ещё уточнить про длительность?»', time: '20 мин назад', unread: true },
+  { id: 'n3', kind: 'cancel',icon: 'x',        title: 'Отмена записи',        body: 'Татьяна Романова отменила запись 28 мая.', time: '2 ч назад',  unread: false },
+  { id: 'n4', kind: 'info',  icon: 'eye',      title: 'Личная страница',     body: 'Сегодня страницу посмотрели 34 человека.', time: 'утром', unread: false },
 ];
 
 export const TASKS = [
@@ -166,3 +166,4 @@ export function pluralize(n, one, few, many) {
   if (m >= 2 && m <= 4 && (t < 10 || t >= 20)) return few;
   return many;
 }
+

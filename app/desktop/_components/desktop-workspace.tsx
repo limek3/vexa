@@ -1,16 +1,52 @@
 'use client';
 
+import React from 'react';
 import DesktopHtmlExactApp from '@/components/desktop-html-exact/desktop-html-app';
 
+type RuntimeBoundaryState = { error: Error | null };
+
+class DesktopRuntimeBoundary extends React.Component<React.PropsWithChildren, RuntimeBoundaryState> {
+  state: RuntimeBoundaryState = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    if (typeof console !== 'undefined') {
+      console.error('[vexa desktop runtime]', error, info);
+    }
+  }
+
+  render() {
+    if (!this.state.error) return this.props.children;
+
+    return (
+      <div className="cb-desktop-html" data-theme="light" data-accent="clay" data-density="default" data-radius="default">
+        <div className="boot-exact vexa-runtime-fallback">
+          <div>
+            <strong>Vexa не смогла открыть экран</strong>
+            <em>{this.state.error.message || 'Ошибка интерфейса'}</em>
+            <button type="button" onClick={() => window.location.reload()}>Перезагрузить приложение</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
 export function DesktopWorkspace({ initialScreen }: { initialScreen: string }) {
-  return <DesktopHtmlExactApp initialPage={initialScreen} />;
+  return (
+    <DesktopRuntimeBoundary>
+      <DesktopHtmlExactApp initialPage={initialScreen} />
+    </DesktopRuntimeBoundary>
+  );
 }
 
 export function DesktopBootScreen() {
   return (
-    <div className="cb-desktop-html" data-theme="light" data-accent="plum" data-density="default" data-radius="default">
+    <div className="cb-desktop-html" data-theme="light" data-accent="clay" data-density="default" data-radius="default">
       <div className="boot-exact">
-        <img src="/vexa-logo.png" alt="Vexa" className="boot-logo" />
         <div>
           <strong>Рабочий кабинет</strong>
           <em>Открываем интерфейс...</em>

@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 function safeRelativePath(value: string | null) {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/desktop/dashboard';
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/desktop/searches';
   return value;
 }
 

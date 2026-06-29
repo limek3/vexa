@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap");
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import './design-v2/klickbook-preview.css';
 @import "./desktop/desktop.css";
 @custom-variant dark (&:is(.dark *));
 

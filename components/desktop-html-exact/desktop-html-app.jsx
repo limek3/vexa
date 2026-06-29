@@ -2,48 +2,50 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTheme as useNextTheme } from 'next-themes';
 import { MASTER, SERVICES, CLIENTS, NOTIFICATIONS } from './desktop-html-data';
 import { Icon, Avatar, Check, SuccessCheck } from './desktop-html-ui';
 import { useDesktopPlatform } from './desktop-platform';
-import { VexaAuthGate } from './vexa-auth-gate';
-import { AppearancePage } from './pages/appearance';
-import {
-  VexaDashboardPage,
-  VexaMatchesPage,
-  VexaSearchesPage,
-  VexaSettingsPage,
-  VexaSimplePage,
-  VexaSourcesPage,
-  VexaSubscriptionPage,
-} from './pages/vexa';
+import { PublicPage } from './pages/public';
+import { ModulePage } from './pages/module';
+import { ChatsPage } from './pages/chats';
+import { CalendarPage } from './pages/calendar';
+import { VexaMatchesPage, VexaSearchesPage, VexaSettingsPage, VexaSimplePage, VexaSourcesPage, VexaSubscriptionPage } from './pages/vexa';
+import { DesktopDashboardTransferPage } from '../desktop-dashboard-transfer/dashboard-embed';
+import ModeSwitch from '@/components/ui/mode-switch';
 
 const pageToRoute = {
   dashboard: 'dashboard',
   searches: 'searches',
   matches: 'matches',
-  sources: 'sources',
-  notifications: 'notifications',
-  analytics: 'analytics',
-  payments: 'payments',
-  subscription: 'subscription',
-  settings: 'settings',
-  account: 'settings',
-  help: 'help',
+  'vexa-sources': 'vexa-sources',
+  'vexa-settings': 'vexa-settings',
+  'vexa-testing': 'vexa-testing',
+  'vexa-help': 'vexa-help',
   calendar: 'schedule',
   chats: 'chats',
   clients: 'clients',
   services: 'services',
   availability: 'availability',
   profile: 'profile',
+  analytics: 'analytics',
   public: 'public',
   appearance: 'appearance',
   templates: 'templates',
+  notifications: 'notifications',
   integrations: 'integrations',
   reviews: 'reviews',
+  subscription: 'subscription',
+  account: 'account',
+  settings: 'settings',
   finance: 'finance',
   marketing: 'marketing',
+  payments: 'payments',
   limits: 'limits',
+  sources: 'sources',
+  help: 'help',
 };
+
 
 const DESKTOP_MODAL_POSITION_STORAGE_KEY = 'clickbook.desktop.modal.positions.v4';
 
@@ -344,13 +346,11 @@ const routeToPage = {
   dashboard: 'dashboard',
   searches: 'searches',
   matches: 'matches',
-  sources: 'sources',
-  notifications: 'notifications',
-  analytics: 'analytics',
-  payments: 'payments',
-  subscription: 'subscription',
-  settings: 'settings',
-  help: 'help',
+  contacts: 'searches',
+  'vexa-sources': 'vexa-sources',
+  'vexa-settings': 'vexa-settings',
+  'vexa-testing': 'vexa-testing',
+  'vexa-help': 'vexa-help',
   schedule: 'calendar',
   calendar: 'calendar',
   bookings: 'calendar',
@@ -361,15 +361,22 @@ const routeToPage = {
   profile: 'profile',
   'master-profile': 'profile',
   stats: 'analytics',
+  analytics: 'analytics',
   public: 'public',
   appearance: 'appearance',
   templates: 'templates',
+  notifications: 'notifications',
   integrations: 'integrations',
   reviews: 'reviews',
-  account: 'settings',
+  subscription: 'subscription',
+  settings: 'settings',
+  account: 'account',
   finance: 'finance',
   marketing: 'marketing',
+  payments: 'payments',
   limits: 'limits',
+  sources: 'sources',
+  help: 'help',
 };
 
 function pageFromDesktopPath(pathname, fallback = 'dashboard') {
@@ -392,51 +399,79 @@ function TweakSelect() { return null; }
 
 /* Exact Claude desktop shell — adapted for Next/Electron */
 
-const CRUMBS = {
-  dashboard: ['Мониторинг', 'Главная'],
-  searches: ['Мониторинг', 'Поиски'],
-  matches: ['Мониторинг', 'Совпадения'],
-  sources: ['Мониторинг', 'Источники'],
-  analytics: ['Мониторинг', 'Аналитика'],
-  subscription: ['Аккаунт', 'Подписка'],
-  account: ['Аккаунт', 'Настройки'],
-  settings: ['Аккаунт', 'Настройки'],
-};
-
-const PLATFORM_NAV = [
-  { section: 'Мониторинг', items: [
-    { id: 'dashboard', label: 'Главная', icon: 'home' },
-    { id: 'searches', label: 'Поиски', icon: 'search' },
-    { id: 'matches', label: 'Совпадения', icon: 'inbox' },
-    { id: 'sources', label: 'Источники', icon: 'filter' },
-    { id: 'analytics', label: 'Аналитика', icon: 'chart' },
+const NAV = [
+  { section: 'Кабинет', items: [
+    { id: 'dashboard',   label: 'Главная',      icon: 'home' },
+    { id: 'calendar',    label: 'Записи',       icon: 'calendar', count: 5 },
+    { id: 'chats',       label: 'Чаты',         icon: 'chat',     count: 3 },
+    { id: 'clients',     label: 'Клиенты',      icon: 'users' },
+    { id: 'services',    label: 'Услуги',       icon: 'services' },
+    { id: 'analytics',   label: 'Статистика',   icon: 'chart' },
+  ]},
+  { section: 'Личная страница', items: [
+    { id: 'public',      label: 'Страница записи', icon: 'page' },
+    { id: 'appearance',  label: 'Внешний вид',   icon: 'palette' },
   ]},
   { section: 'Аккаунт', items: [
-    { id: 'notifications', label: 'Уведомления', icon: 'bell' },
-    { id: 'payments', label: 'Платежи', icon: 'card' },
-    { id: 'subscription', label: 'Подписка', icon: 'crown' },
-    { id: 'settings', label: 'Настройки', icon: 'gear' },
-    { id: 'help', label: 'Помощь', icon: 'help' },
+    { id: 'subscription',label: 'Подписка',     icon: 'crown' },
+    { id: 'account',     label: 'Настройки',    icon: 'gear' },
   ]},
 ];
 
-const VEXA_NAV_WORKSPACE_STORAGE_KEY = 'vexa.desktop.workspace.v3';
+void NAV;
 
-function readVexaNavCounts() {
-  if (typeof window === 'undefined') return {};
-  try {
-    const workspace = JSON.parse(window.localStorage.getItem(VEXA_NAV_WORKSPACE_STORAGE_KEY) || '{}');
-    const searches = Array.isArray(workspace.searches) ? workspace.searches : [];
-    const matches = Array.isArray(workspace.matches) ? workspace.matches : [];
-    return {
-      searches: searches.length,
-      matches: matches.filter((item) => !item.hidden).length,
-      sources: Array.isArray(workspace.sources) ? workspace.sources.length : 0,
-    };
-  } catch {
-    return {};
-  }
-}
+const CRUMBS = {
+  dashboard: ['Кабинет', 'Главная'],
+  calendar: ['Кабинет', 'Записи'],
+  chats: ['Кабинет', 'Чаты'],
+  clients: ['Кабинет', 'Клиенты'],
+  services: ['Кабинет', 'Услуги'],
+  analytics: ['Кабинет', 'Статистика'],
+  public: ['Личная страница', 'Страница записи'],
+  appearance: ['Личная страница', 'Внешний вид'],
+  subscription: ['Аккаунт', 'Подписка'],
+  account: ['Аккаунт', 'Настройки'],
+};
+
+const PLATFORM_NAV = [
+  { section: 'Vexa · Telegram', items: [
+    { id: 'searches', label: 'Мониторинг', icon: 'search' },
+    { id: 'matches', label: 'Совпадения', icon: 'inbox' },
+    { id: 'vexa-sources', label: 'Источники', icon: 'filter' },
+    { id: 'vexa-settings', label: 'Настройки', icon: 'gear' },
+    { id: 'vexa-testing', label: 'Тестирование', icon: 'sparkle' },
+    { id: 'vexa-help', label: 'Помощь', icon: 'help' },
+  ]},
+  { section: 'Кабинет', items: [
+    { id: 'dashboard', label: 'Главная', icon: 'home' },
+    { id: 'calendar', label: 'Записи', icon: 'calendar', count: 5 },
+    { id: 'chats', label: 'Чаты', icon: 'chat', count: 3 },
+    { id: 'clients', label: 'Клиенты', icon: 'users' },
+    { id: 'services', label: 'Услуги', icon: 'services' },
+    { id: 'availability', label: 'Доступность', icon: 'clock' },
+    { id: 'analytics', label: 'Статистика', icon: 'chart' },
+    { id: 'finance', label: 'Финансы', icon: 'card' },
+  ]},
+  { section: 'Рост', items: [
+    { id: 'public', label: 'Страница записи', icon: 'page' },
+    { id: 'profile', label: 'Профиль', icon: 'users' },
+    { id: 'appearance', label: 'Внешний вид', icon: 'palette' },
+    { id: 'marketing', label: 'Маркетинг', icon: 'zap' },
+    { id: 'reviews', label: 'Отзывы', icon: 'star' },
+    { id: 'sources', label: 'Источники', icon: 'filter' },
+  ]},
+  { section: 'Операции', items: [
+    { id: 'templates', label: 'Шаблоны', icon: 'sparkle' },
+    { id: 'notifications', label: 'Уведомления', icon: 'bell' },
+    { id: 'integrations', label: 'Интеграции', icon: 'link' },
+    { id: 'payments', label: 'Платежи', icon: 'card' },
+    { id: 'limits', label: 'Лимиты', icon: 'shield' },
+    { id: 'settings', label: 'Настройки', icon: 'gear' },
+    { id: 'account', label: 'Аккаунт', icon: 'gear' },
+    { id: 'subscription', label: 'Подписка', icon: 'crown' },
+    { id: 'help', label: 'Помощь', icon: 'help' },
+  ]},
+];
 
 const PLATFORM_CRUMBS = Object.fromEntries(
   PLATFORM_NAV.flatMap((section) => section.items.map((item) => [item.id, [section.section, item.label]])),
@@ -460,13 +495,41 @@ function buildSearchResults(query, platform) {
   const needle = query.trim().toLowerCase();
   if (!needle) return [];
 
-  void platform;
+  const clients = (platform?.clients || []).filter((client) =>
+    [client.name, client.phone, client.email].some((value) => textIncludes(value, needle)),
+  ).map((client) => ({
+    id: `client-${client.id}`,
+    page: 'clients',
+    icon: 'users',
+    title: client.name,
+    subtitle: client.phone || 'Клиент',
+  }));
+
+  const services = (platform?.services || []).filter((service) =>
+    [service.name, service.category].some((value) => textIncludes(value, needle)),
+  ).map((service) => ({
+    id: `service-${service.id}`,
+    page: 'services',
+    icon: 'services',
+    title: service.name,
+    subtitle: service.price ? `${service.price.toLocaleString('ru-RU')} ₽` : 'Услуга',
+  }));
+
+  const appointments = (platform?.appointments || []).filter((booking) =>
+    [booking.client, booking.service, booking.date, booking.time].some((value) => textIncludes(value, needle)),
+  ).map((booking) => ({
+    id: `booking-${booking.id}`,
+    page: 'calendar',
+    icon: 'calendar',
+    title: `${booking.client} · ${booking.service}`,
+    subtitle: `${booking.date || ''} ${booking.time || ''}`.trim() || 'Запись',
+  }));
 
   const modules = NAV_SEARCH_ITEMS.filter((item) =>
     [item.title, item.subtitle].some((value) => textIncludes(value, needle)),
   );
 
-  return modules.slice(0, 8);
+  return [...clients, ...services, ...appointments, ...modules].slice(0, 8);
 }
 
 function GlobalSearchResults({ query, results, onPick }) {
@@ -491,7 +554,7 @@ function GlobalSearchResults({ query, results, onPick }) {
           <span className="desktop-search-icon"><Icon name="search" size={14} /></span>
           <span>
             <span className="desktop-search-title">Ничего не найдено</span>
-            <span className="desktop-search-sub">Попробуйте поиск, источник, совпадение или раздел</span>
+            <span className="desktop-search-sub">Попробуйте имя, телефон, услугу или раздел</span>
           </span>
         </div>
       )}
@@ -566,17 +629,19 @@ function DesktopToasts({ notifications }) {
 }
 
 function buildDesktopSummary(platform) {
+  const next = platform?.appointments?.[0];
   const unread = (platform?.notifications || []).filter((item) => item.unread).length;
+  const activeServices = (platform?.services || []).filter((item) => item.active).length;
   return [
-    'Рабочее место Vexa',
-    '4 активных поиска',
-    '52 источника',
-    '214 совпадений сегодня',
+    platform?.isLive ? 'Live workspace' : 'Demo sandbox',
+    `${platform?.appointments?.length || 0} записей`,
+    `${activeServices} активных услуг`,
     `${unread} уведомлений`,
+    next ? `Ближайшая: ${next.client || 'клиент'} ${next.start || next.time || ''}` : 'Свободный день',
   ].join(' · ');
 }
 
-function buildCommandGroups({ platform, setPage, onClose, onToggleTheme, tweaks }) {
+function buildCommandGroups({ platform, setPage, onCreate, onClose, onToggleTheme, tweaks }) {
   const openPage = (page) => () => setPage(page);
   const runAction = (label, action) => () => {
     action?.();
@@ -591,12 +656,17 @@ function buildCommandGroups({ platform, setPage, onClose, onToggleTheme, tweaks 
       platform.recordAction?.('Сводка готова', summary);
     }
   };
+  const openPublic = () => {
+    const slug = platform?.master?.username || 'alisa';
+    window.open(`/m/${slug}`, '_blank', 'noopener,noreferrer');
+  };
+
   return [
     {
       title: 'Быстрые действия',
       items: [
-        { id: 'create', icon: 'plus', title: 'Новый поиск', subtitle: 'Ключи, минус-слова и источники', run: openPage('searches') },
-        { id: 'summary', icon: 'copy', title: 'Скопировать сводку мониторинга', subtitle: buildDesktopSummary(platform), run: copySummary },
+        { id: 'create', icon: 'plus', title: 'Новая запись', subtitle: 'Клиент, услуга, дата и время', run: () => { onCreate(); onClose(); } },
+        { id: 'summary', icon: 'copy', title: 'Скопировать сводку дня', subtitle: buildDesktopSummary(platform), run: copySummary },
         { id: 'theme', icon: tweaks.theme === 'dark' ? 'sun' : 'moon', title: tweaks.theme === 'dark' ? 'Включить светлую тему' : 'Включить темную тему', subtitle: 'Мгновенно меняет рабочую тему', run: onToggleTheme },
         { id: 'read', icon: 'check', title: 'Отметить уведомления прочитанными', subtitle: 'Очистить бейджи и тосты', run: () => platform.markNotificationsRead?.() },
       ],
@@ -612,17 +682,18 @@ function buildCommandGroups({ platform, setPage, onClose, onToggleTheme, tweaks 
       })),
     },
     {
-      title: 'Мониторинг',
+      title: 'Публикация и рост',
       items: [
-        { id: 'matches', icon: 'inbox', title: 'Открыть совпадения', subtitle: 'Лента новых сообщений', run: openPage('matches') },
-        { id: 'sources', icon: 'filter', title: 'Проверить источники', subtitle: 'Доступ и статусы Telegram', run: openPage('sources') },
-        { id: 'subscription', icon: 'crown', title: 'Тариф и лимиты', subtitle: 'Free, Start, Pro, Business', run: openPage('subscription') },
+        { id: 'public-preview', icon: 'page', title: 'Предпросмотр страницы записи', subtitle: platform?.master?.publicUrl || 'Публичная страница', run: openPage('public') },
+        { id: 'public-open', icon: 'arrow-up-right', title: 'Открыть публичную страницу', subtitle: 'В новой вкладке браузера', run: openPublic },
+        { id: 'marketing', icon: 'zap', title: 'Маркетинг', subtitle: 'Акции, рассылки и источники', run: openPage('marketing') },
+        { id: 'reviews', icon: 'star', title: 'Отзывы', subtitle: 'Запросить и опубликовать отзывы', run: openPage('reviews') },
       ],
     },
     {
       title: 'Сервис',
       items: [
-        { id: 'refresh-data', icon: 'refresh', title: 'Обновить рабочие данные', subtitle: 'Перечитать поиски, источники и лимиты', run: runAction('Данные обновлены', () => platform.resetDemoData?.()) },
+        { id: 'reset-demo', icon: 'refresh', title: 'Сбросить demo-данные', subtitle: platform?.demoMode ? 'Вернуть стартовое состояние' : 'Доступно только в demo', run: platform?.demoMode ? runAction('Demo сброшен', () => platform.resetDemoData?.()) : undefined },
         { id: 'help', icon: 'help', title: 'Помощь и диагностика', subtitle: 'Проверка статуса и поддержка', run: openPage('help') },
         { id: 'settings', icon: 'gear', title: 'Настройки рабочего места', subtitle: 'Поведение платформы и безопасность', run: openPage('settings') },
       ],
@@ -630,11 +701,11 @@ function buildCommandGroups({ platform, setPage, onClose, onToggleTheme, tweaks 
   ];
 }
 
-function CommandCenter({ open, onClose, platform, setPage, onToggleTheme, tweaks }) {
+function CommandCenter({ open, onClose, platform, setPage, onCreate, onToggleTheme, tweaks }) {
   const [query, setQuery] = useState('');
   const groups = useMemo(
-    () => buildCommandGroups({ platform, setPage, onClose, onToggleTheme, tweaks }),
-    [platform, setPage, onClose, onToggleTheme, tweaks],
+    () => buildCommandGroups({ platform, setPage, onCreate, onClose, onToggleTheme, tweaks }),
+    [platform, setPage, onCreate, onClose, onToggleTheme, tweaks],
   );
   const needle = query.trim().toLowerCase();
   const filteredGroups = groups.map((group) => ({
@@ -664,17 +735,17 @@ function CommandCenter({ open, onClose, platform, setPage, onToggleTheme, tweaks
       <div className="command-panel" onClick={(event) => event.stopPropagation()}>
         <div className="command-head">
           <div className="command-brand">
-            <span className="command-orb"><img src="/vexa-logo.png" alt="Vexa" /></span>
+            <span className="command-orb"><Icon name="sparkle" size={15} /></span>
             <div>
-          <div className="command-title">Командный центр</div>
-              <div className="command-sub">Рабочее место Vexa · мониторинг Telegram</div>
+              <div className="command-title">Командный центр</div>
+              <div className="command-sub">{platform?.isLive ? 'Живой кабинет' : 'Безопасная demo-среда'} · {platform?.master?.name}</div>
             </div>
           </div>
           <button type="button" className="btn btn-ghost icon" onClick={onClose} aria-label="Закрыть"><Icon name="x" size={14} /></button>
         </div>
         <div className="command-search">
           <Icon name="search" size={15} />
-          <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Команда, поиск, источник или действие" />
+          <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Команда, клиент, раздел или действие" />
           <kbd>Esc</kbd>
         </div>
         <div className="command-body">
@@ -722,7 +793,6 @@ function Sidebar({ page, setPage, collapsed }) {
   const sidebarRef = useRef(null);
   const activeItemRef = useRef(null);
   const [indicator, setIndicator] = useState({ top: 0, height: 0, visible: false });
-  const [navCounts, setNavCounts] = useState(readVexaNavCounts);
 
   const measureActiveIndicator = useCallback(() => {
     const sidebar = sidebarRef.current;
@@ -780,30 +850,6 @@ function Sidebar({ page, setPage, collapsed }) {
     };
   }, [measureActiveIndicator]);
 
-  useEffect(() => {
-    const updateCounts = (event) => {
-      if (event?.detail) {
-        const searches = Array.isArray(event.detail.searches) ? event.detail.searches : [];
-        const matches = Array.isArray(event.detail.matches) ? event.detail.matches : [];
-        setNavCounts({
-          searches: searches.length,
-          matches: matches.filter((item) => !item.hidden).length,
-          sources: Array.isArray(event.detail.sources) ? event.detail.sources.length : 0,
-        });
-        return;
-      }
-      setNavCounts(readVexaNavCounts());
-    };
-
-    updateCounts();
-    window.addEventListener('vexa-workspace-updated', updateCounts);
-    window.addEventListener('storage', updateCounts);
-    return () => {
-      window.removeEventListener('vexa-workspace-updated', updateCounts);
-      window.removeEventListener('storage', updateCounts);
-    };
-  }, []);
-
   return (
     <aside
       ref={sidebarRef}
@@ -833,7 +879,7 @@ function Sidebar({ page, setPage, collapsed }) {
               >
                 <Icon name={item.icon} size={15} className="icon" />
                 <span>{item.label}</span>
-                {navCounts[item.id] > 0 && <span className="count">{navCounts[item.id]}</span>}
+                {item.count != null && <span className="count">{item.count}</span>}
               </button>
             );
           })}
@@ -844,11 +890,24 @@ function Sidebar({ page, setPage, collapsed }) {
   );
 }
 
-function Topbar({ page, setPage, search, setSearch, onNotif, theme, onToggleTheme, unreadNotifications, master, vexaProfile }) {
+function DemoModeToggle({ demoMode, onChange }) {
+  return (
+    <ModeSwitch
+      className="desktop-mode-toggle"
+      ariaLabel="Режим рабочего места"
+      value={demoMode ? 'demo' : 'work'}
+      onChange={(value) => onChange(value === 'demo')}
+      options={[
+        { value: 'demo', label: 'Демо' },
+        { value: 'work', label: 'Рабочий' },
+      ]}
+    />
+  );
+}
+
+function Topbar({ page, setPage, search, setSearch, onNotif, onCreate, theme, onToggleTheme, demoMode, onDemoModeChange, unreadNotifications, master }) {
   const crumbs = PLATFORM_CRUMBS[page] || CRUMBS[page] || ['Кабинет'];
   const isDark = theme === 'dark';
-  const profileName = vexaProfile?.email || vexaProfile?.name || master?.name || MASTER.name;
-  const profileAvatar = vexaProfile?.avatar || '';
   return (
     <header className="topbar">
       <div className="crumbs">
@@ -862,9 +921,10 @@ function Topbar({ page, setPage, search, setSearch, onNotif, theme, onToggleThem
       <div className="spacer" />
       <div className="input-with-icon" style={{ width: 300, maxWidth: '28vw' }}>
         <Icon name="search" />
-        <input className="input" placeholder="Поиск по Vexa: поиски, источники, совпадения…" value={search} onChange={e => setSearch(e.target.value)} />
+        <input className="input" placeholder="Поиск клиентов, записей, услуг…" value={search} onChange={e => setSearch(e.target.value)} />
         <span className="kbd">/</span>
       </div>
+      <DemoModeToggle demoMode={demoMode} onChange={onDemoModeChange} />
       <button
         className="btn btn-ghost icon"
         onClick={onToggleTheme}
@@ -884,10 +944,10 @@ function Topbar({ page, setPage, search, setSearch, onNotif, theme, onToggleThem
         type="button"
         className="topbar-profile"
         onClick={() => setPage('account')}
-        data-tip={profileName || 'Профиль'}
+        data-tip={master?.name || 'Профиль'}
         aria-label="Профиль аккаунта"
       >
-        <Avatar name={profileName} src={profileAvatar} />
+        <Avatar name={master?.name || MASTER.name} />
       </button>
     </header>
   );
@@ -1103,7 +1163,7 @@ function CreateModal({ open, onClose, platform }) {
 /* ================== App root ================== */
 const DEFAULT_TWEAKS = /*EDITMODE-BEGIN*/{
   "theme": "light",
-  "accent": "plum",
+  "accent": "clay",
   "density": "default",
   "radius": "default",
   "showSubscriptionBanner": false
@@ -1130,7 +1190,7 @@ function applyDesktopChromeTheme(preferences, options = {}) {
   const root = document.documentElement;
   root.dataset.desktopScreen = 'true';
   root.dataset.theme = theme;
-  root.dataset.accent = preferences?.accent || 'plum';
+  root.dataset.accent = preferences?.accent || 'clay';
   root.dataset.density = preferences?.density || 'default';
   root.dataset.radius = preferences?.radius || 'default';
   root.classList.toggle('dark', theme === 'dark');
@@ -1143,7 +1203,7 @@ function applyDesktopChromeTheme(preferences, options = {}) {
   const desktopRoot = document.querySelector('.cb-desktop-html');
   if (desktopRoot) {
     desktopRoot.setAttribute('data-theme', theme);
-    desktopRoot.setAttribute('data-accent', preferences?.accent || 'plum');
+    desktopRoot.setAttribute('data-accent', preferences?.accent || 'clay');
     desktopRoot.setAttribute('data-density', preferences?.density || 'default');
     desktopRoot.setAttribute('data-radius', preferences?.radius || 'default');
   }
@@ -1151,27 +1211,12 @@ function applyDesktopChromeTheme(preferences, options = {}) {
 
 const DESKTOP_DEMO_LS_KEY = 'clickbook.desktop.mode.v1';
 const DESKTOP_SIDEBAR_COLLAPSED_LS_KEY = 'clickbook.desktop.sidebar-collapsed.v1';
-const VEXA_PROFILE_STORAGE_KEY = 'vexa.profile.v1';
-const VEXA_WORKSPACE_STORAGE_KEY = 'vexa.desktop.workspace.v3';
-
-function readVexaProfile() {
-  if (typeof window === 'undefined') return null;
-  try {
-    const profile = JSON.parse(window.localStorage.getItem(VEXA_PROFILE_STORAGE_KEY) || 'null');
-    const workspace = JSON.parse(window.localStorage.getItem(VEXA_WORKSPACE_STORAGE_KEY) || 'null');
-    const avatar = workspace?.settings?.avatarUrl || profile?.avatar || '';
-    if (profile) return { ...profile, avatar };
-    return avatar ? { name: 'Vexa', email: '', avatar } : null;
-  } catch (err) {
-    void err;
-    return null;
-  }
-}
 
 export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
   useDesktopModalWindowBehavior();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : `/desktop/${pageToRoute[normalizeInitialPage(initialPage)] || 'dashboard'}`;
   const demoMode = searchParams?.get('demo') === '1';
 
   // Rehydrate the desktop mode preference from localStorage on first load so a
@@ -1190,13 +1235,28 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleDemoModeChange = useCallback((nextDemo) => {
+    if (!!nextDemo === !!demoMode) return;
+    try {
+      window.localStorage.setItem(DESKTOP_DEMO_LS_KEY, nextDemo ? 'demo' : 'live');
+    } catch (err) { /* localStorage unavailable */ void err; }
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    if (nextDemo) {
+      params.set('demo', '1');
+    } else {
+      params.delete('demo');
+    }
+    const qs = params.toString();
+    const base = typeof window !== 'undefined' ? window.location.pathname : pathname;
+    router.replace(qs ? `${base}?${qs}` : base);
+  }, [demoMode, router, searchParams, pathname]);
+
   const platform = useDesktopPlatform(DEFAULT_TWEAKS, { demoMode });
   const [page, setRawPage] = useState(() => getInitialDesktopPage(initialPage));
   const [search, setSearch] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
-  const [vexaProfile, setVexaProfile] = useState(readVexaProfile);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false;
     try {
@@ -1217,9 +1277,13 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
   }, [setTweak, tweaks]);
   const searchResults = useMemo(() => buildSearchResults(search, platform), [search, platform]);
 
+  // Keep next-themes in sync with the desktop preference so embedded dashboard
+  // pages (which call useTheme() from next-themes) render in the same mode.
+  const { setTheme: setNextTheme } = useNextTheme();
   useLayoutEffect(() => {
     applyDesktopChromeTheme(tweaks);
-  }, [tweaks]);
+    setNextTheme(tweaks.theme === 'dark' ? 'dark' : 'light');
+  }, [tweaks, setNextTheme]);
 
   useEffect(() => {
     const syncPageFromLocation = () => {
@@ -1352,24 +1416,6 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
   }, [platform]);
 
   useEffect(() => {
-    const refreshProfile = (event) => {
-      if (event?.type === 'vexa-profile-updated') {
-        const stored = readVexaProfile();
-        setVexaProfile({ ...(event.detail || {}), avatar: stored?.avatar || event.detail?.avatar || '' });
-        return;
-      }
-      setVexaProfile(readVexaProfile());
-    };
-    refreshProfile();
-    window.addEventListener('vexa-profile-updated', refreshProfile);
-    window.addEventListener('vexa-workspace-updated', refreshProfile);
-    return () => {
-      window.removeEventListener('vexa-profile-updated', refreshProfile);
-      window.removeEventListener('vexa-workspace-updated', refreshProfile);
-    };
-  }, []);
-
-  useEffect(() => {
     const openCommand = () => setCommandOpen(true);
     window.addEventListener('clickbook:open-command-center', openCommand);
     return () => window.removeEventListener('clickbook:open-command-center', openCommand);
@@ -1434,27 +1480,49 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
 
   const renderPage = () => {
     switch (page) {
-      case 'dashboard': return <VexaDashboardPage go={setPage} />;
+      case 'dashboard': return <DesktopDashboardTransferPage page="dashboard" />;
       case 'searches': return <VexaSearchesPage />;
       case 'matches': return <VexaMatchesPage />;
-      case 'sources': return <VexaSourcesPage />;
-      case 'analytics': return <VexaSimplePage id="analytics" go={setPage} />;
-      case 'notifications': return <VexaSimplePage id="notifications" go={setPage} />;
-      case 'payments': return <VexaSimplePage id="payments" go={setPage} />;
-      case 'appearance': return <AppearancePage tweaks={tweaks} setTweak={setDesktopTweak} />;
-      case 'subscription': return <VexaSubscriptionPage />;
+      case 'vexa-sources': return <VexaSourcesPage />;
+      case 'vexa-settings': return <VexaSettingsPage />;
+      case 'vexa-testing': return <VexaSubscriptionPage />;
+      case 'vexa-help': return <VexaSimplePage id="help" />;
+      case 'calendar':  return <CalendarPage platform={platform} setPage={setPage} onCreate={() => setCreateOpen(true)} />;
+      case 'chats':     return <ChatsPage platform={platform} setPage={setPage} onCreate={() => setCreateOpen(true)} onNotif={() => setNotifOpen(true)} onToggleTheme={() => setDesktopTweak('theme', tweaks.theme === 'dark' ? 'light' : 'dark')} theme={tweaks.theme} />;
+      case 'clients':   return <DesktopDashboardTransferPage page="clients" />;
+      case 'services':  return <DesktopDashboardTransferPage page="services" />;
+      case 'analytics': return <DesktopDashboardTransferPage page="analytics" />;
+      case 'public':    return <PublicPage tweaks={tweaks} platform={platform} />;
+      case 'appearance':return <DesktopDashboardTransferPage page="appearance" />;
+      case 'subscription': return <DesktopDashboardTransferPage page="subscription" />;
+      case 'account':   return <DesktopDashboardTransferPage page="settings" />;
+      case 'availability':
+      case 'profile':
+      case 'templates':
+      case 'notifications':
+      case 'integrations':
+      case 'reviews':
       case 'settings':
-      case 'account':
-        return <VexaSettingsPage />;
+      case 'finance':
+      case 'marketing':
+      case 'payments':
+      case 'limits':
+      case 'sources':
+        return <DesktopDashboardTransferPage page={page} />;
       case 'help':
-        return <VexaSimplePage id="help" go={setPage} />;
-      default: return <VexaDashboardPage go={setPage} />;
+        return <ModulePage id={page} platform={platform} go={setPage} />;
+      default: return null;
     }
   };
 
-  const shellSidebarCollapsed = sidebarCollapsed;
-  const flush = false;
-  const chatPage = false;
+  // Public preview is full-bleed. Chats stay inside the normal desktop shell,
+  // but force the left navigation into icon-only mode so the chat ecosystem
+  // occupies the main rounded workspace.
+  const chatMode = page === 'chats';
+  const chatPage = page === 'chats';
+  const shellSidebarCollapsed = chatMode || sidebarCollapsed;
+  const flush = page === 'public' || chatMode;
+  const dashboardTransferPage = page !== 'public' && page !== 'help' && page !== 'chats' && page !== 'calendar';
 
   const popupOpen = Boolean(notifOpen || commandOpen || createOpen || search.trim());
 
@@ -1468,19 +1536,20 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
       data-sidebar-collapsed={shellSidebarCollapsed ? 'true' : 'false'}
       data-popup-open={popupOpen ? 'true' : 'false'}
     >
-      <div className="app" data-screen-label={`Page: ${page}`}>
+      <div className={`app ${chatMode ? 'chat-docked-mode' : ''}`} data-screen-label={`Page: ${page}`}>
       <Sidebar page={page} setPage={setPage} collapsed={shellSidebarCollapsed} />
       <div className="main">
         <Topbar page={page} setPage={setPage} search={search} setSearch={setSearch}
-          onNotif={() => setNotifOpen(true)}
+          onNotif={() => setNotifOpen(true)} onCreate={() => setCreateOpen(true)}
           theme={tweaks.theme}
           onToggleTheme={() => setDesktopTweak('theme', tweaks.theme === 'dark' ? 'light' : 'dark')}
+          demoMode={demoMode}
+          onDemoModeChange={handleDemoModeChange}
           unreadNotifications={(platform.notifications || []).filter((item) => item.unread).length}
-          master={platform.master}
-          vexaProfile={vexaProfile} />
+          master={platform.master} />
         <GlobalSearchResults query={search} results={searchResults} onPick={pickSearchResult} />
-        <main className={`content ${flush ? 'flush wide' : ''} ${chatPage ? 'chat-content' : ''}`}>
-          <VexaAuthGate>{renderPage()}</VexaAuthGate>
+        <main className={`content ${flush ? 'flush wide' : ''} ${chatPage ? 'chat-content' : ''} ${dashboardTransferPage ? 'dashboard-transfer-content' : ''}`} key={page}>
+          {renderPage()}
         </main>
       </div>
       <NotifPanel
@@ -1496,6 +1565,7 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
         onClose={() => setCommandOpen(false)}
         platform={platform}
         setPage={setPage}
+        onCreate={() => setCreateOpen(true)}
         onToggleTheme={() => setDesktopTweak('theme', tweaks.theme === 'dark' ? 'light' : 'dark')}
         tweaks={tweaks}
       />
@@ -1510,10 +1580,10 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
         <TweakSection label="Acc­ent цвет">
           <TweakSelect label="Палитра" value={tweaks.accent}
             options={[
-              {value:'clay',   label:'Фиолетовый'},
+              {value:'clay',   label:'Глина (тёплый коралл)'},
               {value:'sage',   label:'Шалфей (зелёный)'},
               {value:'indigo', label:'Индиго (синий)'},
-              {value:'plum',   label:'Фиолетовый deep'},
+              {value:'plum',   label:'Слива (розово-лиловый)'},
               {value:'amber',  label:'Янтарь (тёплый жёлтый)'},
             ]}
             onChange={v => setDesktopTweak('accent', v)} />

@@ -1,17 +1,14 @@
 {
-  "name": "vexa-railway",
-  "version": "0.1.0",
+  "name": "vexa-railway-server",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
-    "start:railway": "HOSTNAME=0.0.0.0 node .next/standalone/server.js",
-    "start:render": "next start -H 0.0.0.0 -p $PORT",
+    "start:railway": "next start -H 0.0.0.0 -p ${PORT:-3000}",
     "start:local": "next start -p 3000",
-    "render:build": "npm install && npm run build",
-    "dev:turbo": "next dev --turbo",
+    "lint": "eslint .",
     "clean": "node -e \"const fs=require('fs');for(const p of ['.next','node_modules/.cache'])fs.rmSync(p,{recursive:true,force:true});console.log('Next cache cleaned')\""
   },
   "dependencies": {

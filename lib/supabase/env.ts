@@ -15,9 +15,9 @@ export function getSupabasePublishableKey() {
 }
 
 export function getSupabaseServiceRoleKey() {
-  const value = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY;
+  const value = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!value) {
-    throw new Error('Missing Supabase service role key. Set SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY.');
+    throw new Error('Missing Supabase service role key. Set SUPABASE_SERVICE_ROLE_KEY.');
   }
   return value;
 }

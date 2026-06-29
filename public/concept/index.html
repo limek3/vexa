@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>ClickBook — Главная</title>
+<meta name="viewport" content="width=1440">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.grid-2{display:grid;grid-template-columns:1.55fr 1fr;gap:18px}
+.chart{height:240px;margin-top:8px}
+.chart svg{width:100%;height:100%}
+.legend{display:flex;gap:18px;font-size:12px;color:var(--text-3);margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.legend i{width:10px;height:2px;display:inline-block;margin-right:7px;vertical-align:middle}
+.timeline{display:flex;flex-direction:column}
+.tl{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.tl:last-child{border-bottom:0}
+.tl .t{font-size:13px;color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.tl .t span{display:block;font-size:11px;color:var(--text-3);font-weight:400;margin-top:1px}
+.tl .body b{font-size:13.5px;display:block;margin-bottom:2px;font-weight:500}
+.tl .body span{font-size:12px;color:var(--text-3)}
+.src-list{display:flex;flex-direction:column;gap:14px}
+.src{display:grid;grid-template-columns:90px 1fr 44px;gap:12px;align-items:center;font-size:13px}
+.src .bar{height:6px;background:var(--soft);border-radius:99px;overflow:hidden}
+.src .bar i{display:block;height:100%;background:var(--text)}
+.src .n{color:var(--text-3);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+.svc{display:flex;justify-content:space-between;padding:9px 0;font-size:13px;border-bottom:1px solid var(--line)}
+.svc:last-child{border:0}
+.svc b{font-weight:500}
+.svc .n{font-variant-numeric:tabular-nums;color:var(--text-2)}
+.banner{
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+  padding:22px 24px;border:1px solid var(--line);border-radius:14px;background:var(--paper);
+}
+.banner h2{font-size:18px;font-weight:600;letter-spacing:-0.02em;margin-bottom:6px}
+.banner p{color:var(--text-2);font-size:13.5px;max-width:560px;line-height:1.5}
+.banner .acts{display:flex;gap:8px;margin-top:14px}
+.attn{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}
+.attn:last-child{border-bottom:0}
+.attn .av{width:30px;height:30px;border-radius:7px;background:var(--soft);border:1px solid var(--line);display:grid;place-items:center;font-weight:600;font-size:11px;color:var(--text-2)}
+.attn b{font-weight:500;display:block}
+.attn span{color:var(--text-3);font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><div class="mark"></div><div><b>ClickBook</b><span>Beauty Studio</span></div></div>
+    <nav class="nav">
+      <a class="active" href="index.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Главная</a>
+      <a href="bookings.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>Записи<span class="count">12</span></a>
+      <a href="schedule.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>График</a>
+      <a href="clients.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7"/></svg>Клиенты</a>
+      <a href="chats.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a8 8 0 1 1-3-6.2L21 4l-1 4.5A8 8 0 0 1 21 12z"/></svg>Чаты<span class="count">3</span></a>
+      <div class="group">Управление</div>
+      <a href="#"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>Услуги</a>
+      <a href="#"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 11a4 4 0 1 0-8 0M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Сотрудники</a>
+      <a href="#"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>Аналитика</a>
+      <a href="#"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.2-1.7l2.1-1.6-2-3.4-2.5.9a7 7 0 0 0-3-1.7L13 1.5h-2L10.6 4a7 7 0 0 0-3 1.7L5.1 4.8l-2 3.4L5.2 9.8A7 7 0 0 0 5 12c0 .6.1 1.1.2 1.7L3.1 15.3l2 3.4 2.5-.9a7 7 0 0 0 3 1.7L11 22h2l.4-2.5a7 7 0 0 0 3-1.7l2.5.9 2-3.4-2.1-1.6c.1-.6.2-1.1.2-1.7z"/></svg>Настройки</a>
+    </nav>
+    <div class="foot">
+      <div class="av">АК</div>
+      <div><b>Анна Кузнецова</b><span>Pro · до 12 авг</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1>Доброе утро, Анна</h1>
+        <div class="sub">Понедельник · 11 мая · 4 записи на сегодня</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Поиск
+        <span class="k">⌘K</span>
+      </div>
+      <button class="btn">Уведомления</button>
+      <button class="btn primary">+ Новая запись</button>
+      <div class="avatar">АК</div>
+    </div>
+
+    <div class="col">
+      <div class="banner">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="pill">эта неделя</span><span style="font-size:12px;color:var(--text-3)">11–17 мая</span></div>
+          <h2>Выручка ₽184 200 · загрузка 82%</h2>
+          <p>Записей на 18% больше, чем неделей ранее. Большая часть прироста пришла из Telegram‑канала. Свободны 12 слотов до пятницы.</p>
+          <div class="acts">
+            <button class="btn primary">Включить напоминания</button>
+            <button class="btn">Отчёт за неделю</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;min-width:440px">
+          <div><div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600">Выручка</div><div class="num" style="font-size:22px;font-weight:600">₽184 200</div><div style="font-size:11px;color:var(--good);margin-top:4px">+18%</div></div>
+          <div><div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600">Записи</div><div class="num" style="font-size:22px;font-weight:600">47</div><div style="font-size:11px;color:var(--good);margin-top:4px">+12</div></div>
+          <div><div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600">Загрузка</div><div class="num" style="font-size:22px;font-weight:600">82%</div><div style="font-size:11px;color:var(--good);margin-top:4px">+6 п.п.</div></div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="card kpi"><h5>Сегодня</h5><div class="v">₽28 400</div><div class="delta"><span class="up">+12%</span> к прошл. понед.</div></div>
+        <div class="card kpi"><h5>Записей · сегодня</h5><div class="v">4 <small>/ 7 слотов</small></div><div class="delta">3 свободных слота</div></div>
+        <div class="card kpi"><h5>Новых клиентов · нед.</h5><div class="v">9</div><div class="delta"><span class="up">+3</span> к прошл.</div></div>
+        <div class="card kpi"><h5>NPS · 30 дней</h5><div class="v">8.7</div><div class="delta"><span class="dn">−0.2</span> к прошл.</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="section-title">
+            <h3>Динамика выручки</h3>
+            <div class="tabs"><button>Неделя</button><button class="on">14 дней</button><button>Месяц</button></div>
+          </div>
+          <div class="chart">
+            <svg viewBox="0 0 600 240" preserveAspectRatio="none">
+              <g stroke="#ececef" stroke-width="1">
+                <line x1="0" y1="50" x2="600" y2="50"/>
+                <line x1="0" y1="110" x2="600" y2="110"/>
+                <line x1="0" y1="170" x2="600" y2="170"/>
+                <line x1="0" y1="230" x2="600" y2="230"/>
+              </g>
+              <g font-size="10" fill="#8b8b94" font-family="Inter">
+                <text x="6" y="48">₽20k</text>
+                <text x="6" y="108">₽15k</text>
+                <text x="6" y="168">₽10k</text>
+                <text x="546" y="226">пн</text>
+                <text x="500" y="226">сб</text>
+                <text x="454" y="226">пт</text>
+                <text x="408" y="226">чт</text>
+                <text x="362" y="226">ср</text>
+                <text x="316" y="226">вт</text>
+                <text x="270" y="226">пн</text>
+                <text x="224" y="226">вс</text>
+                <text x="178" y="226">сб</text>
+                <text x="132" y="226">пт</text>
+                <text x="86" y="226">чт</text>
+                <text x="42" y="226">ср</text>
+              </g>
+              <path d="M40,170 C90,150 130,160 170,130 C210,90 250,120 290,100 C330,80 370,110 410,80 C450,55 490,90 530,65 C570,50 590,70 600,40" stroke="#8b8b94" stroke-width="1.2" fill="none" stroke-dasharray="3 3"/>
+              <path d="M40,180 C90,170 130,175 170,150 C210,130 250,155 290,135 C330,115 370,135 410,110 C450,95 490,110 530,85 C570,70 590,80 600,55" stroke="#0a0a0b" stroke-width="2" fill="none"/>
+              <circle cx="530" cy="85" r="4" fill="#0a0a0b"/>
+              <circle cx="530" cy="85" r="8" fill="#0a0a0b" opacity=".1"/>
+            </svg>
+          </div>
+          <div class="legend"><span><i style="background:#0a0a0b"></i>Эта неделя · ₽184 200</span><span><i style="background:#8b8b94;border-top:1px dashed #8b8b94;background:transparent"></i>Прошлая · ₽156 300</span></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title"><h3>Каналы записи</h3><a href="#" class="link">Все каналы →</a></div>
+          <div class="src-list">
+            <div class="src"><span>Telegram</span><span class="bar"><i style="width:54%"></i></span><span class="num n">54%</span></div>
+            <div class="src"><span>VK</span><span class="bar"><i style="width:22%"></i></span><span class="num n">22%</span></div>
+            <div class="src"><span>Сайт</span><span class="bar"><i style="width:14%"></i></span><span class="num n">14%</span></div>
+            <div class="src"><span>Звонок</span><span class="bar"><i style="width:7%"></i></span><span class="num n">7%</span></div>
+            <div class="src"><span>Прочее</span><span class="bar"><i style="width:3%"></i></span><span class="num n">3%</span></div>
+          </div>
+          <hr>
+          <div class="section-title"><h3>Топ‑услуги недели</h3></div>
+          <div class="svc"><b>Окрашивание AirTouch</b><span class="n">₽56 400</span></div>
+          <div class="svc"><b>Маникюр + покрытие</b><span class="n">₽41 200</span></div>
+          <div class="svc"><b>Стрижка женская</b><span class="n">₽33 100</span></div>
+          <div class="svc"><b>Брови · форма</b><span class="n">₽18 700</span></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="section-title"><h3>Сегодняшний график</h3><a href="schedule.html" class="link">Открыть график →</a></div>
+          <div class="timeline">
+            <div class="tl"><div class="t">09:30<span>90 мин</span></div><div class="body"><b>Маникюр + покрытие · Ольга Романова</b><span>Мастер Мария · Telegram · ₽3 200</span></div><span class="pill good"><span class="dot"></span>Подтв.</span></div>
+            <div class="tl"><div class="t">11:00<span>3 ч</span></div><div class="body"><b>AirTouch окрашивание · Виктория Новикова</b><span>Мастер Дина · VK · ₽12 500 · VIP</span></div><span class="pill warn"><span class="dot"></span>Ожидает</span></div>
+            <div class="tl"><div class="t">14:30<span>60 мин</span></div><div class="body"><b>Брови · форма + краска · Анастасия Лебедева</b><span>Мастер Лера · Сайт · ₽1 800</span></div><span class="pill brand"><span class="dot"></span>Оплачено</span></div>
+            <div class="tl"><div class="t">17:00<span>75 мин</span></div><div class="body"><b>Стрижка + укладка · Елена Беляева</b><span>Мастер Дина · Telegram · ₽2 800</span></div><span class="pill good"><span class="dot"></span>Подтв.</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title"><h3>Требует внимания</h3><span class="pill">5</span></div>
+          <div class="attn"><div class="av">МР</div><div style="flex:1"><b>Марина Родина</b><span>Три пропуска подряд — позвонить</span></div><button class="btn">Открыть</button></div>
+          <div class="attn"><div class="av">ВН</div><div style="flex:1"><b>Виктория Новикова · 11:00</b><span>Не подтвердила запись — отправить напоминание</span></div><button class="btn">Открыть</button></div>
+          <div class="attn"><div class="av">КЛ</div><div style="flex:1"><b>Катя Лебедева</b><span>День рождения завтра — отправить промокод</span></div><button class="btn">Открыть</button></div>
+          <div class="attn"><div class="av">·3</div><div style="flex:1"><b>Три отзыва без ответа</b><span>Средняя оценка 4.3 за последнюю неделю</span></div><button class="btn">Открыть</button></div>
+          <hr>
+          <button class="btn primary" style="width:100%;justify-content:center">Все задачи</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>
