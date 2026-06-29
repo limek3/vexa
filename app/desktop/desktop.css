@@ -14592,3 +14592,528 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   border-radius: 6px;
   object-fit: cover;
 }
+
+
+/* === Vexa professional refinement patch v7 === */
+.cb-desktop-html .vexa3-page,
+.cb-desktop-html .vexa2-auth-screen,
+.cb-desktop-html .vexa2-auth-card {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.cb-desktop-html .content:has(.vexa3-page) {
+  background: var(--bg) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .content:has(.vexa3-page) {
+  background: var(--bg) !important;
+}
+
+.cb-desktop-html .vexa3-page {
+  --vexa3-ink: var(--text);
+  --vexa3-muted: var(--text-3);
+  --vexa3-line: color-mix(in oklab, var(--line) 86%, transparent);
+  --vexa3-soft: var(--surface);
+  gap: 18px;
+}
+
+.cb-desktop-html .vexa3-page .page-title,
+.cb-desktop-html .vexa3-hero h2,
+.cb-desktop-html .vexa3-testing h2 {
+  font-weight: 560;
+  letter-spacing: -0.03em;
+}
+
+.cb-desktop-html .vexa3-page .page-subtitle,
+.cb-desktop-html .vexa3-hero p,
+.cb-desktop-html .vexa3-testing p,
+.cb-desktop-html .vexa3-row-content small,
+.cb-desktop-html .vexa3-match-row-main small,
+.cb-desktop-html .vexa3-row-health small,
+.cb-desktop-html .vexa3-simple-row small,
+.cb-desktop-html .vexa3-source-meta,
+.cb-desktop-html .vexa3-source-analytics-row small,
+.cb-desktop-html .vexa3-session-user small,
+.cb-desktop-html .vexa3-section-head .section-sub,
+.cb-desktop-html .vexa3-pie-legend span,
+.cb-desktop-html .vexa3-hero-summary small,
+.cb-desktop-html .vexa3-hero-summary span {
+  color: var(--text-3) !important;
+}
+
+.cb-desktop-html .vexa3-card,
+.cb-desktop-html .vexa3-metrics .metric-card,
+.cb-desktop-html .vexa3-metrics .metric,
+.cb-desktop-html .vexa3-template,
+.cb-desktop-html .vexa3-usecase,
+.cb-desktop-html .vexa3-health-grid > div,
+.cb-desktop-html .vexa3-source-types > div,
+.cb-desktop-html .vexa3-detail-grid > div,
+.cb-desktop-html .vexa3-analyzer-result > div,
+.cb-desktop-html .vexa3-roadmap > div,
+.cb-desktop-html .vexa3-source-checklist > div,
+.cb-desktop-html .vexa3-toggle-line,
+.cb-desktop-html .vexa3-session-strip,
+.cb-desktop-html .vexa3-source-analytics-row,
+.cb-desktop-html .vexa3-search-row.active,
+.cb-desktop-html .vexa3-source-row.active,
+.cb-desktop-html .vexa3-match-row.active {
+  border-color: var(--line) !important;
+  background: var(--surface) !important;
+  box-shadow: var(--shadow-sm) !important;
+  backdrop-filter: none !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-card,
+.cb-desktop-html[data-theme="dark"] .vexa3-metrics .metric-card,
+.cb-desktop-html[data-theme="dark"] .vexa3-metrics .metric,
+.cb-desktop-html[data-theme="dark"] .vexa3-template,
+.cb-desktop-html[data-theme="dark"] .vexa3-usecase,
+.cb-desktop-html[data-theme="dark"] .vexa3-health-grid > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-types > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-detail-grid > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-analyzer-result > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-roadmap > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-checklist > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-toggle-line,
+.cb-desktop-html[data-theme="dark"] .vexa3-session-strip,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-analytics-row,
+.cb-desktop-html[data-theme="dark"] .vexa3-search-row.active,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-row.active,
+.cb-desktop-html[data-theme="dark"] .vexa3-match-row.active {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.cb-desktop-html .vexa3-hero {
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr);
+  gap: 18px;
+  padding: 22px !important;
+  border-color: color-mix(in oklab, var(--accent) 16%, var(--line)) !important;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--surface) 96%, white), color-mix(in oklab, var(--surface-2) 97%, white)) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-hero {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--surface) 96%, #0f1115), color-mix(in oklab, var(--surface-2) 98%, #0f1115)) !important;
+}
+
+.cb-desktop-html .vexa3-hero::after,
+.cb-desktop-html .vexa3-funnel {
+  display: none !important;
+}
+
+.cb-desktop-html .vexa3-hero-side {
+  display: grid;
+  gap: 12px;
+}
+
+.cb-desktop-html .vexa3-hero-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cb-desktop-html .vexa3-hero-summary,
+.cb-desktop-html .vexa3-hero-brief {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--surface) 92%, white);
+  box-shadow: var(--shadow-xs);
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-hero-summary,
+.cb-desktop-html[data-theme="dark"] .vexa3-hero-brief {
+  background: color-mix(in oklab, var(--surface) 98%, #101217);
+}
+
+.cb-desktop-html .vexa3-hero-summary {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+}
+
+.cb-desktop-html .vexa3-hero-summary strong {
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cb-desktop-html .vexa3-hero-brief .vexa3-section-head {
+  padding-bottom: 8px;
+}
+
+.cb-desktop-html .vexa3-hero-brief-list {
+  display: grid;
+  gap: 10px;
+  padding: 0 18px 18px;
+}
+
+.cb-desktop-html .vexa3-hero-brief-list > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.cb-desktop-html .vexa3-hero-brief-list svg {
+  flex: 0 0 auto;
+  color: var(--accent-text);
+  margin-top: 2px;
+}
+
+.cb-desktop-html .vexa3-hero-brand {
+  font-size: 22px;
+  font-weight: 650;
+}
+
+.cb-desktop-html .vexa3-hero-brand img,
+.cb-desktop-html .vexa-sidebar-brand img,
+.cb-desktop-html .vexa2-auth-logo img,
+.cb-desktop-html .vexa2-auth-mark img,
+.cb-desktop-html .vexa3-operator img {
+  object-fit: contain;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.cb-desktop-html .vexa3-page .input,
+.cb-desktop-html .vexa3-page select.input,
+.cb-desktop-html .vexa3-page textarea.input,
+.cb-desktop-html .vexa2-auth-input input {
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text) !important;
+  caret-color: var(--accent-text) !important;
+  font-weight: 500 !important;
+  background: var(--surface) !important;
+  box-shadow: inset 0 0 0 1000px var(--surface) !important;
+  border-color: var(--line) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-page .input,
+.cb-desktop-html[data-theme="dark"] .vexa3-page select.input,
+.cb-desktop-html[data-theme="dark"] .vexa3-page textarea.input {
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text) !important;
+  background: var(--surface) !important;
+  box-shadow: inset 0 0 0 1000px var(--surface) !important;
+  border-color: var(--line) !important;
+}
+
+.cb-desktop-html .vexa3-page .input::placeholder,
+.cb-desktop-html .vexa3-page textarea.input::placeholder,
+.cb-desktop-html .vexa2-auth-input input::placeholder {
+  color: var(--text-4) !important;
+  -webkit-text-fill-color: var(--text-4) !important;
+}
+
+.cb-desktop-html .vexa3-page .input:focus,
+.cb-desktop-html .vexa3-page textarea.input:focus,
+.cb-desktop-html .vexa3-page select.input:focus,
+.cb-desktop-html .vexa2-auth-input input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 14%, transparent), inset 0 0 0 1000px var(--surface) !important;
+}
+
+.cb-desktop-html .vexa2-auth-input input:-webkit-autofill,
+.cb-desktop-html .vexa2-auth-input input:-webkit-autofill:hover,
+.cb-desktop-html .vexa2-auth-input input:-webkit-autofill:focus,
+.cb-desktop-html .vexa3-page .input:-webkit-autofill,
+.cb-desktop-html .vexa3-page .input:-webkit-autofill:hover,
+.cb-desktop-html .vexa3-page .input:-webkit-autofill:focus,
+.cb-desktop-html .vexa3-page textarea.input:-webkit-autofill,
+.cb-desktop-html .vexa3-page textarea.input:-webkit-autofill:hover,
+.cb-desktop-html .vexa3-page textarea.input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text) !important;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0 1000px var(--surface) inset !important;
+}
+
+.cb-desktop-html .vexa2-auth-input {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+}
+
+.cb-desktop-html .vexa2-auth-mark,
+.cb-desktop-html .vexa2-auth-logo img {
+  background: transparent !important;
+}
+
+.cb-desktop-html .vexa3-page select.input,
+.cb-desktop-html .vexa-page select.input,
+.cb-desktop-html .vexa-select-trigger,
+.cb-desktop-html .vexa-source-picker-trigger,
+.cb-desktop-html .vexa3-picker summary {
+  min-height: 44px;
+  border-radius: 12px;
+  border-color: var(--line) !important;
+  background: var(--surface) !important;
+}
+
+.cb-desktop-html .vexa3-page select.input,
+.cb-desktop-html .vexa-page select.input {
+  appearance: none;
+  padding-right: 36px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.cb-desktop-html .vexa3-picker {
+  position: relative;
+  overflow: visible;
+  border-color: var(--line) !important;
+  background: transparent !important;
+}
+
+.cb-desktop-html .vexa3-picker[open] {
+  z-index: 30;
+}
+
+.cb-desktop-html .vexa3-picker summary {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.cb-desktop-html .vexa3-picker-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface) !important;
+  box-shadow: var(--shadow-md);
+  z-index: 35;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-picker-menu {
+  background: var(--surface) !important;
+}
+
+.cb-desktop-html .vexa3-picker-menu button,
+.cb-desktop-html .vexa-select-option,
+.cb-desktop-html .vexa-source-option {
+  border-radius: 12px;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.cb-desktop-html .vexa3-picker-menu button:hover,
+.cb-desktop-html .vexa-select-option:hover,
+.cb-desktop-html .vexa-source-option:hover {
+  background: color-mix(in oklab, var(--accent) 9%, var(--surface)) !important;
+}
+
+.cb-desktop-html .vexa3-layout,
+.cb-desktop-html .vexa3-lower-grid {
+  align-items: start;
+}
+
+.cb-desktop-html .vexa3-row-title strong,
+.cb-desktop-html .vexa3-match-row-main strong,
+.cb-desktop-html .vexa3-health-grid strong,
+.cb-desktop-html .vexa3-source-types strong,
+.cb-desktop-html .vexa3-detail-grid strong,
+.cb-desktop-html .vexa3-analyzer-result strong,
+.cb-desktop-html .vexa3-roadmap strong,
+.cb-desktop-html .vexa3-source-checklist span,
+.cb-desktop-html .vexa3-source-analytics-row strong,
+.cb-desktop-html .vexa3-session-user strong,
+.cb-desktop-html .vexa3-analytics-bar-head,
+.cb-desktop-html .vexa3-message-head strong,
+.cb-desktop-html .vexa3-empty strong,
+.cb-desktop-html .vexa3-bot-preview > div,
+.cb-desktop-html .vexa3-simple-row strong,
+.cb-desktop-html .vexa3-template strong {
+  color: var(--text) !important;
+  font-weight: 560;
+}
+
+.cb-desktop-html .vexa3-template > span,
+.cb-desktop-html .vexa3-row-icon,
+.cb-desktop-html .vexa3-simple-row .vexa3-row-icon,
+.cb-desktop-html .vexa3-activity-row > span {
+  color: var(--accent-text) !important;
+  background: color-mix(in oklab, var(--accent) 12%, var(--surface)) !important;
+}
+
+.cb-desktop-html .vexa3-note,
+.cb-desktop-html .vexa3-inline-notice,
+.cb-desktop-html .vexa3-quality,
+.cb-desktop-html .vexa3-learning-box,
+.cb-desktop-html .vexa3-bot-preview,
+.cb-desktop-html .vexa3-message {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+.cb-desktop-html .vexa3-note {
+  border-left: 3px solid #d5a245;
+}
+
+.cb-desktop-html .vexa3-inline-notice {
+  border-left: 3px solid var(--accent);
+}
+
+.cb-desktop-html .vexa3-score,
+.cb-desktop-html .vexa3-checklist > div.ok {
+  color: var(--accent-text);
+  background: color-mix(in oklab, var(--accent) 15%, var(--surface));
+}
+
+.cb-desktop-html .vexa3-keywords i {
+  color: var(--accent-text) !important;
+  background: color-mix(in oklab, var(--accent) 10%, var(--surface)) !important;
+}
+
+.cb-desktop-html .vexa3-chart-card {
+  min-height: 100%;
+}
+
+.cb-desktop-html .vexa3-analytics-dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.cb-desktop-html .vexa3-chart-shell {
+  height: 280px;
+  padding: 0 12px 12px;
+}
+
+.cb-desktop-html .vexa3-chart-shell-compact {
+  height: 240px;
+}
+
+.cb-desktop-html .vexa3-pie-legend {
+  display: grid;
+  gap: 8px;
+  padding: 0 18px 18px;
+}
+
+.cb-desktop-html .vexa3-pie-legend > div {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.cb-desktop-html .vexa3-pie-legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: block;
+}
+
+.cb-desktop-html .vexa3-pie-legend strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.cb-desktop-html .vexa3-analytics-bar-head {
+  color: var(--text);
+}
+
+.cb-desktop-html .vexa3-analytics-track {
+  background: color-mix(in oklab, var(--accent) 10%, var(--surface));
+}
+
+.cb-desktop-html .vexa3-analytics-track i {
+  background: linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent) 68%, white));
+}
+
+.cb-desktop-html .vexa3-analytics-track.soft i {
+  background: linear-gradient(90deg, color-mix(in oklab, var(--accent) 74%, white), color-mix(in oklab, var(--accent) 30%, white));
+}
+
+.cb-desktop-html .vexa3-page .btn,
+.cb-desktop-html .vexa2-auth-card .btn {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.cb-desktop-html .vexa3-page .btn::after,
+.cb-desktop-html .vexa2-auth-card .btn::after {
+  content: '';
+  position: absolute;
+  top: -120%;
+  bottom: -120%;
+  left: -28%;
+  width: 28%;
+  transform: rotate(16deg) translateX(-180%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.42), transparent);
+  opacity: 0;
+  transition: transform .55s ease, opacity .24s ease;
+  pointer-events: none;
+}
+
+.cb-desktop-html .vexa3-page .btn:hover::after,
+.cb-desktop-html .vexa2-auth-card .btn:hover::after {
+  transform: rotate(16deg) translateX(520%);
+  opacity: 1;
+}
+
+.cb-desktop-html .vexa3-page .btn:hover,
+.cb-desktop-html .vexa2-auth-card .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.cb-desktop-html .vexa3-page .btn-primary,
+.cb-desktop-html .vexa2-auth-card .btn-primary {
+  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 72%, white)) !important;
+  border-color: color-mix(in oklab, var(--accent) 88%, black) !important;
+  color: #fff !important;
+}
+
+.cb-desktop-html .vexa3-page .btn-primary:hover,
+.cb-desktop-html .vexa2-auth-card .btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-hover), color-mix(in oklab, var(--accent) 64%, white)) !important;
+}
+
+.cb-desktop-html .vexa3-page .btn-secondary,
+.cb-desktop-html .vexa2-auth-card .btn-secondary {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+.cb-desktop-html .vexa3-page .btn-secondary:hover,
+.cb-desktop-html .vexa2-auth-card .btn-secondary:hover {
+  background: color-mix(in oklab, var(--accent) 8%, var(--surface)) !important;
+}
+
+@media (max-width: 1440px) {
+  .cb-desktop-html .vexa3-hero,
+  .cb-desktop-html .vexa3-analytics-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .cb-desktop-html .vexa3-hero-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-desktop-html .vexa3-chart-shell,
+  .cb-desktop-html .vexa3-chart-shell-compact {
+    height: 220px;
+  }
+}
