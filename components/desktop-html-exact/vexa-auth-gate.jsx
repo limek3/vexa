@@ -97,7 +97,7 @@ function AuthStoryPanel() {
     ['search', 'Поиски по ключевым фразам', 'Создавайте отдельные сценарии для заявок, вакансий, кандидатов, бренда, услуг и нишевых обсуждений.'],
     ['filter', 'Источники Telegram', 'Каналы, группы, комментарии и invite-ссылки собираются в библиотеку со статусом доступа.'],
     ['sort', 'Минус-слова и скоринг', 'Фильтруйте шум до попадания сообщения в ленту и бот.'],
-    ['send', 'Только новые совпадения', 'После подключения источника Vexa присылает новые релевантные публикации, а не старую историю.'],
+    ['send', 'Наш бот доставляет совпадения', 'Пользователь авторизуется в Vexa-боте один раз и получает личные уведомления по правилам своих поисков.'],
   ];
 
   return (
@@ -109,7 +109,7 @@ function AuthStoryPanel() {
       <div className="vexa2-auth-copy">
         <Badge kind="info">тестирование</Badge>
         <h2>Мониторинг Telegram-источников по ключевым словам</h2>
-        <p>Войдите один раз, после этого откроется рабочий кабинет Vexa: поиски, источники, совпадения, тестирование и настройки доставки в Telegram-бот.</p>
+        <p>Войдите один раз, после этого откроется рабочий кабинет Vexa: поиски, источники, совпадения, аналитика и настройки доставки через нашего Telegram-бота.</p>
       </div>
       <div className="vexa2-auth-flow">
         <span>поиск</span>
@@ -118,7 +118,7 @@ function AuthStoryPanel() {
         <Icon name="chevron-right" size={13} />
         <span>источники</span>
         <Icon name="chevron-right" size={13} />
-        <span>новые совпадения в бот</span>
+        <span>личные уведомления</span>
       </div>
       <div className="vexa2-auth-features">
         {features.map(([icon, title, body]) => (
@@ -130,7 +130,7 @@ function AuthStoryPanel() {
       </div>
       <div className="vexa2-auth-warning">
         <Icon name="shield" size={16} />
-        <span><strong>Важно:</strong> Vexa не загружает старую историю Telegram. Мониторинг начинается с новых публикаций после подключения источника.</span>
+        <span><strong>Важно:</strong> Vexa не загружает старую историю Telegram. Наш бот начинает отслеживать только новые публикации после подключения источника.</span>
       </div>
     </aside>
   );
@@ -298,10 +298,18 @@ export function VexaAuthGate({ children }) {
   if (state === 'loading') {
     return (
       <AuthShell>
-        <div className="vexa2-auth-card vexa2-auth-loading">
-          <div className="vexa2-auth-mark"><img src="/vexa-logo.png" alt="Vexa" /></div>
-          <h1>Проверяем доступ</h1>
-          <p>Если сессия активна, кабинет мониторинга откроется автоматически.</p>
+        <div className="vexa2-auth-card vexa2-auth-loading vexa2-auth-checking">
+          <div className="vexa2-loader-orbit" aria-hidden="true">
+            <span />
+            <img src="/vexa-logo.png" alt="" />
+          </div>
+          <h1>Проверяем...</h1>
+          <p>Проверяем сессию, профиль и доступ к рабочему кабинету. Если вход уже выполнен, приложение откроется автоматически.</p>
+          <div className="vexa2-loading-steps" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
         </div>
       </AuthShell>
     );

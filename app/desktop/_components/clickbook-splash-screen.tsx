@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const LOADING_MESSAGES = [
-  'Настраиваем интерфейс...',
-  'Синхронизируем данные...',
-  'Загружаем клиентов...',
-  'Готовим рабочее место...',
+  'Проверяем доступ...',
+  'Готовим мониторинг...',
+  'Проверяем источники...',
+  'Поднимаем Vexa...',
   'Почти готово...',
 ];
 
@@ -224,7 +224,7 @@ const SPLASH_STYLES = `
 }
 `;
 
-export function ClickBookSplashScreen({ logoSrc = '/brand/clickbook-desktop-icon.png' }: { logoSrc?: string }) {
+export function ClickBookSplashScreen({ logoSrc = '/vexa-logo.png' }: { logoSrc?: string }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<'in' | 'out'>('in');
 

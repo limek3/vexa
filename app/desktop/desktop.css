@@ -14064,3 +14064,531 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   font-weight: 800;
   cursor: pointer;
 }
+
+/* === Vexa v6 brand polish: logo palette, dark mode, loading and button glint === */
+.cb-desktop-html {
+  --vexa-brand: #8F6BFF;
+  --vexa-brand-strong: #6F42FF;
+  --vexa-brand-soft: #D9C8FF;
+  --vexa-brand-ink: #2C173E;
+  --vexa-brand-night: #120A1E;
+}
+
+.cb-desktop-html .btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+}
+
+.cb-desktop-html .btn::after {
+  content: '';
+  position: absolute;
+  inset: -45% auto -45% -70%;
+  width: 42%;
+  transform: skewX(-18deg) translateX(0);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.44), transparent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.cb-desktop-html .btn:hover {
+  transform: translateY(-1px);
+}
+
+.cb-desktop-html .btn:hover::after {
+  opacity: .9;
+  transform: skewX(-18deg) translateX(430%);
+  transition: transform .68s ease, opacity .18s ease;
+}
+
+.cb-desktop-html .btn-primary {
+  border-color: color-mix(in srgb, var(--vexa-brand-strong) 74%, #fff 0%) !important;
+  background: linear-gradient(135deg, var(--vexa-brand-strong), var(--vexa-brand), #BFA8FF) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 28px rgba(111, 66, 255, .26) !important;
+}
+
+.cb-desktop-html .btn-primary:hover {
+  border-color: #BFA8FF !important;
+  box-shadow: 0 16px 34px rgba(111, 66, 255, .34) !important;
+}
+
+.cb-desktop-html .vexa-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  margin: 4px 8px 14px;
+  padding: 7px 8px;
+  border: 1px solid rgba(143, 107, 255, .16);
+  border-radius: 15px;
+  background: linear-gradient(135deg, rgba(143, 107, 255, .12), rgba(217, 200, 255, .04));
+}
+
+.cb-desktop-html .vexa-sidebar-brand img {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  object-fit: cover;
+  box-shadow: 0 8px 18px rgba(111, 66, 255, .22);
+}
+
+.cb-desktop-html .vexa-sidebar-brand span {
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -.045em;
+}
+
+.cb-desktop-html[data-sidebar-collapsed="true"] .vexa-sidebar-brand {
+  justify-content: center;
+  padding: 7px 0;
+}
+
+.cb-desktop-html[data-sidebar-collapsed="true"] .vexa-sidebar-brand span {
+  display: none;
+}
+
+.cb-desktop-html .vexa2-auth-story {
+  background:
+    radial-gradient(circle at 24% 0%, rgba(191, 168, 255, .24), transparent 36%),
+    radial-gradient(circle at 92% 100%, rgba(143, 107, 255, .28), transparent 44%),
+    linear-gradient(142deg, #10091A 0%, #171024 54%, #2A1243 100%) !important;
+}
+
+.cb-desktop-html .vexa2-auth-input {
+  background: rgba(255,255,255,.92) !important;
+  border-color: rgba(143, 107, 255, .22) !important;
+  color: var(--vexa-brand-strong) !important;
+}
+
+.cb-desktop-html .vexa2-auth-input:focus-within {
+  border-color: rgba(143, 107, 255, .72) !important;
+  box-shadow: 0 0 0 4px rgba(143, 107, 255, .12) !important;
+}
+
+.cb-desktop-html .vexa2-auth-input input {
+  color: var(--vexa-brand-strong) !important;
+  -webkit-text-fill-color: var(--vexa-brand-strong) !important;
+  caret-color: var(--vexa-brand-strong) !important;
+  font-weight: 750;
+}
+
+.cb-desktop-html .vexa2-auth-input input::placeholder {
+  color: rgba(111, 66, 255, .46) !important;
+  -webkit-text-fill-color: rgba(111, 66, 255, .46) !important;
+}
+
+.cb-desktop-html .vexa2-auth-input input:-webkit-autofill,
+.cb-desktop-html .vexa2-auth-input input:-webkit-autofill:hover,
+.cb-desktop-html .vexa2-auth-input input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--vexa-brand-strong) !important;
+  box-shadow: 0 0 0 1000px #fff inset !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.cb-desktop-html .vexa2-auth-checking {
+  justify-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.cb-desktop-html .vexa2-loader-orbit {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+}
+
+.cb-desktop-html .vexa2-loader-orbit span {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(143,107,255,.18);
+  border-top-color: var(--vexa-brand-strong);
+  border-right-color: rgba(191,168,255,.95);
+  box-shadow: 0 0 34px rgba(143, 107, 255, .14);
+  animation: vexaOrbitSpin 1.05s linear infinite;
+}
+
+.cb-desktop-html .vexa2-loader-orbit::after {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(143,107,255,.12), transparent 68%);
+  animation: vexaPulse 1.8s ease-in-out infinite;
+}
+
+.cb-desktop-html .vexa2-loader-orbit img {
+  position: relative;
+  z-index: 1;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  object-fit: cover;
+  box-shadow: 0 14px 30px rgba(44,23,62,.16);
+}
+
+.cb-desktop-html .vexa2-loading-steps {
+  display: flex;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.cb-desktop-html .vexa2-loading-steps i {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--vexa-brand);
+  opacity: .28;
+  animation: vexaCheckingDot 1s ease-in-out infinite;
+}
+
+.cb-desktop-html .vexa2-loading-steps i:nth-child(2) { animation-delay: .14s; }
+.cb-desktop-html .vexa2-loading-steps i:nth-child(3) { animation-delay: .28s; }
+
+@keyframes vexaOrbitSpin { to { transform: rotate(360deg); } }
+@keyframes vexaPulse { 0%, 100% { transform: scale(.92); opacity: .55; } 50% { transform: scale(1.08); opacity: 1; } }
+@keyframes vexaCheckingDot { 0%, 100% { transform: translateY(0); opacity: .25; } 50% { transform: translateY(-5px); opacity: 1; } }
+
+.cb-desktop-html .vexa3-page {
+  --vexa3-ink: #2B213A;
+  --vexa3-muted: #7C718D;
+  --vexa3-soft: rgba(255, 255, 255, 0.80);
+  --vexa3-line: rgba(76, 45, 120, 0.13);
+  --vexa3-accent: var(--vexa-brand-strong);
+  --vexa3-accent-2: #CDB9FF;
+}
+
+.cb-desktop-html .content:has(.vexa3-page) {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(143,107,255,.18), transparent 34%),
+    radial-gradient(circle at 90% 8%, rgba(217,200,255,.18), transparent 32%),
+    linear-gradient(180deg, #FBFAFF, #F5F1FF) !important;
+}
+
+.cb-desktop-html .vexa3-card,
+.cb-desktop-html .vexa3-metrics .metric-card,
+.cb-desktop-html .vexa3-metrics .metric,
+.cb-desktop-html .vexa3-funnel-step,
+.cb-desktop-html .vexa3-template,
+.cb-desktop-html .vexa3-usecase,
+.cb-desktop-html .vexa3-health-grid > div,
+.cb-desktop-html .vexa3-source-types > div,
+.cb-desktop-html .vexa3-detail-grid > div,
+.cb-desktop-html .vexa3-analyzer-result > div,
+.cb-desktop-html .vexa3-roadmap > div,
+.cb-desktop-html .vexa3-source-checklist > div,
+.cb-desktop-html .vexa3-toggle-line {
+  border-color: var(--vexa3-line) !important;
+  background: rgba(255,255,255,.78) !important;
+}
+
+.cb-desktop-html .vexa3-hero {
+  border-color: rgba(143,107,255,.24) !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(143,107,255,.23), transparent 34%),
+    linear-gradient(135deg, rgba(255,255,255,.97), rgba(245,239,255,.90)) !important;
+}
+
+.cb-desktop-html .vexa3-page .input,
+.cb-desktop-html .vexa3-page select.input,
+.cb-desktop-html .vexa3-page textarea.input {
+  color: var(--vexa-brand-strong) !important;
+  -webkit-text-fill-color: var(--vexa-brand-strong) !important;
+  caret-color: var(--vexa-brand-strong) !important;
+  border-color: rgba(143,107,255,.18) !important;
+  background: rgba(255,255,255,.88) !important;
+  box-shadow: inset 0 0 0 1000px rgba(255,255,255,.88) !important;
+  font-weight: 700;
+}
+
+.cb-desktop-html .vexa3-page .input::placeholder,
+.cb-desktop-html .vexa3-page textarea.input::placeholder {
+  color: rgba(111,66,255,.42) !important;
+  -webkit-text-fill-color: rgba(111,66,255,.42) !important;
+}
+
+.cb-desktop-html .vexa3-page .input:focus,
+.cb-desktop-html .vexa3-page textarea.input:focus,
+.cb-desktop-html .vexa3-page select.input:focus {
+  border-color: rgba(143,107,255,.64) !important;
+  box-shadow: inset 0 0 0 1000px rgba(255,255,255,.92), 0 0 0 4px rgba(143,107,255,.12) !important;
+}
+
+.cb-desktop-html .vexa3-analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.cb-desktop-html .vexa3-analytics-panel {
+  min-height: 100%;
+}
+
+.cb-desktop-html .vexa3-analytics-list,
+.cb-desktop-html .vexa3-analytics-source-table {
+  display: grid;
+  gap: 12px;
+  padding: 0 18px 18px;
+}
+
+.cb-desktop-html .vexa3-analytics-bar {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.cb-desktop-html .vexa3-analytics-bar-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--vexa3-ink);
+  font-size: 12px;
+}
+
+.cb-desktop-html .vexa3-analytics-bar-head strong:empty { display: none; }
+.cb-desktop-html .vexa3-analytics-bar-head span { color: var(--vexa3-muted); }
+
+.cb-desktop-html .vexa3-analytics-track {
+  height: 9px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(143,107,255,.10);
+}
+
+.cb-desktop-html .vexa3-analytics-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--vexa-brand-strong), var(--vexa-brand-soft));
+}
+
+.cb-desktop-html .vexa3-analytics-track.soft i {
+  background: linear-gradient(90deg, #A78BFA, #E9D5FF);
+}
+
+.cb-desktop-html .vexa3-source-analytics-row {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1.1fr) minmax(160px, .75fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--vexa3-line);
+  border-radius: 17px;
+  background: rgba(255,255,255,.62);
+}
+
+.cb-desktop-html .vexa3-source-analytics-row > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.cb-desktop-html .vexa3-source-analytics-row strong { color: var(--vexa3-ink); font-size: 13px; }
+.cb-desktop-html .vexa3-source-analytics-row small { color: var(--vexa3-muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cb-desktop-html .vexa3-session-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--vexa3-line);
+  border-radius: 17px;
+  background: rgba(255,255,255,.66);
+}
+
+.cb-desktop-html .vexa3-session-user {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cb-desktop-html .vexa3-session-user > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--vexa-brand-strong), var(--vexa-brand-soft));
+  color: #fff;
+  font-weight: 900;
+}
+
+.cb-desktop-html .vexa3-session-user div { display: grid; gap: 2px; min-width: 0; }
+.cb-desktop-html .vexa3-session-user strong { color: var(--vexa3-ink); font-size: 13px; }
+.cb-desktop-html .vexa3-session-user small { color: var(--vexa3-muted); font-size: 12px; }
+
+.cb-desktop-html[data-theme="dark"] .content:has(.vexa3-page) {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(143,107,255,.20), transparent 36%),
+    radial-gradient(circle at 92% 4%, rgba(217,200,255,.11), transparent 32%),
+    linear-gradient(180deg, #0D0A13, #120C1D 58%, #0E0D13) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-page {
+  --vexa3-ink: #F3ECFF;
+  --vexa3-muted: #AFA2C7;
+  --vexa3-line: rgba(217,200,255,.13);
+  --vexa3-soft: rgba(24,16,35,.74);
+  --vexa3-accent: #B99DFF;
+  --vexa3-accent-2: #E5D8FF;
+  color: var(--vexa3-ink) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-card,
+.cb-desktop-html[data-theme="dark"] .vexa3-metrics .metric-card,
+.cb-desktop-html[data-theme="dark"] .vexa3-metrics .metric,
+.cb-desktop-html[data-theme="dark"] .vexa3-funnel-step,
+.cb-desktop-html[data-theme="dark"] .vexa3-template,
+.cb-desktop-html[data-theme="dark"] .vexa3-usecase,
+.cb-desktop-html[data-theme="dark"] .vexa3-health-grid > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-types > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-detail-grid > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-analyzer-result > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-roadmap > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-checklist > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-toggle-line,
+.cb-desktop-html[data-theme="dark"] .vexa3-session-strip,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-analytics-row {
+  border-color: var(--vexa3-line) !important;
+  background: rgba(22, 15, 32, .82) !important;
+  box-shadow: 0 18px 55px rgba(0,0,0,.22) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-hero {
+  border-color: rgba(217,200,255,.22) !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(143,107,255,.30), transparent 36%),
+    linear-gradient(135deg, rgba(24,15,38,.96), rgba(15,11,23,.92)) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-message,
+.cb-desktop-html[data-theme="dark"] .vexa3-quality,
+.cb-desktop-html[data-theme="dark"] .vexa3-learning-box,
+.cb-desktop-html[data-theme="dark"] .vexa3-bot-preview,
+.cb-desktop-html[data-theme="dark"] .vexa3-picker,
+.cb-desktop-html[data-theme="dark"] .vexa3-picker-menu,
+.cb-desktop-html[data-theme="dark"] .vexa3-note,
+.cb-desktop-html[data-theme="dark"] .vexa3-inline-notice {
+  border-color: var(--vexa3-line) !important;
+  background: rgba(18, 12, 29, .84) !important;
+  color: var(--vexa3-ink) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-hero h2,
+.cb-desktop-html[data-theme="dark"] .vexa3-testing h2,
+.cb-desktop-html[data-theme="dark"] .vexa3-funnel-step strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-health-grid strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-types strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-detail-grid strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-analyzer-result strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-roadmap strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-checklist span,
+.cb-desktop-html[data-theme="dark"] .vexa3-row-title strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-match-row-main strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-empty strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-message-head strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-bot-preview > div,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-analytics-row strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-session-user strong,
+.cb-desktop-html[data-theme="dark"] .vexa3-analytics-bar-head {
+  color: var(--vexa3-ink) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-hero p,
+.cb-desktop-html[data-theme="dark"] .vexa3-testing p,
+.cb-desktop-html[data-theme="dark"] .vexa3-message p,
+.cb-desktop-html[data-theme="dark"] .vexa3-bot-preview p,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-meta,
+.cb-desktop-html[data-theme="dark"] .vexa3-match-source,
+.cb-desktop-html[data-theme="dark"] .vexa3-match-time,
+.cb-desktop-html[data-theme="dark"] .vexa3-row-content small,
+.cb-desktop-html[data-theme="dark"] .vexa3-match-row-main small,
+.cb-desktop-html[data-theme="dark"] .vexa3-row-health small,
+.cb-desktop-html[data-theme="dark"] .vexa3-section-head .section-sub,
+.cb-desktop-html[data-theme="dark"] .vexa3-simple-row small,
+.cb-desktop-html[data-theme="dark"] .vexa3-activity-row small,
+.cb-desktop-html[data-theme="dark"] .vexa3-session-user small,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-analytics-row small {
+  color: var(--vexa3-muted) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-page .input,
+.cb-desktop-html[data-theme="dark"] .vexa3-page select.input,
+.cb-desktop-html[data-theme="dark"] .vexa3-page textarea.input {
+  color: #E8DCFF !important;
+  -webkit-text-fill-color: #E8DCFF !important;
+  background: rgba(14, 10, 22, .88) !important;
+  border-color: rgba(217,200,255,.16) !important;
+  box-shadow: inset 0 0 0 1000px rgba(14, 10, 22, .88) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-page .input::placeholder,
+.cb-desktop-html[data-theme="dark"] .vexa3-page textarea.input::placeholder {
+  color: rgba(232,220,255,.42) !important;
+  -webkit-text-fill-color: rgba(232,220,255,.42) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-keywords i,
+.cb-desktop-html[data-theme="dark"] .vexa3-row-icon,
+.cb-desktop-html[data-theme="dark"] .vexa3-template > span,
+.cb-desktop-html[data-theme="dark"] .vexa3-activity-row > span,
+.cb-desktop-html[data-theme="dark"] .vexa3-simple-row .vexa3-row-icon {
+  color: #D9C8FF !important;
+  background: rgba(143,107,255,.16) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-search-row.active,
+.cb-desktop-html[data-theme="dark"] .vexa3-source-row.active,
+.cb-desktop-html[data-theme="dark"] .vexa3-match-row.active {
+  background: rgba(143,107,255,.13) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-analytics-track {
+  background: rgba(217,200,255,.10);
+}
+
+@media (max-width: 1440px) {
+  .cb-desktop-html .vexa3-analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  .cb-desktop-html .vexa3-source-analytics-row {
+    grid-template-columns: 38px minmax(0,1fr);
+  }
+}
+
+.cb-desktop-html .vexa3-hero-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--vexa3-ink);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -.055em;
+}
+
+.cb-desktop-html .vexa3-hero-brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 12px 28px rgba(111,66,255,.22);
+}
+
+.cb-desktop-html .vexa3-operator img {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  object-fit: cover;
+}

@@ -10,16 +10,16 @@ import { buildAppearancePreferenceScript } from '@/lib/appearance';
 
 export const metadata: Metadata = {
   title: {
-    default: 'КликБук',
-    template: '%s · КликБук',
+    default: 'Vexa',
+    template: '%s · Vexa',
   },
-  description: 'Профиль мастера, страница записи, чаты и аналитика в одной платформе КликБук.',
-  generator: 'КликБук',
-  applicationName: 'КликБук',
+  description: 'Vexa — мониторинг Telegram-источников по ключевым словам и доставка новых совпадений в приложение и личные сообщения.',
+  generator: 'Vexa',
+  applicationName: 'Vexa',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
-    title: 'КликБук',
+    title: 'Vexa',
     statusBarStyle: 'black-translucent',
   },
   formatDetection: {

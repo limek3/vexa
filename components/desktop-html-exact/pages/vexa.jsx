@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Badge, Btn, Card, Icon, Metric, Segmented, Switch } from '../desktop-html-ui';
 
-const VEXA_WORKSPACE_STORAGE_KEY = 'vexa.telegram.monitoring.workspace.v7';
+const VEXA_WORKSPACE_STORAGE_KEY = 'vexa.telegram.monitoring.workspace.v8';
 const VEXA_PROFILE_STORAGE_KEY = 'vexa.profile.v1';
 
 const SOURCE_TYPES = ['Канал', 'Группа', 'Комментарии', 'Invite-ссылка'];
@@ -164,7 +164,7 @@ const starterSearches = [
     matchesToday: 4,
     quality: 94,
     lastRun: 'ждет новые сообщения',
-    botChannel: 'личный бот',
+    botChannel: 'личный чат Vexa-бота',
     keywords: ['нужен подрядчик', 'ищу специалиста', 'кто может сделать', 'нужна консультация', 'посоветуйте исполнителя'],
     minus: ['бесплатно', 'розыгрыш', 'стажировка', 'без бюджета'],
     sourceIds: ['src-service-chats', 'src-brand-comments'],
@@ -182,7 +182,7 @@ const starterSearches = [
     matchesToday: 2,
     quality: 86,
     lastRun: 'ждет новые публикации',
-    botChannel: 'личный бот',
+    botChannel: 'личный чат Vexa-бота',
     keywords: ['ищем дизайнера', 'ищем разработчика', 'открыта вакансия', 'ищу работу', 'готов взять проект'],
     minus: ['junior без опыта', 'релокация обязательна', 'только офис'],
     sourceIds: ['src-product-jobs', 'src-candidates'],
@@ -226,7 +226,7 @@ const starterMatches = [
     time: 'сейчас',
     text: 'Нужен подрядчик на лендинг и Telegram-воронку. Желательно с опытом в нишевых сервисах. Кто может взяться на этой неделе?',
     reason: 'Совпала точная фраза “нужен подрядчик”; минус-слова не найдены; источник входит в поиск “Заявки на услуги”.',
-    nextStep: 'Открыть источник, проверить контекст и отправить в бот.',
+    nextStep: 'Открыть источник, проверить контекст и отправить в личку через Vexa-бота.',
   },
   {
     id: 'mtch-designer',
@@ -246,7 +246,7 @@ const starterMatches = [
     time: '7 минут назад',
     text: 'Ищем продуктового дизайнера на part-time. Нужен человек, который быстро собирает интерфейсы и проверяет гипотезы.',
     reason: 'Найдена фраза “ищем дизайнера”, сообщение новое, источник онлайн.',
-    nextStep: 'Уже отправлено в бот. Можно отметить итог после обработки.',
+    nextStep: 'Уже отправлено пользователю через нашего Vexa-бота. Можно отметить итог после обработки.',
   },
   {
     id: 'mtch-consulting',
@@ -266,7 +266,7 @@ const starterMatches = [
     time: '18 минут назад',
     text: 'Нужна консультация по мониторингу Telegram-комментариев: хотим не пропускать запросы под постами конкурентов и партнеров.',
     reason: 'Совпала фраза “нужна консультация”; источник отмечен как комментарии, поэтому нужна проверка доступа.',
-    nextStep: 'Проверить доступ к комментариям и отправить в бот, если контекст релевантен.',
+    nextStep: 'Проверить доступ к комментариям и отправить через Vexa-бота, если контекст релевантен.',
   },
   {
     id: 'mtch-candidate',
@@ -286,7 +286,7 @@ const starterMatches = [
     time: '24 минуты назад',
     text: 'Готов взять проект по React/Next.js на 2–3 недели. Есть опыт с Telegram Mini Apps и кабинетами для сервисов.',
     reason: 'Сообщение похоже на кандидата: совпала фраза “готов взять проект”.',
-    nextStep: 'Отправить в бот или отметить как подходящее для обучения фильтра.',
+    nextStep: 'Отправить в личку через Vexa-бота или отметить как подходящее для обучения фильтра.',
   },
 ];
 
@@ -295,14 +295,21 @@ const initialWorkspace = {
   sources: starterSources,
   matches: starterMatches,
   notificationRules: [
-    { id: 'rule-high', title: 'Высокий скоринг', target: 'Telegram-бот сразу', threshold: 80, enabled: true },
-    { id: 'rule-new', title: 'Все новые совпадения', target: 'Лента + бот', threshold: 65, enabled: true },
-    { id: 'rule-source', title: 'Источник требует доступа', target: 'Кабинет + бот', threshold: 0, enabled: true },
-    { id: 'rule-digest', title: 'Ежедневная сводка', target: 'Telegram-бот в 09:30', threshold: 0, enabled: false },
+    { id: 'rule-high', title: 'Высокий скоринг', target: 'Личное сообщение в нашем боте сразу', threshold: 80, enabled: true },
+    { id: 'rule-new', title: 'Все новые совпадения', target: 'Лента приложения + личный бот', threshold: 65, enabled: true },
+    { id: 'rule-source', title: 'Источник требует доступа', target: 'Кабинет + системное уведомление', threshold: 0, enabled: true },
+    { id: 'rule-digest', title: 'Ежедневная сводка', target: 'Личное сообщение в Vexa-боте в 09:30', threshold: 0, enabled: false },
   ],
   settings: {
     botConnected: false,
+    telegramLinked: false,
+    telegramUser: '',
     botUsername: '@vexa_monitor_bot',
+    workspaceName: 'Пилотный мониторинг',
+    notifyInApp: true,
+    notifyTelegram: true,
+    weeklyReport: true,
+    sourceWatchMode: 'new-only',
     quiet: true,
     quietFrom: '00:00',
     quietTo: '07:00',
@@ -311,6 +318,7 @@ const initialWorkspace = {
     deliveryMode: 'smart',
     retention: '30 дней',
     owner: 'Пилот Vexa',
+    accountRole: 'Владелец',
   },
   activity: [
     { id: 'act-1', title: 'Запущен пилот Vexa', body: '2 активных поиска ждут новые публикации', icon: 'play', time: 'сейчас' },
@@ -327,7 +335,7 @@ const blankSearchDraft = {
   dailyLimit: 50,
   minScore: 70,
   mode: 'phrase',
-  botChannel: 'личный бот',
+  botChannel: 'личный чат Vexa-бота',
   keywordsText: '',
   minusText: '',
   sourceIds: [],
@@ -448,6 +456,14 @@ function sourceUsage(workspace, sourceId) {
   return workspace.searches.filter((search) => Array.isArray(search.sourceIds) && search.sourceIds.includes(sourceId)).length;
 }
 
+function isBotAuthorized(workspace) {
+  return Boolean(workspace?.settings?.telegramLinked || workspace?.settings?.botConnected);
+}
+
+function botDisplayName(workspace) {
+  return workspace?.settings?.botUsername || '@vexa_monitor_bot';
+}
+
 function statusLabel(status) {
   if (status === 'active') return 'активен';
   if (status === 'online') return 'онлайн';
@@ -563,7 +579,7 @@ function workspaceChecks(workspace) {
     { ok: activeSearches.length > 0, title: 'Есть активный поиск', body: activeSearches.length ? `${activeSearches.length} сценария запущено` : 'Запустите хотя бы один поиск' },
     { ok: onlineSources.length > 0, title: 'Есть доступные источники', body: onlineSources.length ? `${onlineSources.length} источника онлайн` : 'Проверьте доступ к каналам или группам' },
     { ok: attachedSourceIds.size > 0, title: 'Источники привязаны', body: attachedSourceIds.size ? `${attachedSourceIds.size} привязок к поискам` : 'Выберите источники в настройке поиска' },
-    { ok: workspace.settings.botConnected, title: 'Telegram-бот подключен', body: workspace.settings.botConnected ? workspace.settings.botUsername : 'Можно имитировать подключение в настройках' },
+    { ok: isBotAuthorized(workspace), title: 'Пользователь авторизован в Vexa-боте', body: isBotAuthorized(workspace) ? `${botDisplayName(workspace)} · личные уведомления активны` : 'Откройте нашего бота и подтвердите получение уведомлений' },
   ];
   const score = Math.round((checks.filter((item) => item.ok).length / checks.length) * 100);
   return { checks, score };
@@ -672,7 +688,7 @@ function useVexaWorkspace() {
           reason: scoring.blocked.length
             ? `Найдены минус-слова: ${scoring.blocked.join(', ')}. Сообщение оставлено в ленте как пример шума.`
             : `Совпала фраза “${keyword}”; источник был подключен до появления сообщения; минус-слова не сработали.`,
-          nextStep: scoring.passed ? 'Проверить контекст и отправить в бот.' : 'Добавить точные минус-слова или скорректировать ключевые фразы.',
+          nextStep: scoring.passed ? 'Проверить контекст и отправить пользователю в личку через Vexa-бота.' : 'Добавить точные минус-слова или скорректировать ключевые фразы.',
         };
         return {
           ...current,
@@ -799,21 +815,22 @@ function ProductHero({ profile, workspace, stats, onNewSearch, onSources, onExpo
     ['02', 'Фразы', `${stats.totalKeywords} ключей / ${stats.totalMinus} минус-слов`],
     ['03', 'Источники', `${workspace.sources.length} подключений`],
     ['04', 'Фильтр', `${stats.healthScore}% готовность`],
-    ['05', 'Бот', workspace.settings.botConnected ? 'подключен' : 'не подключен'],
+    ['05', 'Доставка', isBotAuthorized(workspace) ? 'бот авторизован' : 'нужна авторизация'],
   ];
   return (
     <Card className="vexa3-hero">
       <div className="vexa3-hero-main">
+        <div className="vexa3-hero-brand"><img src="/vexa-logo.png" alt="" /><span>vexa</span></div>
         <div className="vexa3-badges"><Badge kind="info">пилот</Badge><Badge kind="warn">только новые сообщения</Badge><Badge kind="success">Telegram-first</Badge></div>
         <h2>Операционный центр мониторинга Telegram</h2>
-        <p>Vexa отслеживает каналы, группы и комментарии по ключевым фразам, отсеивает шум через минус-слова и доставляет новые релевантные совпадения в бот.</p>
+        <p>Vexa отслеживает каналы, группы и комментарии по ключевым фразам, отсеивает шум через минус-слова и доставляет новые релевантные совпадения в приложение и в личные сообщения через нашего Telegram-бота.</p>
         <div className="vexa3-hero-actions">
           <Btn kind="primary" icon="plus" onClick={onNewSearch}>Создать поиск</Btn>
           <Btn kind="secondary" icon="filter" onClick={onSources}>Настроить источники</Btn>
           <Btn kind="secondary" icon="arrow-down" onClick={onExport}>Экспорт JSON</Btn>
         </div>
         <div className="vexa3-operator">
-          <Icon name="logo" size={16} />
+          <img src="/vexa-logo.png" alt="" />
           <span>{profile?.email || workspace.settings.owner || 'Пилот Vexa'}</span>
           <small>{workspace.settings.timezone}</small>
         </div>
@@ -837,7 +854,7 @@ function MetricGrid({ workspace, stats }) {
       <Metric label="Активных поисков" value={stats.activeSearches} delta={`${stats.pausedSearches} на паузе`} deltaKind="up" />
       <Metric label="Источников онлайн" value={stats.onlineSources} delta={`${stats.sourceWarnings} требуют доступа`} deltaKind={stats.sourceWarnings ? 'down' : 'up'} />
       <Metric label="Новых совпадений" value={stats.newMatches} delta={`${stats.highScore} с высоким скорингом`} deltaKind={stats.newMatches ? 'up' : undefined} />
-      <Metric label="Готовность контура" value={`${stats.healthScore}%`} delta={workspace.settings.botConnected ? 'бот подключен' : 'бот не подключен'} deltaKind={stats.healthScore >= 75 ? 'up' : 'down'} />
+      <Metric label="Готовность контура" value={`${stats.healthScore}%`} delta={isBotAuthorized(workspace) ? 'бот авторизован' : 'бот ждет авторизацию'} deltaKind={stats.healthScore >= 75 ? 'up' : 'down'} />
     </div>
   );
 }
@@ -945,7 +962,7 @@ function SearchQuality({ draft }) {
     [(draft.sourceIds || []).length >= 1, 'есть источник'],
     [minus.length >= 2, 'есть минус-слова'],
     [Number(draft.minScore) >= 60, 'задан порог скоринга'],
-    [draft.delivery !== 'feed', 'есть доставка в бот или сводку'],
+    [draft.delivery !== 'feed', 'есть доставка через Vexa-бота или сводку'],
   ];
 
   return (
@@ -988,7 +1005,7 @@ function SearchRow({ search, workspace, active, onOpen, onToggle, onDuplicate, o
 }
 
 function SearchAnalyzer({ workspace, selected, onCreateMatch }) {
-  const [text, setText] = useState('Нужен подрядчик на Telegram-бота и мониторинг комментариев. Кто может помочь на этой неделе?');
+  const [text, setText] = useState('Нужен подрядчик на мониторинг Telegram-комментариев и заявок. Кто может помочь на этой неделе?');
   const source = workspace.sources.find((item) => selected?.sourceIds?.includes(item.id));
   const result = selected ? scoreMessageAgainstSearch(text, selected, source) : null;
   return (
@@ -1100,7 +1117,7 @@ export function VexaSearchesPage() {
       dailyLimit: Math.max(10, Math.min(500, Number(draft.dailyLimit) || 50)),
       minScore,
       mode: draft.mode || 'phrase',
-      botChannel: cleanText(draft.botChannel, 48) || 'личный бот',
+      botChannel: cleanText(draft.botChannel, 48) || 'личный чат Vexa-бота',
       keywords,
       minus,
       sourceIds,
@@ -1138,7 +1155,7 @@ export function VexaSearchesPage() {
   return (
     <PageShell
       title="Vexa · Мониторинг Telegram"
-      subtitle="Командный центр: поиски, фразы, минус-слова, источники, скоринг и доставка новых совпадений в бот."
+      subtitle="Командный центр: поиски, фразы, минус-слова, источники, скоринг и доставка новых совпадений через Vexa-бота."
       actions={(<><Btn icon="refresh" kind="secondary" onClick={actions.resetDemo}>Сбросить демо</Btn><Btn icon="plus" kind="primary" onClick={createBlank}>Новый поиск</Btn></>)}
     >
       <ProductHero profile={profile} workspace={workspace} stats={stats} onNewSearch={createBlank} onSources={() => notify('Откройте раздел “Источники” в меню Vexa')} onExport={() => downloadJson('vexa-workspace-export.json', workspace)} />
@@ -1193,9 +1210,9 @@ export function VexaSearchesPage() {
             <label className="field"><span>Telegram-источники</span><SourcePicker workspace={workspace} value={draft.sourceIds} onChange={(sourceIds) => setDraft({ ...draft, sourceIds })} /></label>
             <div className="grid-2">
               <label className="field"><span>Лимит в день</span><input className="input" type="number" min="10" max="500" value={draft.dailyLimit} onChange={(event) => setDraft({ ...draft, dailyLimit: event.target.value })} /></label>
-              <label className="field"><span>Доставка</span><select className="input" value={draft.delivery} onChange={(event) => setDraft({ ...draft, delivery: event.target.value })}><option value="telegram">Сразу в Telegram-бот</option><option value="digest">Сводкой в бот</option><option value="feed">Только в ленту</option></select></label>
+              <label className="field"><span>Доставка</span><select className="input" value={draft.delivery} onChange={(event) => setDraft({ ...draft, delivery: event.target.value })}><option value="telegram">Сразу через Vexa-бота</option><option value="digest">Сводкой через Vexa-бота</option><option value="feed">Только в ленту</option></select></label>
             </div>
-            <label className="field"><span>Канал доставки</span><input className="input" value={draft.botChannel} onChange={(event) => setDraft({ ...draft, botChannel: event.target.value })} placeholder="личный бот / команда / сводка" /></label>
+            <label className="field"><span>Канал доставки</span><input className="input" value={draft.botChannel} onChange={(event) => setDraft({ ...draft, botChannel: event.target.value })} placeholder="личный чат Vexa-бота / команда / сводка" /></label>
             <SearchQuality draft={draft} />
             <div className="vexa3-form-actions"><Btn kind="secondary" onClick={() => setDraft(toSearchDraft(selected))}>Отмена</Btn><Btn kind="secondary" icon="pause" onClick={() => saveSearch('paused')}>Сохранить на паузе</Btn><Btn kind="primary" icon="check" onClick={() => saveSearch('active')}>Сохранить и запустить</Btn></div>
           </div>
@@ -1213,7 +1230,7 @@ export function VexaSearchesPage() {
 
 function matchStatusBadge(match) {
   if (match.hidden) return <Badge kind="danger">скрыто</Badge>;
-  if (match.sent) return <Badge kind="success">в боте</Badge>;
+  if (match.sent) return <Badge kind="success">доставлено</Badge>;
   return statusBadge(match.status);
 }
 
@@ -1235,7 +1252,7 @@ function BotPreview({ match }) {
   if (!match) return null;
   return (
     <div className="vexa3-bot-preview">
-      <div><Icon name="send" size={15} /><strong>Превью сообщения в боте</strong></div>
+      <div><Icon name="send" size={15} /><strong>Превью сообщения в Vexa-боте</strong></div>
       <p><b>{match.search}</b> · {match.score}%</p>
       <p>{match.text}</p>
       <small>{match.source} · причина: {match.keyword}</small>
@@ -1271,8 +1288,8 @@ export function VexaMatchesPage() {
 
   const sendToBot = (match) => {
     if (!match) return;
-    actions.updateMatch(match.id, { sent: true, status: 'qualified' }, { title: 'Совпадение отправлено в бот', body: match.keyword, icon: 'send' });
-    setNotice('В демо совпадение отмечено как отправленное. В рабочей версии здесь вызывается реальная отправка в Telegram-бот.');
+    actions.updateMatch(match.id, { sent: true, status: 'qualified' }, { title: 'Совпадение отправлено через Vexa-бота', body: match.keyword, icon: 'send' });
+    setNotice('В демо совпадение отмечено как отправленное. В рабочей версии здесь вызывается реальная отправка через Vexa-бота.');
   };
 
   const qualify = (match) => {
@@ -1301,19 +1318,19 @@ export function VexaMatchesPage() {
   };
 
   return (
-    <PageShell title="Vexa · Совпадения" subtitle="Triage-лента новых Telegram-сообщений: разбор, отправка в бот, обучение фильтров и работа с шумом." actions={selected ? <Btn kind="primary" icon="send" onClick={() => sendToBot(selected)} disabled={selected.sent}>Отправить в бот</Btn> : null}>
+    <PageShell title="Vexa · Совпадения" subtitle="Triage-лента новых Telegram-сообщений: разбор, отправка через Vexa-бота, обучение фильтров и работа с шумом." actions={selected ? <Btn kind="primary" icon="send" onClick={() => sendToBot(selected)} disabled={selected.sent}>Отправить через Vexa-бота</Btn> : null}>
       <ImportantNote compact />
       {notice ? <div className="vexa3-inline-notice"><Icon name="info" size={14} />{notice}</div> : null}
       <div className="grid-4 vexa3-metrics">
         <Metric label="В ленте" value={visibleMatches.length} delta="не скрытые" />
         <Metric label="Новые" value={stats.newMatches} delta="требуют разбора" deltaKind={stats.newMatches ? 'up' : undefined} />
         <Metric label="Высокий скоринг" value={stats.highScore} delta="80% и выше" deltaKind={stats.highScore ? 'up' : undefined} />
-        <Metric label="В боте" value={stats.sent} delta={`${stats.rejected} отклонено`} deltaKind="up" />
+        <Metric label="Доставлено" value={stats.sent} delta={`${stats.rejected} отклонено`} deltaKind="up" />
       </div>
 
       <div className="vexa3-layout vexa3-layout-matches">
         <Card flush className="vexa3-card">
-          <SectionTitle title="Рабочая очередь" subtitle="Сначала разбирайте высокий скоринг и новые сообщения." right={<Segmented value={filter} onChange={setFilter} items={[{ value: 'all', label: 'Все' }, { value: 'new', label: 'Новые' }, { value: 'high', label: '80%+' }, { value: 'qualified', label: 'Подходят' }, { value: 'sent', label: 'В боте' }, { value: 'rejected', label: 'Шум' }]} />} />
+          <SectionTitle title="Рабочая очередь" subtitle="Сначала разбирайте высокий скоринг и новые сообщения." right={<Segmented value={filter} onChange={setFilter} items={[{ value: 'all', label: 'Все' }, { value: 'new', label: 'Новые' }, { value: 'high', label: '80%+' }, { value: 'qualified', label: 'Подходят' }, { value: 'sent', label: 'Доставлено' }, { value: 'rejected', label: 'Шум' }]} />} />
           <div className="vexa3-toolbar"><div className="input-with-icon vexa3-search-input"><Icon name="search" /><input className="input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Поиск по тексту, источнику, автору, ключевой фразе" /></div></div>
           <div className="divider" />
           {filtered.map((match) => <MatchRow key={match.id} match={match} active={selected?.id === match.id} onOpen={(item) => setSelectedId(item.id)} />)}
@@ -1344,7 +1361,7 @@ export function VexaMatchesPage() {
                 <Btn kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(selected.source)}>Открыть источник</Btn>
                 <Btn kind="secondary" icon="check" onClick={() => qualify(selected)}>Подходит</Btn>
                 <Btn kind="secondary" icon="x" onClick={() => reject(selected)}>Отклонить</Btn>
-                <Btn kind="primary" icon="send" onClick={() => sendToBot(selected)} disabled={selected.sent}>В бот</Btn>
+                <Btn kind="primary" icon="send" onClick={() => sendToBot(selected)} disabled={selected.sent}>В личку</Btn>
                 <Btn kind="danger" icon="trash" onClick={() => hide(selected)}>Скрыть</Btn>
               </div>
             </div>
@@ -1507,7 +1524,7 @@ export function VexaSourcesPage() {
             <div className="grid-2"><label className="field"><span>Статус</span><select className="input" value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value })}>{SOURCE_STATUSES.map((status) => <option key={status} value={status}>{statusLabel(status)}</option>)}</select></label><label className="field"><span>Доверие источника, %</span><input className="input" type="number" min="0" max="100" value={draft.trust} onChange={(event) => setDraft({ ...draft, trust: event.target.value })} /></label></div>
             <div className="grid-2"><label className="field"><span>Язык</span><input className="input" value={draft.language} onChange={(event) => setDraft({ ...draft, language: event.target.value })} placeholder="RU / EN" /></label><label className="field"><span>Частота проверки</span><input className="input" value={draft.cadence} onChange={(event) => setDraft({ ...draft, cadence: event.target.value })} placeholder="постоянно / после проверки" /></label></div>
             <label className="field"><span>Заметка</span><textarea className="input" rows={4} value={draft.note} onChange={(event) => setDraft({ ...draft, note: event.target.value })} placeholder="Что здесь ищем и почему источник важен" /></label>
-            <div className="vexa3-source-checklist"><div><Icon name="shield" size={14} /><span>Старые сообщения не импортируются.</span></div><div><Icon name="clock" size={14} /><span>Отсчет начинается после подключения.</span></div><div><Icon name="send" size={14} /><span>Совпадения уходят в бот по правилам поиска.</span></div></div>
+            <div className="vexa3-source-checklist"><div><Icon name="shield" size={14} /><span>Старые сообщения не импортируются.</span></div><div><Icon name="clock" size={14} /><span>Отсчет начинается после подключения.</span></div><div><Icon name="send" size={14} /><span>Совпадения уходят в приложение и в личку через нашего Vexa-бота.</span></div></div>
             <div className="vexa3-form-actions"><Btn kind="secondary" onClick={() => setDraft(toSourceDraft(selected))}>Отмена</Btn>{selected?.ref ? <Btn kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(selected.ref)}>Открыть</Btn> : null}<Btn kind="primary" icon="check" onClick={saveSource}>Сохранить</Btn></div>
           </div>
         </Card>
@@ -1518,50 +1535,174 @@ export function VexaSourcesPage() {
   );
 }
 
+function VexaAnalyticsBar({ label, value, max, tone = 'brand', meta }) {
+  const width = max ? Math.max(4, Math.round((Number(value) / max) * 100)) : 4;
+  return (
+    <div className="vexa3-analytics-bar">
+      <div className="vexa3-analytics-bar-head"><strong>{label}</strong><span>{value}{meta ? ` · ${meta}` : ''}</span></div>
+      <div className={`vexa3-analytics-track ${tone}`}><i style={{ width: `${width}%` }} /></div>
+    </div>
+  );
+}
+
+export function VexaAnalyticsPage() {
+  const { workspace, stats } = useVexaWorkspace();
+  const visible = stats.visibleMatches;
+  const maxSearch = Math.max(1, ...workspace.searches.map((search) => visible.filter((match) => match.searchId === search.id).length));
+  const maxSource = Math.max(1, ...workspace.sources.map((source) => visible.filter((match) => match.sourceId === source.id).length));
+  const avgScore = visible.length ? Math.round(visible.reduce((sum, item) => sum + Number(item.score || 0), 0) / visible.length) : 0;
+  const deliveryRate = visible.length ? Math.round((visible.filter((item) => item.sent).length / visible.length) * 100) : 0;
+  const highIntent = visible.filter((item) => Number(item.score) >= 80).length;
+  const sourceRows = workspace.sources
+    .map((source) => ({
+      ...source,
+      matches: visible.filter((match) => match.sourceId === source.id).length,
+      searches: sourceUsage(workspace, source.id),
+    }))
+    .sort((a, b) => b.matches - a.matches || b.trust - a.trust);
+  const keywordRows = workspace.searches
+    .flatMap((search) => (search.keywords || []).map((keyword) => ({
+      keyword,
+      search: search.title,
+      count: visible.filter((match) => String(match.keyword || '').toLowerCase() === String(keyword).toLowerCase()).length,
+    })))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8);
+  const maxKeyword = Math.max(1, ...keywordRows.map((item) => item.count));
+
+  return (
+    <PageShell
+      title="Vexa · Аналитика"
+      subtitle="Статистика по поискам, источникам, скорингу и доставке новых Telegram-совпадений в приложение и личные сообщения через нашего бота."
+      actions={<><Btn kind="secondary" icon="arrow-down" onClick={() => downloadJson('vexa-analytics-export.json', { exportedAt: new Date().toISOString(), stats, workspace })}>Экспорт</Btn><Btn kind="primary" icon="refresh" onClick={() => notify('Аналитика обновлена')}>Обновить</Btn></>}
+    >
+      <div className="grid-4 vexa3-metrics">
+        <Metric label="Всего совпадений" value={visible.length} delta={`${highIntent} с высоким скорингом`} deltaKind="up" />
+        <Metric label="Средний скоринг" value={`${avgScore}%`} delta="качество входящего потока" deltaKind={avgScore >= 70 ? 'up' : 'down'} />
+        <Metric label="Доставлено" value={`${deliveryRate}%`} delta={`${stats.sent} в личные сообщения`} deltaKind={deliveryRate ? 'up' : undefined} />
+        <Metric label="Источники" value={workspace.sources.length} delta={`${stats.onlineSources} онлайн · ${stats.sourceWarnings} проверить`} deltaKind={stats.sourceWarnings ? 'down' : 'up'} />
+      </div>
+
+      <div className="vexa3-analytics-grid">
+        <Card className="vexa3-card vexa3-analytics-panel">
+          <SectionTitle title="Поиски" subtitle="Какие сценарии дают больше всего полезных сигналов." />
+          <div className="vexa3-analytics-list">
+            {workspace.searches.map((search) => {
+              const count = visible.filter((match) => match.searchId === search.id).length;
+              const sent = visible.filter((match) => match.searchId === search.id && match.sent).length;
+              return <VexaAnalyticsBar key={search.id} label={search.title} value={count} max={maxSearch} meta={`${sent} доставлено · порог ${search.minScore}%`} />;
+            })}
+          </div>
+        </Card>
+
+        <Card className="vexa3-card vexa3-analytics-panel">
+          <SectionTitle title="Источники" subtitle="Каналы, группы и комментарии с лучшим выходом совпадений." />
+          <div className="vexa3-analytics-source-table">
+            {sourceRows.map((source) => (
+              <div className="vexa3-source-analytics-row" key={source.id}>
+                <span className="vexa3-row-icon"><Icon name={sourceIcon(source.type)} /></span>
+                <span><strong>{source.title}</strong><small>{source.ref} · {source.type} · {source.searches} поисков</small></span>
+                <VexaAnalyticsBar label="" value={source.matches} max={maxSource} meta={`${source.trust}% доверие`} />
+                {statusBadge(source.status)}
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="vexa3-card vexa3-analytics-panel">
+          <SectionTitle title="Ключевые фразы" subtitle="Какие формулировки чаще всего приводят новые сообщения." />
+          <div className="vexa3-analytics-list">
+            {keywordRows.map((item) => <VexaAnalyticsBar key={`${item.search}-${item.keyword}`} label={item.keyword} value={item.count} max={maxKeyword} meta={item.search} tone="soft" />)}
+            {!keywordRows.length ? <div className="vexa3-empty-line">Добавьте ключевые фразы в поиски, чтобы увидеть статистику.</div> : null}
+          </div>
+        </Card>
+
+        <Card flush className="vexa3-card">
+          <SectionTitle title="Операционная сводка" subtitle="Что нужно проверить перед масштабированием." />
+          <div className="divider" />
+          {stats.checks.map((check) => (
+            <div className="vexa3-simple-row" key={check.title}>
+              <span className="vexa3-row-icon"><Icon name={check.ok ? 'check' : 'info'} /></span>
+              <span><strong>{check.title}</strong><small>{check.body}</small></span>
+              <Badge kind={check.ok ? 'success' : 'warn'}>{check.ok ? 'готово' : 'нужно действие'}</Badge>
+            </div>
+          ))}
+        </Card>
+      </div>
+    </PageShell>
+  );
+}
+
 export function VexaSettingsPage() {
   const { workspace, actions, stats } = useVexaWorkspace();
+  const profile = useVexaProfile();
   const [importText, setImportText] = useState('');
   const [notice, setNotice] = useState('');
+  const botAuthorized = isBotAuthorized(workspace);
+  const botName = botDisplayName(workspace);
 
   const importWorkspace = () => {
     try {
       const parsed = JSON.parse(importText);
       actions.importWorkspace(parsed);
-      setNotice('JSON импортирован. Проверьте поиски, источники и правила доставки.');
+      setNotice('JSON импортирован. Проверьте поиски, источники, правила доставки и Telegram-профиль.');
       setImportText('');
     } catch {
       setNotice('Не удалось прочитать JSON. Проверьте формат экспорта Vexa.');
     }
   };
 
+  const authorizeBot = () => {
+    openTelegram(botName);
+    setNotice('Откройте нашего Vexa-бота, нажмите Start и подтвердите получение уведомлений. После этого отметьте авторизацию здесь.');
+  };
+
   return (
-    <PageShell title="Vexa · Настройки" subtitle="Бот, уведомления, тихие часы, экспорт, импорт и правила доставки новых совпадений.">
+    <PageShell title="Vexa · Настройки" subtitle="Аккаунт, наш Telegram-бот, доставка уведомлений, тихие часы, хранение, экспорт и рабочие параметры мониторинга.">
       {notice ? <div className="vexa3-inline-notice"><Icon name="info" size={14} />{notice}</div> : null}
       <MetricGrid workspace={workspace} stats={stats} />
       <div className="vexa3-layout vexa3-layout-settings">
-        <Card className="vexa3-card"><SectionTitle title="Telegram-бот" subtitle="Сюда приходят подходящие новые совпадения." />
+        <Card className="vexa3-card"><SectionTitle title="Наш Telegram-бот" subtitle="Клиент не подключает своего бота. Он авторизуется в нашем Vexa-боте и получает личные уведомления." right={<Badge kind={botAuthorized ? 'success' : 'warn'}>{botAuthorized ? 'авторизован' : 'ждет авторизацию'}</Badge>} />
           <div className="vexa3-editor-body">
-            <div className="vexa3-toggle-line"><span><strong>{workspace.settings.botConnected ? 'Бот подключен' : 'Бот не подключен'}</strong><small>В тестовой версии подключение можно имитировать для проверки сценария.</small></span><Switch on={workspace.settings.botConnected} onChange={(botConnected) => actions.updateSettings({ botConnected })} /></div>
-            <label className="field"><span>Username бота</span><input className="input" value={workspace.settings.botUsername} onChange={(event) => actions.updateSettings({ botUsername: event.target.value })} /></label>
-            <label className="field"><span>Режим доставки</span><select className="input" value={workspace.settings.deliveryMode} onChange={(event) => actions.updateSettings({ deliveryMode: event.target.value })}><option value="smart">Умно: высокий скоринг сразу, остальное сводкой</option><option value="all">Все совпадения сразу</option><option value="digest">Только ежедневная сводка</option></select></label>
-            <Btn kind="primary" icon="send" onClick={() => notify('Тестовое уведомление Vexa', workspace.settings.botUsername)}>Отправить тест</Btn>
+            <div className="vexa3-toggle-line"><span><strong>{botAuthorized ? 'Личные уведомления включены' : 'Нужно авторизоваться в Vexa-боте'}</strong><small>Наш бот мониторит новые сообщения по правилам поисков и отправляет подходящие совпадения в приложение и личку пользователя.</small></span><Switch on={botAuthorized} onChange={(telegramLinked) => actions.updateSettings({ telegramLinked, botConnected: telegramLinked })} /></div>
+            <div className="grid-2"><label className="field"><span>Vexa-бот</span><input className="input" value={botName} onChange={(event) => actions.updateSettings({ botUsername: event.target.value })} /></label><label className="field"><span>Telegram пользователя</span><input className="input" value={workspace.settings.telegramUser || ''} onChange={(event) => actions.updateSettings({ telegramUser: event.target.value })} placeholder="@username после авторизации" /></label></div>
+            <div className="vexa3-form-actions"><Btn kind="primary" icon="send" onClick={authorizeBot}>Открыть Vexa-бота</Btn><Btn kind="secondary" icon="check" onClick={() => actions.updateSettings({ telegramLinked: true, botConnected: true })}>Отметить авторизацию</Btn><Btn kind="secondary" icon="bell" onClick={() => notify('Тестовое уведомление Vexa', `${botName} · личное сообщение`) }>Тест уведомления</Btn></div>
+            <div className="vexa3-source-checklist"><div><Icon name="shield" size={14} /><span>Бот принадлежит Vexa, токены клиенту не нужны.</span></div><div><Icon name="send" size={14} /><span>Пользователь получает только совпадения из своих поисков.</span></div><div><Icon name="clock" size={14} /><span>Старые сообщения не подтягиваются.</span></div></div>
           </div>
         </Card>
-        <Card className="vexa3-card"><SectionTitle title="Тихие часы и хранение" subtitle="Чтобы бот не шумел ночью и в нерабочее время." />
+
+        <Card className="vexa3-card"><SectionTitle title="Аккаунт и рабочая область" subtitle="Параметры владельца, роли и названия проекта." />
           <div className="vexa3-editor-body">
-            <div className="vexa3-toggle-line"><span><strong>Тихие часы</strong><small>Новые совпадения копятся и уходят после окна тишины.</small></span><Switch on={workspace.settings.quiet} onChange={(quiet) => actions.updateSettings({ quiet })} /></div>
+            <div className="vexa3-session-strip"><div className="vexa3-session-user"><span>{(profile?.email || workspace.settings.owner || 'V').slice(0,1).toUpperCase()}</span><div><strong>{workspace.settings.owner || profile?.name || 'Пользователь Vexa'}</strong><small>{profile?.email || 'email из авторизации Supabase'}</small></div></div><Badge kind="info">{workspace.settings.accountRole || 'Владелец'}</Badge></div>
+            <div className="grid-2"><label className="field"><span>Название workspace</span><input className="input" value={workspace.settings.workspaceName || ''} onChange={(event) => actions.updateSettings({ workspaceName: event.target.value })} /></label><label className="field"><span>Владелец</span><input className="input" value={workspace.settings.owner || ''} onChange={(event) => actions.updateSettings({ owner: event.target.value })} /></label></div>
+            <div className="grid-2"><label className="field"><span>Роль</span><select className="input" value={workspace.settings.accountRole || 'Владелец'} onChange={(event) => actions.updateSettings({ accountRole: event.target.value })}><option>Владелец</option><option>Маркетолог</option><option>HR</option><option>Продажи</option><option>Аналитик</option></select></label><label className="field"><span>Часовой пояс</span><input className="input" value={workspace.settings.timezone} onChange={(event) => actions.updateSettings({ timezone: event.target.value })} /></label></div>
+            <Btn kind="danger" icon="logout" onClick={requestSignOut}>Выйти из Vexa</Btn>
+          </div>
+        </Card>
+
+        <Card className="vexa3-card"><SectionTitle title="Доставка и правила" subtitle="Что отправлять сразу, что оставлять в ленте, что собирать в сводку." />
+          <div className="vexa3-editor-body">
+            <div className="vexa3-toggle-line"><span><strong>Уведомления в приложении</strong><small>Все совпадения остаются в ленте Vexa для разбора и обучения фильтров.</small></span><Switch on={workspace.settings.notifyInApp !== false} onChange={(notifyInApp) => actions.updateSettings({ notifyInApp })} /></div>
+            <div className="vexa3-toggle-line"><span><strong>Личные сообщения в Vexa-боте</strong><small>Отправлять совпадения, прошедшие порог скоринга и правила минус-слов.</small></span><Switch on={workspace.settings.notifyTelegram !== false} onChange={(notifyTelegram) => actions.updateSettings({ notifyTelegram })} /></div>
+            <label className="field"><span>Режим доставки</span><select className="input" value={workspace.settings.deliveryMode} onChange={(event) => actions.updateSettings({ deliveryMode: event.target.value })}><option value="smart">Умно: высокий скоринг сразу, остальное сводкой</option><option value="all">Все совпадения сразу</option><option value="digest">Только ежедневная сводка</option><option value="app-only">Только приложение</option></select></label>
+            <div className="grid-2"><label className="field"><span>Минимальный режим источников</span><select className="input" value={workspace.settings.sourceWatchMode || 'new-only'} onChange={(event) => actions.updateSettings({ sourceWatchMode: event.target.value })}><option value="new-only">Только новые сообщения</option><option value="verified-only">Только проверенные источники</option><option value="manual-review">Сначала ручная проверка</option></select></label><label className="field"><span>Хранение совпадений</span><input className="input" value={workspace.settings.retention} onChange={(event) => actions.updateSettings({ retention: event.target.value })} /></label></div>
+          </div>
+        </Card>
+
+        <Card className="vexa3-card"><SectionTitle title="Тихие часы и сводки" subtitle="Чтобы бот не шумел ночью и не дублировал низкоприоритетные совпадения." />
+          <div className="vexa3-editor-body">
+            <div className="vexa3-toggle-line"><span><strong>Тихие часы</strong><small>Новые совпадения копятся в приложении и уходят после окна тишины.</small></span><Switch on={workspace.settings.quiet} onChange={(quiet) => actions.updateSettings({ quiet })} /></div>
             <div className="grid-2"><label className="field"><span>С</span><input className="input" value={workspace.settings.quietFrom} onChange={(event) => actions.updateSettings({ quietFrom: event.target.value })} /></label><label className="field"><span>До</span><input className="input" value={workspace.settings.quietTo} onChange={(event) => actions.updateSettings({ quietTo: event.target.value })} /></label></div>
-            <div className="grid-2"><label className="field"><span>Сводка</span><input className="input" value={workspace.settings.digestTime} onChange={(event) => actions.updateSettings({ digestTime: event.target.value })} /></label><label className="field"><span>Хранение</span><input className="input" value={workspace.settings.retention} onChange={(event) => actions.updateSettings({ retention: event.target.value })} /></label></div>
+            <div className="grid-2"><label className="field"><span>Ежедневная сводка</span><input className="input" value={workspace.settings.digestTime} onChange={(event) => actions.updateSettings({ digestTime: event.target.value })} /></label><div className="vexa3-toggle-line"><span><strong>Недельный отчет</strong><small>Источники, фразы, шум и доставленные совпадения.</small></span><Switch on={workspace.settings.weeklyReport !== false} onChange={(weeklyReport) => actions.updateSettings({ weeklyReport })} /></div></div>
           </div>
         </Card>
-        <Card flush className="vexa3-card"><SectionTitle title="Правила уведомлений" subtitle="Какие события отправлять в бот." /><div className="divider" />
+
+        <Card flush className="vexa3-card"><SectionTitle title="Правила уведомлений" subtitle="Какие события отправлять в приложение и личные сообщения через Vexa-бота." /><div className="divider" />
           {workspace.notificationRules.map((rule) => <div className="vexa3-simple-row" key={rule.id}><span className="vexa3-row-icon"><Icon name="bell" /></span><span><strong>{rule.title}</strong><small>{rule.target} · порог {rule.threshold}%</small></span><Switch on={rule.enabled} onChange={() => actions.updateNotificationRule(rule.id, { enabled: !rule.enabled })} /></div>)}
         </Card>
-        <Card className="vexa3-card"><SectionTitle title="Экспорт и импорт" subtitle="Удобно для переноса пилота между сборками без базы данных." />
+
+        <Card className="vexa3-card"><SectionTitle title="Экспорт, импорт и сброс" subtitle="Для переноса пилота между сборками и проверки на тестовых данных." />
           <div className="vexa3-editor-body"><div className="vexa3-form-actions"><Btn kind="secondary" icon="arrow-down" onClick={() => downloadJson('vexa-workspace-export.json', workspace)}>Экспорт JSON</Btn><Btn kind="secondary" icon="refresh" onClick={actions.resetDemo}>Сбросить демо</Btn></div><label className="field"><span>Импорт JSON</span><textarea className="input" rows={5} value={importText} onChange={(event) => setImportText(event.target.value)} placeholder="Вставьте JSON экспорта Vexa" /></label><Btn kind="primary" icon="arrow-up" onClick={importWorkspace}>Импортировать</Btn></div>
-        </Card>
-        <Card className="vexa3-card"><SectionTitle title="Аккаунт и сессия" subtitle="Вход теперь находится перед приложением, поэтому выход возвращает на отдельный экран авторизации." />
-          <div className="vexa3-editor-body"><div className="vexa3-note compact"><Icon name="shield" size={15} /><span>После выхода боковое меню и рабочие страницы не показываются, пока пользователь снова не авторизуется.</span></div><Btn kind="danger" icon="logout" onClick={requestSignOut}>Выйти из Vexa</Btn></div>
         </Card>
       </div>
     </PageShell>
@@ -1572,7 +1713,7 @@ export function VexaSubscriptionPage() {
   return (
     <PageShell title="Vexa · Тестирование" subtitle="Пилотный контур для проверки реальных сценариев мониторинга Telegram.">
       <div className="vexa3-testing-grid">
-        <Card className="vexa3-card vexa3-testing"><Badge kind="info">тестовый доступ</Badge><h2>Цель пилота — понять, какие источники, фразы и правила доставки реально дают полезные совпадения.</h2><p>На этом этапе важнее качество источников, точность ключей, минус-слова и быстрый разбор в боте, а не тарифная сетка.</p><Btn kind="primary" icon="send" onClick={() => openTelegram('@olenchuk_b')}>Написать @olenchuk_b</Btn></Card>
+        <Card className="vexa3-card vexa3-testing"><Badge kind="info">тестовый доступ</Badge><h2>Цель пилота — понять, какие источники, фразы и правила доставки реально дают полезные совпадения.</h2><p>На этом этапе важнее качество источников, точность ключей, минус-слова и быстрый разбор в Vexa-боте, а не тарифная сетка.</p><Btn kind="primary" icon="send" onClick={() => openTelegram('@olenchuk_b')}>Написать @olenchuk_b</Btn></Card>
         <Card className="vexa3-card"><SectionTitle title="Что проверяем" subtitle="Минимальный набор для пилота." /><div className="vexa3-roadmap"><div><span>1</span><strong>Источники</strong><small>Каналы, группы, комментарии и invite-чаты с доступом.</small></div><div><span>2</span><strong>Фразы</strong><small>Как люди реально формулируют заявки, вакансии и боли.</small></div><div><span>3</span><strong>Шум</strong><small>Минус-слова, отклонения, пороги скоринга.</small></div><div><span>4</span><strong>Доставка</strong><small>Что отправлять сразу, а что собирать в сводку.</small></div></div></Card>
       </div>
     </PageShell>
@@ -1586,7 +1727,7 @@ function HelpPage() {
     ['Что делает Vexa?', 'Отслеживает новые сообщения в Telegram-каналах, группах и комментариях по ключевым словам и фразам.'],
     ['Можно загрузить старую историю?', 'Нет. Vexa работает только с новыми публикациями после подключения источника.'],
     ['Что можно отслеживать?', 'Заявки, лиды, вакансии, кандидатов, упоминания бренда, запросы на услуги, объявления и нишевые обсуждения.'],
-    ['Зачем минус-слова?', 'Чтобы исключать шумные и нерелевантные сообщения до отправки в бот.'],
+    ['Зачем минус-слова?', 'Чтобы исключать шумные и нерелевантные сообщения до отправки через Vexa-бота.'],
     ['Как понять, что поиск готов?', 'Есть 3–7 ключевых фраз, 2+ минус-слова, хотя бы один источник онлайн и понятный канал доставки.'],
   ];
 
@@ -1610,6 +1751,7 @@ function HelpPage() {
 
 export function VexaSimplePage({ id = 'help' }) {
   if (id === 'contacts') return <VexaSearchesPage />;
+  if (id === 'analytics' || id === 'vexa-analytics') return <VexaAnalyticsPage />;
   if (id === 'notifications' || id === 'settings' || id === 'account' || id === 'vexa-settings') return <VexaSettingsPage />;
   if (id === 'subscription' || id === 'payments' || id === 'limits' || id === 'vexa-testing') return <VexaSubscriptionPage />;
   return <HelpPage />;

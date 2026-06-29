@@ -10,7 +10,7 @@ import { PublicPage } from './pages/public';
 import { ModulePage } from './pages/module';
 import { ChatsPage } from './pages/chats';
 import { CalendarPage } from './pages/calendar';
-import { VexaMatchesPage, VexaSearchesPage, VexaSettingsPage, VexaSimplePage, VexaSourcesPage, VexaSubscriptionPage } from './pages/vexa';
+import { VexaAnalyticsPage, VexaMatchesPage, VexaSearchesPage, VexaSettingsPage, VexaSimplePage, VexaSourcesPage, VexaSubscriptionPage } from './pages/vexa';
 import { DesktopDashboardTransferPage } from '../desktop-dashboard-transfer/dashboard-embed';
 import ModeSwitch from '@/components/ui/mode-switch';
 
@@ -19,6 +19,7 @@ const pageToRoute = {
   searches: 'searches',
   matches: 'matches',
   'vexa-sources': 'vexa-sources',
+  'vexa-analytics': 'vexa-analytics',
   'vexa-settings': 'vexa-settings',
   'vexa-testing': 'vexa-testing',
   'vexa-help': 'vexa-help',
@@ -348,6 +349,7 @@ const routeToPage = {
   matches: 'matches',
   contacts: 'searches',
   'vexa-sources': 'vexa-sources',
+  'vexa-analytics': 'vexa-analytics',
   'vexa-settings': 'vexa-settings',
   'vexa-testing': 'vexa-testing',
   'vexa-help': 'vexa-help',
@@ -438,6 +440,7 @@ const PLATFORM_NAV = [
     { id: 'searches', label: 'Мониторинг', icon: 'search' },
     { id: 'matches', label: 'Совпадения', icon: 'inbox' },
     { id: 'vexa-sources', label: 'Источники', icon: 'filter' },
+    { id: 'vexa-analytics', label: 'Аналитика', icon: 'chart' },
     { id: 'vexa-settings', label: 'Настройки', icon: 'gear' },
     { id: 'vexa-testing', label: 'Тестирование', icon: 'sparkle' },
     { id: 'vexa-help', label: 'Помощь', icon: 'help' },
@@ -861,6 +864,10 @@ function Sidebar({ page, setPage, collapsed }) {
       }}
     >
       <span className="nav-active-indicator" aria-hidden="true" />
+      <div className="vexa-sidebar-brand" aria-label="Vexa">
+        <img src="/vexa-logo.png" alt="" />
+        <span>vexa</span>
+      </div>
 
       {PLATFORM_NAV.map((sec, i) => (
         <div className="nav-section" key={sec.section} style={{ marginTop: i === 0 ? 0 : 14 }}>
@@ -908,6 +915,7 @@ function DemoModeToggle({ demoMode, onChange }) {
 function Topbar({ page, setPage, search, setSearch, onNotif, onCreate, theme, onToggleTheme, demoMode, onDemoModeChange, unreadNotifications, master }) {
   const crumbs = PLATFORM_CRUMBS[page] || CRUMBS[page] || ['Кабинет'];
   const isDark = theme === 'dark';
+  const isVexaPage = ['searches', 'matches', 'vexa-sources', 'vexa-analytics', 'vexa-settings', 'vexa-testing', 'vexa-help'].includes(page);
   return (
     <header className="topbar">
       <div className="crumbs">
@@ -921,7 +929,7 @@ function Topbar({ page, setPage, search, setSearch, onNotif, onCreate, theme, on
       <div className="spacer" />
       <div className="input-with-icon" style={{ width: 300, maxWidth: '28vw' }}>
         <Icon name="search" />
-        <input className="input" placeholder="Поиск клиентов, записей, услуг…" value={search} onChange={e => setSearch(e.target.value)} />
+        <input className="input" placeholder={isVexaPage ? "Поиск поисков, источников, совпадений…" : "Поиск клиентов, записей, услуг…"} value={search} onChange={e => setSearch(e.target.value)} />
         <span className="kbd">/</span>
       </div>
       <DemoModeToggle demoMode={demoMode} onChange={onDemoModeChange} />
@@ -933,7 +941,7 @@ function Topbar({ page, setPage, search, setSearch, onNotif, onCreate, theme, on
       >
         <Icon name={isDark ? 'sun' : 'moon'} size={15} />
       </button>
-      <button className="btn btn-ghost icon" onClick={() => setPage('help')} data-tip="Помощь · ?" aria-label="Помощь"><Icon name="help" size={15} /></button>
+      <button className="btn btn-ghost icon" onClick={() => setPage(isVexaPage ? 'vexa-help' : 'help')} data-tip="Помощь · ?" aria-label="Помощь"><Icon name="help" size={15} /></button>
       <button className="btn btn-ghost icon" onClick={onNotif} style={{ position: 'relative' }} data-tip="Уведомления" aria-label="Уведомления">
         <Icon name="bell" size={15} />
         <span className="t-badge" data-open={unreadNotifications > 0 ? 'true' : 'false'}>
@@ -943,7 +951,7 @@ function Topbar({ page, setPage, search, setSearch, onNotif, onCreate, theme, on
       <button
         type="button"
         className="topbar-profile"
-        onClick={() => setPage('account')}
+        onClick={() => setPage(isVexaPage ? 'vexa-settings' : 'account')}
         data-tip={master?.name || 'Профиль'}
         aria-label="Профиль аккаунта"
       >
@@ -1484,6 +1492,7 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
       case 'searches': return <VexaSearchesPage />;
       case 'matches': return <VexaMatchesPage />;
       case 'vexa-sources': return <VexaSourcesPage />;
+      case 'vexa-analytics': return <VexaAnalyticsPage />;
       case 'vexa-settings': return <VexaSettingsPage />;
       case 'vexa-testing': return <VexaSubscriptionPage />;
       case 'vexa-help': return <VexaSimplePage id="help" />;

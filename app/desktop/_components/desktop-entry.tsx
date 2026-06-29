@@ -8,6 +8,7 @@ type DesktopScreen =
   | 'searches'
   | 'matches'
   | 'vexa-sources'
+  | 'vexa-analytics'
   | 'vexa-settings'
   | 'vexa-testing'
   | 'vexa-help'
