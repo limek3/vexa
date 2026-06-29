@@ -1,5 +1,5 @@
 {
-  "name": "vexa-desktop",
+  "name": "vexa-railway",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,15 +11,6 @@
     "start:render": "next start -H 0.0.0.0 -p $PORT",
     "start:local": "next start -p 3000",
     "render:build": "npm install && npm run build",
-    "desktop:dev": "concurrently -k -n next,electron -c cyan,magenta \"npm run dev\" \"wait-on http://localhost:3000 && cross-env ELECTRON_APP_URL=http://localhost:3000/desktop/dashboard electron .\"",
-    "desktop:dev:demo": "concurrently -k -n next,electron -c cyan,magenta \"npm run dev\" \"wait-on http://localhost:3000 && cross-env ELECTRON_APP_URL=http://localhost:3000/desktop/dashboard VEXA_DESKTOP_DEMO=1 electron .\"",
-    "desktop:preview": "cross-env ELECTRON_APP_URL=http://localhost:3000/desktop/dashboard electron .",
-    "desktop:preview:demo": "cross-env ELECTRON_APP_URL=http://localhost:3000/desktop/dashboard VEXA_DESKTOP_DEMO=1 electron .",
-    "desktop:pack": "electron-builder --dir --win --x64",
-    "desktop:dist": "electron-builder --win nsis --x64",
-    "desktop:live": "cross-env ELECTRON_APP_URL=http://localhost:3000/desktop/dashboard electron .",
-    "desktop:dev:login": "concurrently -k -n next,electron -c cyan,magenta \"npm run dev\" \"wait-on http://localhost:3000 && cross-env ELECTRON_APP_URL=http://localhost:3000/login electron .\"",
-    "desktop:dev:auth": "concurrently -k -n next,electron -c cyan,magenta \"npm run dev\" \"wait-on http://localhost:3000 && cross-env ELECTRON_APP_URL=http://localhost:3000/desktop/dashboard electron .\"",
     "dev:turbo": "next dev --turbo",
     "clean": "node -e \"const fs=require('fs');for(const p of ['.next','node_modules/.cache'])fs.rmSync(p,{recursive:true,force:true});console.log('Next cache cleaned')\""
   },
@@ -87,57 +78,14 @@
     "@types/node": "^22",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "concurrently": "^9.2.1",
-    "cross-env": "^10.1.0",
-    "electron": "^42.1.0",
-    "electron-builder": "^26.8.1",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.1.6",
     "postcss": "^8.5",
     "tailwindcss": "^4.2.0",
     "tw-animate-css": "1.3.3",
-    "typescript": "5.7.3",
-    "wait-on": "^9.0.3"
+    "typescript": "5.7.3"
   },
   "engines": {
     "node": "22.x"
-  },
-  "productName": "Vexa",
-  "main": "electron/main.cjs",
-  "build": {
-    "appId": "app.vexa.desktop",
-    "productName": "Vexa",
-    "asar": true,
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "electron/**/*",
-      "package.json"
-    ],
-    "extraMetadata": {
-      "main": "electron/main.cjs"
-    },
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "icon": "electron/assets/icon.ico",
-      "artifactName": "Vexa-Setup-${version}.${ext}"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "perMachine": false,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Vexa",
-      "deleteAppDataOnUninstall": false
-    }
   }
 }
