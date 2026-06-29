@@ -1774,3 +1774,127 @@ export function VexaAnalyticsPage() {
     </PageShell>
   );
 }
+
+export function VexaSettingsPage() {
+  const { workspace, actions, stats } = useVexaWorkspace();
+  const profile = useVexaProfile();
+  const [importText, setImportText] = useState('');
+  const [notice, setNotice] = useState('');
+  const botAuthorized = isBotAuthorized(workspace);
+  const botName = botDisplayName(workspace);
+
+  const importWorkspace = () => {
+    try {
+      const parsed = JSON.parse(importText);
+      actions.importWorkspace(parsed);
+      setNotice('JSON импортирован. Проверьте поиски, источники, правила доставки и Telegram-профиль.');
+      setImportText('');
+    } catch {
+      setNotice('Не удалось прочитать JSON. Проверьте формат экспорта Vexa.');
+    }
+  };
+
+  const authorizeBot = () => {
+    openTelegram(botName);
+    setNotice('Откройте нашего Vexa-бота, нажмите Start и подтвердите получение уведомлений. После этого отметьте авторизацию здесь.');
+  };
+
+  return (
+    <PageShell title="Vexa · Настройки" subtitle="Аккаунт, наш Telegram-бот, доставка уведомлений, тихие часы, хранение, экспорт и рабочие параметры мониторинга.">
+      {notice ? <div className="vexa3-inline-notice"><Icon name="info" size={14} />{notice}</div> : null}
+      <MetricGrid workspace={workspace} stats={stats} />
+      <div className="vexa3-layout vexa3-layout-settings">
+        <Card className="vexa3-card"><SectionTitle title="Наш Telegram-бот" subtitle="Клиент не подключает своего бота. Он авторизуется в нашем Vexa-боте и получает личные уведомления." right={<Badge kind={botAuthorized ? 'success' : 'warn'}>{botAuthorized ? 'авторизован' : 'ждет авторизацию'}</Badge>} />
+          <div className="vexa3-editor-body">
+            <div className="vexa3-toggle-line"><span><strong>{botAuthorized ? 'Личные уведомления включены' : 'Нужно авторизоваться в Vexa-боте'}</strong><small>Наш бот мониторит новые сообщения по правилам поисков и отправляет подходящие совпадения в приложение и личку пользователя.</small></span><Switch on={botAuthorized} onChange={(telegramLinked) => actions.updateSettings({ telegramLinked, botConnected: telegramLinked })} /></div>
+            <div className="grid-2"><label className="field"><span>Vexa-бот</span><input className="input" value={botName} onChange={(event) => actions.updateSettings({ botUsername: event.target.value })} /></label><label className="field"><span>Telegram пользователя</span><input className="input" value={workspace.settings.telegramUser || ''} onChange={(event) => actions.updateSettings({ telegramUser: event.target.value })} placeholder="@username после авторизации" /></label></div>
+            <div className="vexa3-form-actions"><Btn kind="primary" icon="send" onClick={authorizeBot}>Открыть Vexa-бота</Btn><Btn kind="secondary" icon="check" onClick={() => actions.updateSettings({ telegramLinked: true, botConnected: true })}>Отметить авторизацию</Btn><Btn kind="secondary" icon="bell" onClick={() => notify('Тестовое уведомление Vexa', `${botName} · личное сообщение`) }>Тест уведомления</Btn></div>
+            <div className="vexa3-source-checklist"><div><Icon name="shield" size={14} /><span>Бот принадлежит Vexa, токены клиенту не нужны.</span></div><div><Icon name="send" size={14} /><span>Пользователь получает только совпадения из своих поисков.</span></div><div><Icon name="clock" size={14} /><span>Старые сообщения не подтягиваются.</span></div></div>
+          </div>
+        </Card>
+
+        <Card className="vexa3-card"><SectionTitle title="Аккаунт и рабочая область" subtitle="Параметры владельца, роли и названия проекта." />
+          <div className="vexa3-editor-body">
+            <div className="vexa3-session-strip"><div className="vexa3-session-user"><span>{(profile?.email || workspace.settings.owner || 'V').slice(0,1).toUpperCase()}</span><div><strong>{workspace.settings.owner || profile?.name || 'Пользователь Vexa'}</strong><small>{profile?.email || 'email из авторизации Supabase'}</small></div></div><Badge kind="info">{workspace.settings.accountRole || 'Владелец'}</Badge></div>
+            <div className="grid-2"><label className="field"><span>Название workspace</span><input className="input" value={workspace.settings.workspaceName || ''} onChange={(event) => actions.updateSettings({ workspaceName: event.target.value })} /></label><label className="field"><span>Владелец</span><input className="input" value={workspace.settings.owner || ''} onChange={(event) => actions.updateSettings({ owner: event.target.value })} /></label></div>
+            <div className="grid-2"><label className="field"><span>Роль</span><select className="input" value={workspace.settings.accountRole || 'Владелец'} onChange={(event) => actions.updateSettings({ accountRole: event.target.value })}><option>Владелец</option><option>Маркетолог</option><option>HR</option><option>Продажи</option><option>Аналитик</option></select></label><label className="field"><span>Часовой пояс</span><input className="input" value={workspace.settings.timezone} onChange={(event) => actions.updateSettings({ timezone: event.target.value })} /></label></div>
+            <Btn kind="danger" icon="logout" onClick={requestSignOut}>Выйти из Vexa</Btn>
+          </div>
+        </Card>
+
+        <Card className="vexa3-card"><SectionTitle title="Доставка и правила" subtitle="Что отправлять сразу, что оставлять в ленте, что собирать в сводку." />
+          <div className="vexa3-editor-body">
+            <div className="vexa3-toggle-line"><span><strong>Уведомления в приложении</strong><small>Все совпадения остаются в ленте Vexa для разбора и обучения фильтров.</small></span><Switch on={workspace.settings.notifyInApp !== false} onChange={(notifyInApp) => actions.updateSettings({ notifyInApp })} /></div>
+            <div className="vexa3-toggle-line"><span><strong>Личные сообщения в Vexa-боте</strong><small>Отправлять совпадения, прошедшие порог скоринга и правила минус-слов.</small></span><Switch on={workspace.settings.notifyTelegram !== false} onChange={(notifyTelegram) => actions.updateSettings({ notifyTelegram })} /></div>
+            <label className="field"><span>Режим доставки</span><select className="input" value={workspace.settings.deliveryMode} onChange={(event) => actions.updateSettings({ deliveryMode: event.target.value })}><option value="smart">Умно: высокий скоринг сразу, остальное сводкой</option><option value="all">Все совпадения сразу</option><option value="digest">Только ежедневная сводка</option><option value="app-only">Только приложение</option></select></label>
+            <div className="grid-2"><label className="field"><span>Минимальный режим источников</span><select className="input" value={workspace.settings.sourceWatchMode || 'new-only'} onChange={(event) => actions.updateSettings({ sourceWatchMode: event.target.value })}><option value="new-only">Только новые сообщения</option><option value="verified-only">Только проверенные источники</option><option value="manual-review">Сначала ручная проверка</option></select></label><label className="field"><span>Хранение совпадений</span><input className="input" value={workspace.settings.retention} onChange={(event) => actions.updateSettings({ retention: event.target.value })} /></label></div>
+          </div>
+        </Card>
+
+        <Card className="vexa3-card"><SectionTitle title="Тихие часы и сводки" subtitle="Чтобы бот не шумел ночью и не дублировал низкоприоритетные совпадения." />
+          <div className="vexa3-editor-body">
+            <div className="vexa3-toggle-line"><span><strong>Тихие часы</strong><small>Новые совпадения копятся в приложении и уходят после окна тишины.</small></span><Switch on={workspace.settings.quiet} onChange={(quiet) => actions.updateSettings({ quiet })} /></div>
+            <div className="grid-2"><label className="field"><span>С</span><input className="input" value={workspace.settings.quietFrom} onChange={(event) => actions.updateSettings({ quietFrom: event.target.value })} /></label><label className="field"><span>До</span><input className="input" value={workspace.settings.quietTo} onChange={(event) => actions.updateSettings({ quietTo: event.target.value })} /></label></div>
+            <div className="grid-2"><label className="field"><span>Ежедневная сводка</span><input className="input" value={workspace.settings.digestTime} onChange={(event) => actions.updateSettings({ digestTime: event.target.value })} /></label><div className="vexa3-toggle-line"><span><strong>Недельный отчет</strong><small>Источники, фразы, шум и доставленные совпадения.</small></span><Switch on={workspace.settings.weeklyReport !== false} onChange={(weeklyReport) => actions.updateSettings({ weeklyReport })} /></div></div>
+          </div>
+        </Card>
+
+        <Card flush className="vexa3-card"><SectionTitle title="Правила уведомлений" subtitle="Какие события отправлять в приложение и личные сообщения через Vexa-бота." /><div className="divider" />
+          {workspace.notificationRules.map((rule) => <div className="vexa3-simple-row" key={rule.id}><span className="vexa3-row-icon"><Icon name="bell" /></span><span><strong>{rule.title}</strong><small>{rule.target} · порог {rule.threshold}%</small></span><Switch on={rule.enabled} onChange={() => actions.updateNotificationRule(rule.id, { enabled: !rule.enabled })} /></div>)}
+        </Card>
+
+        <Card className="vexa3-card"><SectionTitle title="Экспорт, импорт и сброс" subtitle="Для переноса пилота между сборками и проверки на тестовых данных." />
+          <div className="vexa3-editor-body"><div className="vexa3-form-actions"><Btn kind="secondary" icon="arrow-down" onClick={() => downloadJson('vexa-workspace-export.json', workspace)}>Экспорт JSON</Btn><Btn kind="secondary" icon="refresh" onClick={actions.resetDemo}>Сбросить демо</Btn></div><label className="field"><span>Импорт JSON</span><textarea className="input" rows={5} value={importText} onChange={(event) => setImportText(event.target.value)} placeholder="Вставьте JSON экспорта Vexa" /></label><Btn kind="primary" icon="arrow-up" onClick={importWorkspace}>Импортировать</Btn></div>
+        </Card>
+      </div>
+    </PageShell>
+  );
+}
+
+export function VexaSubscriptionPage() {
+  return (
+    <PageShell title="Vexa · Тестирование" subtitle="Пилотный контур для проверки реальных сценариев мониторинга Telegram.">
+      <div className="vexa3-testing-grid">
+        <Card className="vexa3-card vexa3-testing"><Badge kind="info">тестовый доступ</Badge><h2>Цель пилота — понять, какие источники, фразы и правила доставки реально дают полезные совпадения.</h2><p>На этом этапе важнее качество источников, точность ключей, минус-слова и быстрый разбор в Vexa-боте, а не тарифная сетка.</p><Btn kind="primary" icon="send" onClick={() => openTelegram('@olenchuk_b')}>Написать @olenchuk_b</Btn></Card>
+        <Card className="vexa3-card"><SectionTitle title="Что проверяем" subtitle="Минимальный набор для пилота." /><div className="vexa3-roadmap"><div><span>1</span><strong>Источники</strong><small>Каналы, группы, комментарии и invite-чаты с доступом.</small></div><div><span>2</span><strong>Фразы</strong><small>Как люди реально формулируют заявки, вакансии и боли.</small></div><div><span>3</span><strong>Шум</strong><small>Минус-слова, отклонения, пороги скоринга.</small></div><div><span>4</span><strong>Доставка</strong><small>Что отправлять сразу, а что собирать в сводку.</small></div></div></Card>
+      </div>
+    </PageShell>
+  );
+}
+
+function HelpPage() {
+  const [feedback, setFeedback] = useState('Хочу протестировать Vexa для задачи: отслеживать заявки и обсуждения в Telegram-чатах. Источников примерно: 10–20. Важные фразы: ... Минус-слова: ...');
+  const [notice, setNotice] = useState('');
+  const faq = [
+    ['Что делает Vexa?', 'Отслеживает новые сообщения в Telegram-каналах, группах и комментариях по ключевым словам и фразам.'],
+    ['Можно загрузить старую историю?', 'Нет. Vexa работает только с новыми публикациями после подключения источника.'],
+    ['Что можно отслеживать?', 'Заявки, лиды, вакансии, кандидатов, упоминания бренда, запросы на услуги, объявления и нишевые обсуждения.'],
+    ['Зачем минус-слова?', 'Чтобы исключать шумные и нерелевантные сообщения до отправки через Vexa-бота.'],
+    ['Как понять, что поиск готов?', 'Есть 3–7 ключевых фраз, 2+ минус-слова, хотя бы один источник онлайн и понятный канал доставки.'],
+  ];
+
+  const copyFeedback = () => {
+    const text = feedback.trim();
+    if (!text) return setNotice('Опишите задачу, которую хотите протестировать.');
+    copyText(`Хочу протестировать Vexa:\n${text}`, 'Запрос на тест скопирован');
+    setNotice('Запрос скопирован. Отправьте его в Telegram @olenchuk_b.');
+  };
+
+  return (
+    <PageShell title="Vexa · Помощь" subtitle="FAQ, тестирование и обратная связь.">
+      {notice ? <div className="vexa3-inline-notice"><Icon name="info" size={14} />{notice}</div> : null}
+      <div className="vexa3-layout vexa3-layout-settings">
+        <Card flush className="vexa3-card"><SectionTitle title="Вопросы" subtitle="Базовая логика продукта." /><div className="divider" />{faq.map(([question, answer]) => <div className="vexa3-simple-row" key={question}><span className="vexa3-row-icon"><Icon name="help" /></span><span><strong>{question}</strong><small>{answer}</small></span></div>)}</Card>
+        <Card className="vexa3-card"><SectionTitle title="Запрос на тест" subtitle="Сформулируйте реальную задачу, источники и критерии полезного совпадения." /><div className="vexa3-editor-body"><label className="field"><span>Задача для теста</span><textarea className="input" rows={8} value={feedback} onChange={(event) => setFeedback(event.target.value)} /></label><div className="vexa3-form-actions"><Btn kind="secondary" icon="copy" onClick={copyFeedback}>Скопировать</Btn><Btn kind="primary" icon="send" onClick={() => openTelegram('@olenchuk_b')}>Написать</Btn></div></div></Card>
+      </div>
+    </PageShell>
+  );
+}
+
+export function VexaSimplePage({ id = 'help' }) {
+  if (id === 'contacts') return <VexaSearchesPage />;
+  if (id === 'analytics' || id === 'vexa-analytics') return <VexaAnalyticsPage />;
+  if (id === 'notifications' || id === 'settings' || id === 'account' || id === 'vexa-settings') return <VexaSettingsPage />;
+  if (id === 'subscription' || id === 'payments' || id === 'limits' || id === 'vexa-testing') return <VexaSubscriptionPage />;
+  return <HelpPage />;
+}
