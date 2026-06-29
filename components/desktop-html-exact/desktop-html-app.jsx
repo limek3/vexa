@@ -567,7 +567,7 @@ function DesktopToasts({ notifications }) {
 function buildDesktopSummary(platform) {
   const unread = (platform?.notifications || []).filter((item) => item.unread).length;
   return [
-    'Vexa workspace',
+    'Рабочее место Vexa',
     '4 активных поиска',
     '52 источника',
     '214 совпадений сегодня',
@@ -663,7 +663,7 @@ function CommandCenter({ open, onClose, platform, setPage, onToggleTheme, tweaks
       <div className="command-panel" onClick={(event) => event.stopPropagation()}>
         <div className="command-head">
           <div className="command-brand">
-            <span className="command-orb"><Icon name="sparkle" size={15} /></span>
+            <span className="command-orb"><img src="/vexa-logo.png" alt="Vexa" /></span>
             <div>
           <div className="command-title">Командный центр</div>
               <div className="command-sub">Рабочее место Vexa · мониторинг Telegram</div>

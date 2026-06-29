@@ -10,6 +10,7 @@ export function DesktopBootScreen() {
   return (
     <div className="cb-desktop-html" data-theme="light" data-accent="plum" data-density="default" data-radius="default">
       <div className="boot-exact">
+        <img src="/vexa-logo.png" alt="Vexa" className="boot-logo" />
         <div>
           <strong>Рабочий кабинет</strong>
           <em>Открываем интерфейс...</em>

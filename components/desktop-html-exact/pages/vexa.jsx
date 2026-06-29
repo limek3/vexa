@@ -13,6 +13,7 @@ import {
   YAxis,
 } from 'recharts';
 import { Avatar, Badge, Btn, Card, Icon, Metric, NumberPopIn, Segmented, Switch } from '../desktop-html-ui';
+import { createClient } from '@/lib/supabase/client';
 
 const chartDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
@@ -69,6 +70,27 @@ const initialWorkspace = {
 
 function parseLines(value) {
   return String(value || '').split('\n').map((item) => item.trim()).filter(Boolean);
+}
+
+const blockedInputPattern = /(<\/?[a-z][\s\S]*?>|```|;\s*(select|insert|update|delete|drop|alter|truncate|create|grant|revoke)\b|\b(select|insert|update|delete|drop|alter|truncate|create|union|exec|execute|script|iframe|onerror|onload|javascript:)\b|--|\/\*|\*\/|\${|=>|function\s*\(|import\s+|require\s*\()/i;
+
+function cleanText(value, max = 120) {
+  return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
+}
+
+function validateSafeText(label, value) {
+  const text = String(value || '');
+  if (blockedInputPattern.test(text)) {
+    return `${label}: нельзя вставлять код, HTML или SQL-команды. Оставьте только обычный текст запроса.`;
+  }
+  return '';
+}
+
+function sanitizeLines(value, maxLines = 12, maxLen = 64) {
+  return parseLines(value)
+    .slice(0, maxLines)
+    .map((item) => cleanText(item, maxLen))
+    .filter(Boolean);
 }
 
 function sourceCount(search) {
@@ -164,18 +186,6 @@ function copyText(text, label = 'Скопировано') {
     return;
   }
   notify(label);
-}
-
-function downloadJson(filename, payload) {
-  if (typeof window === 'undefined') return;
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
-  notify('Файл экспорта подготовлен', filename);
 }
 
 function openTelegram(ref) {
@@ -349,8 +359,8 @@ function useVexaWorkspace() {
 
   const actions = useMemo(() => ({
     resetWorkspace() {
-      commit(initialWorkspace, { title: 'Workspace сброшен', body: 'Вернули стартовые данные', icon: 'refresh' });
-      notify('Workspace сброшен');
+      commit(initialWorkspace, { title: 'Рабочее место сброшено', body: 'Вернули стартовые данные', icon: 'refresh' });
+      notify('Рабочее место сброшено');
     },
     upsertSearch(search, activity) {
       commit((current) => ({
@@ -1134,18 +1144,29 @@ export function VexaSearchesPage() {
   };
 
   const saveSearch = () => {
-    const keywords = parseLines(draft.keywords);
-    const minus = parseLines(draft.minus);
+    const unsafe = [
+      validateSafeText('Название', draft.title),
+      validateSafeText('Ключевые слова', draft.keywords),
+      validateSafeText('Минус-слова', draft.minus),
+    ].find(Boolean);
+    if (unsafe) {
+      setNotice(unsafe);
+      notify('Поиск не сохранен', 'Опасный текст в полях');
+      return;
+    }
+
+    const keywords = sanitizeLines(draft.keywords, 12, 64);
+    const minus = sanitizeLines(draft.minus, 24, 64);
     const sourceIds = Array.isArray(draft.sourceIds) ? draft.sourceIds : [];
     const next = {
       ...selected,
-      title: draft.title.trim() || 'Без названия',
+      title: cleanText(draft.title, 80) || 'Без названия',
       keywords: keywords.length ? keywords : ['новый запрос'],
       minus,
       sourceIds,
       sources: sourceIds.length,
       priority: draft.priority,
-      dailyLimit: Number(draft.dailyLimit) || selected.dailyLimit,
+      dailyLimit: Math.max(1, Math.min(5000, Number(draft.dailyLimit) || selected.dailyLimit)),
       quality: Math.max(selected.quality, 78),
       lastRun: selected.status === 'active' ? 'только что' : selected.lastRun,
     };
@@ -1451,7 +1472,26 @@ export function VexaSourcesPage() {
   };
 
   const saveSource = () => {
-    const next = { ...selected, ...draft, group: draft.group.trim() || 'Основные', searches: sourceUsage(workspace, selected.id), status: selected.status === 'blocked' ? 'limited' : selected.status };
+    const unsafe = [
+      validateSafeText('Название источника', draft.title),
+      validateSafeText('Ссылка источника', draft.ref),
+      validateSafeText('Тема источника', draft.group),
+    ].find(Boolean);
+    if (unsafe) {
+      setNotice(unsafe);
+      notify('Источник не сохранен', 'Опасный текст в полях');
+      return;
+    }
+
+    const next = {
+      ...selected,
+      ...draft,
+      title: cleanText(draft.title, 80) || 'Новый источник',
+      ref: cleanText(draft.ref, 120) || '@new_source',
+      group: cleanText(draft.group, 48) || 'Основные',
+      searches: sourceUsage(workspace, selected.id),
+      status: selected.status === 'blocked' ? 'limited' : selected.status,
+    };
     actions.updateSource(selected.id, next, { title: 'Источник сохранен', body: next.ref, icon: 'filter' });
     setNotice(`Источник “${next.title}” сохранен`);
     notify('Источник сохранен', next.ref);
@@ -1691,6 +1731,7 @@ export function VexaSettingsPage() {
   const [settings, setSettings] = useState(workspace.settings);
   const [profile, setProfile] = useState(null);
   const [notice, setNotice] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
     setSettings(workspace.settings);
@@ -1710,6 +1751,28 @@ export function VexaSettingsPage() {
     actions.updateSettings(settings);
     setNotice('Настройки сохранены локально и готовы к синхронизации');
     notify('Настройки Vexa сохранены');
+  };
+
+  const updatePassword = async () => {
+    if (newPassword.length < 8 || newPassword.length > 64) {
+      setNotice('Новый пароль должен быть от 8 до 64 символов.');
+      return;
+    }
+    if (validateSafeText('Пароль', newPassword)) {
+      setNotice('В пароле нельзя использовать код, HTML или SQL-команды.');
+      return;
+    }
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      setNewPassword('');
+      setNotice('Пароль обновлен');
+      notify('Пароль обновлен');
+    } catch {
+      setNotice('Не удалось обновить пароль. Если вы восстанавливаете доступ, сначала откройте письмо восстановления.');
+    }
   };
 
   const applyAvatar = (avatarUrl) => {
@@ -1747,15 +1810,15 @@ export function VexaSettingsPage() {
   return (
     <PageShell
       title="Настройки"
-      subtitle="Уведомления, тихие часы, аккаунт и экспорт данных."
+      subtitle="Уведомления, тихие часы, аккаунт и безопасность."
       actions={<Btn icon="check" kind="primary" onClick={save}>Сохранить</Btn>}
     >
       <Notice>{notice}</Notice>
       <div className="grid-4 vexa-metrics">
         <Metric label="Тариф" value={stats.plan.name} delta={`${stats.plan.searches} поисков`} />
-        <Metric label="Тихие часы" value={settings.quiet ? 'on' : 'off'} delta={`${settings.start}-${settings.end}`} />
-        <Metric label="Telegram" value={telegram.connected ? 'on' : 'off'} delta={telegram.connected ? 'уведомления' : 'не подключен'} />
-        <Metric label="Сводка" value={settings.digest ? 'on' : 'off'} delta="ежедневный отчет" />
+        <Metric label="Тихие часы" value={settings.quiet ? 'Вкл' : 'Выкл'} delta={`${settings.start}-${settings.end}`} />
+        <Metric label="Telegram" value={telegram.connected ? 'Вкл' : 'Выкл'} delta={telegram.connected ? 'уведомления' : 'не подключен'} />
+        <Metric label="Сводка" value={settings.digest ? 'Вкл' : 'Выкл'} delta="ежедневный отчет" />
       </div>
       <div className="vexa-split settings">
         <InnerCard title="Уведомления" subtitle="Правила доставки внутри приложения и во внешние каналы">
@@ -1814,7 +1877,7 @@ export function VexaSettingsPage() {
             </div>
           </div>
         </InnerCard>
-        <InnerCard title="Аккаунт" subtitle="Профиль, экспорт и технические действия">
+        <InnerCard title="Аккаунт" subtitle="Профиль и технические настройки">
           <div className="col vexa-card-body">
             <div className="vexa-account-profile">
               <Avatar name={profile?.email || profile?.name || 'Vexa'} src={settings.avatarUrl} size="lg" />
@@ -1839,8 +1902,12 @@ export function VexaSettingsPage() {
               <strong>{stats.plan.name}</strong>
               <div className="section-sub">{stats.plan.searches} поисков · {stats.plan.sources} источников · {stats.plan.messages} сообщений в день</div>
             </div>
+            <label className="field">
+              <span>Новый пароль</span>
+              <input className="input" type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} minLength={8} maxLength={64} placeholder="8-64 символа" />
+            </label>
             <div className="vexa-form-actions">
-              <Btn kind="secondary" icon="arrow-up-right" onClick={() => downloadJson('vexa-settings.json', settings)}>Экспорт</Btn>
+              <Btn kind="secondary" onClick={updatePassword} disabled={!newPassword}>Обновить пароль</Btn>
               <Btn kind="primary" onClick={save}>Сохранить</Btn>
             </div>
           </div>
@@ -1897,12 +1964,11 @@ function ContactsPage() {
       <div className="vexa-split">
         <Card flush className="vexa-card">
           <div className="card-head vexa-card-head">
-            <div>
-              <div className="section-title">Список контактов</div>
-              <div className="section-sub">{workspace.contacts.length} активных диалогов</div>
-            </div>
-            <Btn size="sm" kind="secondary" icon="arrow-up-right" onClick={() => downloadJson('vexa-contacts.json', workspace.contacts)}>Экспорт</Btn>
+          <div>
+            <div className="section-title">Список контактов</div>
+            <div className="section-sub">{workspace.contacts.length} активных диалогов</div>
           </div>
+        </div>
           <div className="divider" />
           {workspace.contacts.map((item) => (
             <button key={item.id} type="button" className={`li-row vexa-row vexa-row-button ${selected?.id === item.id ? 'active' : ''}`} onClick={() => select(item)}>
@@ -1960,7 +2026,6 @@ function AnalyticsPage() {
             { value: 'week', label: 'Неделя' },
             { value: 'month', label: 'Месяц' },
           ]} />
-          <Btn icon="arrow-up-right" kind="secondary" onClick={() => downloadJson('vexa-analytics.json', { chart: stats.chartData, stats, searches: workspace.searches, sources: workspace.sources })}>Экспорт</Btn>
         </>
       )}
     >
@@ -2047,7 +2112,6 @@ function PaymentsPage({ go }) {
             <div className="section-title">История счетов</div>
             <div className="section-sub">Макет под YooKassa/CloudPayments или ручную оплату</div>
           </div>
-          <Btn size="sm" kind="secondary" icon="arrow-up-right" onClick={() => downloadJson('vexa-invoices.json', workspace.invoices)}>Экспорт</Btn>
         </div>
         <div className="divider" />
         {workspace.invoices.map((invoice) => (
@@ -2101,8 +2165,8 @@ function NotificationsPage() {
       <div className="grid-4 vexa-metrics">
         <Metric label="Правил" value={workspace.notificationRules.length} delta="в приложении" />
         <Metric label="Включено" value={workspace.notificationRules.filter((item) => item.enabled).length} delta="активные события" deltaKind="up" />
-        <Metric label="Telegram" value={telegram.connected ? 'on' : 'off'} delta={telegram.connected ? 'подключен' : 'не подключен'} />
-        <Metric label="Тихие часы" value={workspace.settings.quiet ? 'on' : 'off'} delta={`${workspace.settings.start}-${workspace.settings.end}`} />
+        <Metric label="Telegram" value={telegram.connected ? 'Вкл' : 'Выкл'} delta={telegram.connected ? 'подключен' : 'не подключен'} />
+        <Metric label="Тихие часы" value={workspace.settings.quiet ? 'Вкл' : 'Выкл'} delta={`${workspace.settings.start}-${workspace.settings.end}`} />
       </div>
       <div className="vexa-split notifications">
         <InnerCard title="Каналы доставки" subtitle="Приложение работает всегда, Telegram нужен только для push-сообщений">

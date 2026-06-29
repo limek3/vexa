@@ -37,6 +37,12 @@ html[data-clickbook-desktop='true'] .cb-desktop-html {
   color: var(--text, #4c4f69);
   background: var(--bg, #eef4f9);
 }
+.cb-desktop-html .boot-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  object-fit: cover;
+}
 .cb-desktop-html .boot-exact span {
   width: 34px;
   height: 34px;
@@ -1162,6 +1168,7 @@ html[data-desktop-screen='true'][data-theme='dark'] body {
   border-radius: 10px;
   background: var(--accent-soft);
   color: var(--accent-text);
+  overflow: hidden;
 }
 
 .cb-desktop-html .command-title {
@@ -10418,6 +10425,15 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   border-radius: 12px;
   background: var(--surface-3);
   color: var(--accent-text);
+  overflow: hidden;
+}
+
+.cb-desktop-html .vexa-auth-mark img,
+.cb-desktop-html .command-orb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .cb-desktop-html .vexa-auth-warning {
@@ -10468,6 +10484,23 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+}
+
+.cb-desktop-html .vexa-auth-link {
+  justify-self: center;
+  border: 0;
+  background: transparent;
+  color: var(--accent-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cb-desktop-html .vexa-auth-hint {
+  color: var(--text-4);
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .cb-desktop-html .vexa-auth-strip {
@@ -11062,9 +11095,9 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-search-row {
   display: grid;
-  grid-template-columns: minmax(200px, 1fr) minmax(150px, .52fr) minmax(132px, auto) minmax(154px, auto);
+  grid-template-columns: minmax(220px, .92fr) minmax(240px, 1fr) minmax(150px, auto) minmax(154px, auto);
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   padding: 14px 16px;
   border-bottom: 1px solid var(--line);
 }
@@ -11175,6 +11208,8 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-search-row-health {
   min-width: 0;
+  width: 100%;
+  justify-self: stretch;
   display: grid;
   gap: 6px;
   padding: 9px 11px;
@@ -11229,9 +11264,9 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 
 .cb-desktop-html .vexa-search-row > .vexa-row-actions .btn {
   width: 100%;
-  min-height: 30px;
-  padding-inline: 8px;
-  font-size: 11px;
+  min-height: 30px !important;
+  padding-inline: 8px !important;
+  font-size: 11px !important;
   justify-content: center;
 }
 
@@ -11483,5 +11518,157 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   .cb-desktop-html .vexa-account-profile .vexa-form-actions {
     grid-column: 1 / -1;
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 1800px) {
+  .cb-desktop-html {
+    --sidebar-w: 228px;
+    --topbar-h: 58px;
+  }
+
+  .cb-desktop-html .topbar {
+    padding: 0 22px;
+  }
+
+  .cb-desktop-html .content:has(.vexa-page) {
+    max-width: 1380px;
+    padding: 22px 26px 48px !important;
+  }
+
+  .cb-desktop-html .vexa-page-head {
+    margin-bottom: 18px;
+  }
+
+  .cb-desktop-html .vexa-page .page-title {
+    font-size: 24px;
+  }
+
+  .cb-desktop-html .vexa-page .page-subtitle {
+    font-size: 13px;
+  }
+
+  .cb-desktop-html .vexa-metrics {
+    gap: 14px;
+  }
+
+  .cb-desktop-html .vexa-card .card-head,
+  .cb-desktop-html .vexa-card-head {
+    padding: 14px 16px;
+  }
+
+  .cb-desktop-html .vexa-card-body {
+    padding: 16px;
+  }
+
+  .cb-desktop-html .vexa-chart-shell {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 1500px) {
+  .cb-desktop-html {
+    --sidebar-w: 214px;
+  }
+
+  .cb-desktop-html .content:has(.vexa-page) {
+    max-width: 1240px;
+    padding: 18px 22px 44px !important;
+  }
+
+  .cb-desktop-html .vexa-split,
+  .cb-desktop-html .vexa-split.dashboard,
+  .cb-desktop-html .vexa-split.matches,
+  .cb-desktop-html .vexa-split.sources,
+  .cb-desktop-html .vexa-split.settings,
+  .cb-desktop-html .vexa-split.subscription,
+  .cb-desktop-html .vexa-split.analytics,
+  .cb-desktop-html .vexa-split.help {
+    gap: 16px;
+  }
+
+  .cb-desktop-html .vexa-search-row {
+    grid-template-columns: minmax(190px, .8fr) minmax(190px, 1fr) minmax(132px, auto);
+  }
+
+  .cb-desktop-html .vexa-search-row > .vexa-row-actions {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(78px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .cb-desktop-html {
+    --sidebar-w: 100%;
+    --topbar-h: auto;
+  }
+
+  .cb-desktop-html .content:has(.vexa-page) {
+    padding: 14px 12px 36px !important;
+  }
+
+  .cb-desktop-html .vexa-page-head {
+    display: grid;
+    gap: 12px;
+  }
+
+  .cb-desktop-html .vexa-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .cb-desktop-html .vexa-auth-screen {
+    min-height: calc(100vh - 96px);
+    padding: 18px 12px;
+    place-items: start center;
+  }
+
+  .cb-desktop-html .vexa-auth-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .cb-desktop-html .vexa-auth-card h1 {
+    font-size: 21px;
+  }
+
+  .cb-desktop-html .vexa-auth-strip {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .cb-desktop-html .vexa-search-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .cb-desktop-html .vexa-search-row-open {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .cb-desktop-html .vexa-search-row-title strong {
+    max-width: 100%;
+  }
+
+  .cb-desktop-html .vexa-search-row-side {
+    width: 100%;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .cb-desktop-html .vexa-search-row-stats {
+    justify-content: end;
+  }
+
+  .cb-desktop-html .vexa-search-row > .vexa-row-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cb-desktop-html .vexa-button-grid,
+  .cb-desktop-html .vexa-editor-summary,
+  .cb-desktop-html .vexa-match-grid {
+    grid-template-columns: 1fr;
   }
 }
