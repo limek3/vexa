@@ -10388,10 +10388,9 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
 }
 
 .cb-desktop-html .vexa-auth-screen {
-  position: fixed;
-  inset: var(--titlebar-offset, 0px) 0 0;
-  z-index: 250;
-  min-height: calc(100vh - var(--titlebar-offset, 0px));
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
   display: grid;
   grid-template-columns: minmax(420px, 42.5vw) minmax(0, 1fr);
   overflow: hidden;
@@ -11968,7 +11967,7 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
   .cb-desktop-html .vexa-auth-screen {
     grid-template-columns: 1fr;
     overflow: auto;
-    min-height: calc(100vh - var(--titlebar-offset, 0px));
+    min-height: 100%;
   }
 
   .cb-desktop-html .vexa-auth-brand {

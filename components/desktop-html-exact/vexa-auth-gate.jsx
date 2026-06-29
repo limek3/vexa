@@ -268,7 +268,17 @@ export function VexaAuthGate({ children }) {
       const supabase = createClient();
       await supabase.auth.signOut();
     } finally {
-      window.location.href = '/auth/signout';
+      try {
+        window.localStorage.removeItem(VEXA_PROFILE_STORAGE_KEY);
+      } catch (err) {
+        void err;
+      }
+      setProfile(null);
+      setPassword('');
+      setAuthNotice('');
+      setError('');
+      setState('login');
+      window.dispatchEvent(new CustomEvent('vexa-profile-updated', { detail: null }));
     }
   };
 

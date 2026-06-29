@@ -6,6 +6,7 @@ import { MASTER, SERVICES, CLIENTS, NOTIFICATIONS } from './desktop-html-data';
 import { Icon, Avatar, Check, SuccessCheck } from './desktop-html-ui';
 import { useDesktopPlatform } from './desktop-platform';
 import { VexaAuthGate } from './vexa-auth-gate';
+import { AppearancePage } from './pages/appearance';
 import {
   VexaDashboardPage,
   VexaMatchesPage,
@@ -1440,6 +1441,7 @@ export default function DesktopHtmlExactApp({ initialPage = 'dashboard' }) {
       case 'analytics': return <VexaSimplePage id="analytics" go={setPage} />;
       case 'notifications': return <VexaSimplePage id="notifications" go={setPage} />;
       case 'payments': return <VexaSimplePage id="payments" go={setPage} />;
+      case 'appearance': return <AppearancePage tweaks={tweaks} setTweak={setDesktopTweak} />;
       case 'subscription': return <VexaSubscriptionPage />;
       case 'settings':
       case 'account':
