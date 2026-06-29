@@ -772,15 +772,10 @@ function useVexaWorkspace() {
 }
 
 function PageShell({ title, subtitle, actions, children }) {
+  void subtitle;
   return (
     <div className="vexa3-page" data-screen-label={`Vexa ${title}`}>
-      <div className="page-head vexa3-page-head">
-        <div>
-          <h1 className="page-title">{title}</h1>
-          <p className="page-subtitle">{subtitle}</p>
-        </div>
-        {actions ? <div className="vexa3-actions">{actions}</div> : null}
-      </div>
+      {actions ? <div className="vexa3-page-actionbar"><div aria-hidden="true" /><div className="vexa3-actions">{actions}</div></div> : null}
       {children}
     </div>
   );
@@ -999,6 +994,47 @@ function SourcePicker({ workspace, value = [], onChange }) {
   );
 }
 
+
+function SearchPagination({ page, pages, total, onChange }) {
+  if (pages <= 1) {
+    return <div className="vexa3-pagination compact"><span>{total} сценария</span></div>;
+  }
+  const items = Array.from({ length: pages }, (_, index) => index + 1);
+  return (
+    <div className="vexa3-pagination">
+      <span>{total} сценария · страница {page} из {pages}</span>
+      <div>
+        <button type="button" onClick={() => onChange(Math.max(1, page - 1))} disabled={page <= 1} aria-label="Предыдущая страница"><Icon name="chevron-left" size={13} /></button>
+        {items.map((item) => (
+          <button type="button" key={item} className={item === page ? 'active' : ''} onClick={() => onChange(item)}>{item}</button>
+        ))}
+        <button type="button" onClick={() => onChange(Math.min(pages, page + 1))} disabled={page >= pages} aria-label="Следующая страница"><Icon name="chevron-right" size={13} /></button>
+      </div>
+    </div>
+  );
+}
+
+function PhraseEditor({ label, value, onChange, placeholder, kind = 'keyword' }) {
+  const lines = sanitizeLines(value, 40, 96);
+  return (
+    <label className={`field vexa3-token-field ${kind}`}>
+      <span>{label}</span>
+      <div className="vexa3-token-editor">
+        <div className="vexa3-token-cloud" aria-hidden={lines.length ? 'false' : 'true'}>
+          {lines.length ? lines.map((line) => <i key={line}>{line}</i>) : <em>Добавляйте каждую фразу с новой строки</em>}
+        </div>
+        <textarea
+          className="input vexa3-token-textarea"
+          rows={kind === 'minus' ? 4 : 5}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={placeholder}
+        />
+      </div>
+    </label>
+  );
+}
+
 function toSearchDraft(search) {
   if (!search) return { ...blankSearchDraft };
   return {
@@ -1096,6 +1132,7 @@ export function VexaSearchesPage() {
   const [notice, setNotice] = useState('');
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [searchPage, setSearchPage] = useState(1);
 
   useEffect(() => {
     if (!selected && workspace.searches[0]) {
@@ -1110,6 +1147,15 @@ export function VexaSearchesPage() {
     if (!needle) return true;
     return [search.title, search.goal, ...(search.keywords || []), ...(search.minus || [])].some((value) => String(value || '').toLowerCase().includes(needle));
   });
+
+  const pageSize = 4;
+  const pageCount = Math.max(1, Math.ceil(filteredSearches.length / pageSize));
+  const safePage = Math.min(searchPage, pageCount);
+  const pagedSearches = filteredSearches.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+  useEffect(() => {
+    setSearchPage(1);
+  }, [query, statusFilter, workspace.searches.length]);
 
   const openSearch = (search) => {
     setSelectedId(search.id);
@@ -1217,7 +1263,7 @@ export function VexaSearchesPage() {
     >
       <ProductHero profile={profile} workspace={workspace} stats={stats} onNewSearch={createBlank} onSources={() => notify('Откройте раздел “Источники” в меню Vexa')} onExport={() => downloadJson('vexa-workspace-export.json', workspace)} />
       <ImportantNote />
-      {notice ? <div className="vexa3-inline-notice"><Icon name="info" size={14} />{notice}</div> : null}
+      {notice ? <div className={`vexa3-inline-notice ${notice.includes('тестовое') || notice.includes('тестовое совпадение') ? 'vexa3-test-notice' : ''}`}><Icon name={notice.includes('тестовое') ? 'inbox' : 'info'} size={14} />{notice}</div> : null}
       <MetricGrid workspace={workspace} stats={stats} />
       <HealthPanel stats={stats} />
 
@@ -1232,22 +1278,25 @@ export function VexaSearchesPage() {
             <div className="input-with-icon vexa3-search-input"><Icon name="search" /><input className="input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Поиск по названию, фразам или минус-словам" /></div>
           </div>
           <div className="divider" />
-          {filteredSearches.map((search) => (
-            <SearchRow
-              key={search.id}
-              search={search}
-              workspace={workspace}
-              active={selected?.id === search.id}
-              onOpen={openSearch}
-              onToggle={actions.toggleSearch}
-              onDuplicate={duplicate}
-              onDelete={deleteSearch}
-              onTest={(item) => createTestMatch(item)}
-            />
-          ))}
+          <div className="vexa3-search-list">
+            {pagedSearches.map((search) => (
+              <SearchRow
+                key={search.id}
+                search={search}
+                workspace={workspace}
+                active={selected?.id === search.id}
+                onOpen={openSearch}
+                onToggle={actions.toggleSearch}
+                onDuplicate={duplicate}
+                onDelete={deleteSearch}
+                onTest={(item) => createTestMatch(item)}
+              />
+            ))}
+          </div>
           {!filteredSearches.length ? (
             <div className="vexa3-empty"><Icon name="search" size={22} /><strong>Поисков по фильтру нет</strong><span>Создайте новый сценарий или сбросьте фильтр.</span><Btn kind="primary" icon="plus" onClick={createBlank}>Создать поиск</Btn></div>
           ) : null}
+          {filteredSearches.length ? <SearchPagination page={safePage} pages={pageCount} total={filteredSearches.length} onChange={setSearchPage} /> : null}
         </Card>
 
         <Card className="vexa3-card vexa3-editor">
@@ -1262,8 +1311,8 @@ export function VexaSearchesPage() {
               <label className="field"><span>Режим совпадения</span><select className="input" value={draft.mode} onChange={(event) => setDraft({ ...draft, mode: event.target.value })}><option value="phrase">Фразы как написаны</option><option value="contains">Содержит слова</option><option value="strict">Строгий фильтр</option></select></label>
               <label className="field"><span>Минимальный скоринг</span><input className="input" type="number" min="35" max="95" value={draft.minScore} onChange={(event) => setDraft({ ...draft, minScore: event.target.value })} /></label>
             </div>
-            <label className="field"><span>Ключевые слова и фразы</span><textarea className="input" rows={7} value={draft.keywordsText} onChange={(event) => setDraft({ ...draft, keywordsText: event.target.value })} placeholder={'нужен подрядчик\nищу специалиста\nкто может сделать\nнужна консультация'} /></label>
-            <label className="field"><span>Минус-слова</span><textarea className="input" rows={5} value={draft.minusText} onChange={(event) => setDraft({ ...draft, minusText: event.target.value })} placeholder={'бесплатно\nрозыгрыш\nстажировка\nбез бюджета'} /></label>
+            <PhraseEditor label="Ключевые слова и фразы" value={draft.keywordsText} onChange={(keywordsText) => setDraft({ ...draft, keywordsText })} placeholder={'нужен подрядчик\nищу специалиста\nкто может сделать\nнужна консультация'} />
+            <PhraseEditor label="Минус-слова" kind="minus" value={draft.minusText} onChange={(minusText) => setDraft({ ...draft, minusText })} placeholder={'бесплатно\nрозыгрыш\nстажировка\nбез бюджета'} />
             <label className="field"><span>Telegram-источники</span><SourcePicker workspace={workspace} value={draft.sourceIds} onChange={(sourceIds) => setDraft({ ...draft, sourceIds })} /></label>
             <div className="grid-2">
               <label className="field"><span>Лимит в день</span><input className="input" type="number" min="10" max="500" value={draft.dailyLimit} onChange={(event) => setDraft({ ...draft, dailyLimit: event.target.value })} /></label>
@@ -1434,20 +1483,34 @@ function toSourceDraft(source) {
 }
 
 function SourceRow({ source, active, usage, onOpen, onDelete }) {
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onOpen(source);
+    }
+  };
+
   return (
-    <div className={`vexa3-source-row ${active ? 'active' : ''}`}>
-      <button type="button" className="vexa3-row-mainbutton" onClick={() => onOpen(source)}>
+    <div
+      className={`vexa3-source-row ${active ? 'active' : ''}`}
+      role="button"
+      tabIndex={0}
+      onClick={() => onOpen(source)}
+      onKeyDown={handleKeyDown}
+      aria-label={`Открыть источник ${source.title}`}
+    >
+      <div className="vexa3-row-mainbutton">
         <span className="vexa3-row-icon"><Icon name={sourceIcon(source.type)} size={15} /></span>
         <span className="vexa3-row-content">
           <span className="vexa3-row-title"><strong>{source.title}</strong>{statusBadge(source.status)}</span>
           <small>{source.group} · {source.ref}</small>
         </span>
-      </button>
+      </div>
       <span className="vexa3-source-meta">{source.type}</span>
       <span className="vexa3-source-meta">{source.lastSeen}</span>
       <span className="vexa3-source-meta">{usage} поисков</span>
       <span className="vexa3-source-trust"><i style={{ width: `${Number(source.trust) || 0}%` }} />{source.trust || 0}%</span>
-      <div className="vexa3-row-actions inline"><Btn size="sm" kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(source.ref)}>Открыть</Btn><Btn size="sm" kind="danger" icon="trash" onClick={() => onDelete(source)}>Удалить</Btn></div>
+      <div className="vexa3-row-actions inline" onClick={(event) => event.stopPropagation()}><Btn size="sm" kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(source.ref)}>Открыть</Btn><Btn size="sm" kind="danger" icon="trash" onClick={() => onDelete(source)}>Удалить</Btn></div>
     </div>
   );
 }
@@ -1477,10 +1540,31 @@ function parseBulkSources(text) {
   }).filter((item) => item.ref);
 }
 
+function SourceTopicBar({ topics = [], value, onChange, onCreate }) {
+  return (
+    <Card className="vexa3-card vexa3-topic-card">
+      <div className="vexa3-topic-bar">
+        <div>
+          <strong>Темы источников</strong>
+          <small>Разделяйте источники по нишам, проектам и типам сигналов, чтобы они не смешивались.</small>
+        </div>
+        <div className="vexa3-topic-tabs">
+          <button type="button" className={value === 'all' ? 'active' : ''} onClick={() => onChange('all')}>Все</button>
+          {topics.map((topic) => (
+            <button type="button" key={topic} className={value === topic ? 'active' : ''} onClick={() => onChange(topic)}>{topic}</button>
+          ))}
+          <button type="button" className="create" onClick={onCreate}><Icon name="plus" size={13} />Тема</button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export function VexaSourcesPage() {
   const { workspace, actions, stats } = useVexaWorkspace();
   const [filter, setFilter] = useState('all');
   const [query, setQuery] = useState('');
+  const [topicFilter, setTopicFilter] = useState('all');
   const [selectedId, setSelectedId] = useState(workspace.sources[0]?.id || '');
   const selected = workspace.sources.find((source) => source.id === selectedId) || workspace.sources[0];
   const [draft, setDraft] = useState(() => toSourceDraft(selected));
@@ -1494,7 +1578,13 @@ export function VexaSourcesPage() {
     }
   }, [selected, workspace.sources]);
 
+  const sourceTopics = Array.from(new Set([
+    ...(Array.isArray(workspace.settings?.sourceTopics) ? workspace.settings?.sourceTopics : []),
+    ...workspace.sources.map((source) => source.group || 'Основные'),
+  ].filter(Boolean))).sort((a, b) => a.localeCompare(b, 'ru'));
+
   const sources = workspace.sources.filter((source) => {
+    if (topicFilter !== 'all' && (source.group || 'Основные') !== topicFilter) return false;
     if (filter !== 'all' && source.status !== filter && source.type !== filter) return false;
     const needle = query.trim().toLowerCase();
     if (!needle) return true;
@@ -1503,12 +1593,25 @@ export function VexaSourcesPage() {
 
   const openSource = (source) => { setSelectedId(source.id); setDraft(toSourceDraft(source)); setNotice(''); };
 
+  const createTopic = () => {
+    if (typeof window === 'undefined') return;
+    const raw = window.prompt('Название темы источников', topicFilter !== 'all' ? topicFilter : 'Новая тема');
+    const topic = cleanText(raw, 56);
+    if (!topic) return;
+    const nextTopics = Array.from(new Set([...(Array.isArray(workspace.settings?.sourceTopics) ? workspace.settings?.sourceTopics : []), topic]));
+    actions.updateSettings({ sourceTopics: nextTopics });
+    setTopicFilter(topic);
+    setDraft((current) => ({ ...current, group: topic }));
+    setNotice(`Тема “${topic}” создана. Новые источники можно сразу добавлять в эту тему.`);
+  };
+
   const addSource = () => {
-    const next = { ...blankSourceDraft, id: safeId('src'), title: 'Новый Telegram-источник', ref: '@new_source', access: 'нужна проверка доступа', connectedAt: 'ожидает подключения', lastSeen: 'не проверялся', coverage: 'после подключения', note: 'Добавьте реальную ссылку, @username или invite-ссылку.' };
+    const targetTopic = topicFilter !== 'all' ? topicFilter : (sourceTopics[0] || 'Основные');
+    const next = { ...blankSourceDraft, id: safeId('src'), title: 'Новый Telegram-источник', ref: '@new_source', group: targetTopic, access: 'нужна проверка доступа', connectedAt: 'ожидает подключения', lastSeen: 'не проверялся', coverage: 'после подключения', note: 'Добавьте реальную ссылку, @username или invite. Наш мониторинг будет читать оттуда только новые публикации и искать совпадения по вашим правилам.' };
     actions.addSource(next);
     setSelectedId(next.id);
     setDraft(toSourceDraft(next));
-    setNotice('Источник добавлен как черновик. После подключения Vexa будет видеть только новые сообщения.');
+    setNotice('Источник добавлен как черновик. После проверки доступа наш мониторинг Vexa будет читать из него новые сообщения и искать совпадения по вашим поискам.');
   };
 
   const saveSource = () => {
@@ -1538,7 +1641,7 @@ export function VexaSourcesPage() {
     if (selected?.id) actions.updateSource(selected.id, next); else actions.addSource(next);
     setSelectedId(next.id);
     setDraft(toSourceDraft(next));
-    setNotice(`Источник “${next.title}” сохранен. Старые публикации не будут загружены.`);
+    setNotice(`Источник “${next.title}” сохранен. Наш бот/мониторинг будет брать оттуда только новые публикации после подключения.`);
   };
 
   const deleteSource = (source) => {
@@ -1561,11 +1664,12 @@ export function VexaSourcesPage() {
       <ImportantNote compact />
       {notice ? <div className="vexa3-inline-notice"><Icon name="info" size={14} />{notice}</div> : null}
       <div className="grid-4 vexa3-metrics"><Metric label="Источников" value={workspace.sources.length} delta="каналы, группы, комментарии" /><Metric label="Онлайн" value={stats.onlineSources} delta="готовы к мониторингу" deltaKind="up" /><Metric label="Требуют доступа" value={stats.sourceWarnings} delta="проверить права" deltaKind={stats.sourceWarnings ? 'down' : 'up'} /><Metric label="Привязок" value={stats.attachedSources} delta="в активных поисках" /></div>
-      <div className="vexa3-source-types"><div><Icon name="page" /><strong>Каналы</strong><span>Новые посты в публичных и доступных каналах.</span></div><div><Icon name="users" /><strong>Группы</strong><span>Сообщения в чатах, где появляются лиды, кандидаты и обсуждения.</span></div><div><Icon name="chat" /><strong>Комментарии</strong><span>Ответы под постами, где часто появляются запросы и упоминания.</span></div><div><Icon name="link" /><strong>Invite</strong><span>Закрытые источники, где сначала нужно проверить доступ.</span></div></div>
+      <div className="vexa3-source-types"><div><Icon name="page" /><strong>Каналы</strong><span>Наш мониторинг читает новые посты в публичных и доступных каналах.</span></div><div><Icon name="users" /><strong>Группы</strong><span>Новые сообщения в чатах, где появляются лиды, кандидаты и обсуждения.</span></div><div><Icon name="chat" /><strong>Комментарии</strong><span>Ответы под постами, где часто появляются запросы и упоминания.</span></div><div><Icon name="link" /><strong>Invite</strong><span>Закрытые источники: сначала проверяем доступ, потом мониторим новые сообщения.</span></div></div>
+      <SourceTopicBar topics={sourceTopics} value={topicFilter} onChange={setTopicFilter} onCreate={createTopic} />
 
       <div className="vexa3-layout vexa3-layout-sources">
         <Card flush className="vexa3-card">
-          <SectionTitle title="Библиотека источников" subtitle="Один источник можно использовать в нескольких поисках." right={<Segmented value={filter} onChange={setFilter} items={[{ value: 'all', label: 'Все' }, { value: 'online', label: 'Онлайн' }, { value: 'limited', label: 'Доступ' }, { value: 'pending', label: 'Проверка' }, { value: 'Канал', label: 'Каналы' }, { value: 'Группа', label: 'Группы' }]} />} />
+          <SectionTitle title="Библиотека источников" subtitle="Источник — это Telegram-место, откуда наш мониторинг берет новые сообщения для поиска совпадений." right={<Segmented value={filter} onChange={setFilter} items={[{ value: 'all', label: 'Все' }, { value: 'online', label: 'Онлайн' }, { value: 'limited', label: 'Доступ' }, { value: 'pending', label: 'Проверка' }, { value: 'Канал', label: 'Каналы' }, { value: 'Группа', label: 'Группы' }]} />} />
           <div className="vexa3-toolbar"><div className="input-with-icon vexa3-search-input"><Icon name="search" /><input className="input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Поиск по названию, ссылке, группе или заметке" /></div></div>
           <div className="divider" />
           {sources.map((source) => <SourceRow key={source.id} source={source} active={selected?.id === source.id} usage={sourceUsage(workspace, source.id)} onOpen={openSource} onDelete={deleteSource} />)}
@@ -1581,7 +1685,7 @@ export function VexaSourcesPage() {
             <div className="grid-2"><label className="field"><span>Статус</span><select className="input" value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value })}>{SOURCE_STATUSES.map((status) => <option key={status} value={status}>{statusLabel(status)}</option>)}</select></label><label className="field"><span>Доверие источника, %</span><input className="input" type="number" min="0" max="100" value={draft.trust} onChange={(event) => setDraft({ ...draft, trust: event.target.value })} /></label></div>
             <div className="grid-2"><label className="field"><span>Язык</span><input className="input" value={draft.language} onChange={(event) => setDraft({ ...draft, language: event.target.value })} placeholder="RU / EN" /></label><label className="field"><span>Частота проверки</span><input className="input" value={draft.cadence} onChange={(event) => setDraft({ ...draft, cadence: event.target.value })} placeholder="постоянно / после проверки" /></label></div>
             <label className="field"><span>Заметка</span><textarea className="input" rows={4} value={draft.note} onChange={(event) => setDraft({ ...draft, note: event.target.value })} placeholder="Что здесь ищем и почему источник важен" /></label>
-            <div className="vexa3-source-checklist"><div><Icon name="shield" size={14} /><span>Старые сообщения не импортируются.</span></div><div><Icon name="clock" size={14} /><span>Отсчет начинается после подключения.</span></div><div><Icon name="send" size={14} /><span>Совпадения уходят в приложение и в личку через нашего Vexa-бота.</span></div></div>
+            <div className="vexa3-source-checklist"><div><Icon name="shield" size={14} /><span>Старые сообщения не импортируются.</span></div><div><Icon name="clock" size={14} /><span>Наш мониторинг начинает читать источник после подключения.</span></div><div><Icon name="send" size={14} /><span>Найденные совпадения попадают в приложение и в личку через Vexa-бота.</span></div></div>
             <div className="vexa3-form-actions"><Btn kind="secondary" onClick={() => setDraft(toSourceDraft(selected))}>Отмена</Btn>{selected?.ref ? <Btn kind="secondary" icon="arrow-up-right" onClick={() => openTelegram(selected.ref)}>Открыть</Btn> : null}<Btn kind="primary" icon="check" onClick={saveSource}>Сохранить</Btn></div>
           </div>
         </Card>
@@ -1657,7 +1761,31 @@ export function VexaAnalyticsPage() {
     { range: '<70', value: visible.filter((item) => Number(item.score) < 70).length },
   ];
 
-  const chartPalette = ['#7B61FF', '#9A80FF', '#5B46E8', '#C3B5FF', '#E6E0FF'];
+  const searchPerformance = workspace.searches.map((search) => {
+    const matches = visible.filter((match) => match.searchId === search.id);
+    const delivered = matches.filter((match) => match.sent).length;
+    const avg = matches.length ? Math.round(matches.reduce((sum, item) => sum + Number(item.score || 0), 0) / matches.length) : 0;
+    return {
+      id: search.id,
+      title: search.title,
+      status: search.status,
+      matches: matches.length,
+      delivered,
+      avg,
+      minScore: search.minScore,
+      sources: search.sourceIds?.length || 0,
+      keywords: search.keywords?.length || 0,
+      quality: search.quality || 0,
+    };
+  }).sort((a, b) => b.matches - a.matches || b.avg - a.avg);
+
+  const recommendations = [
+    stats.sourceWarnings ? `Проверить доступ к ${stats.sourceWarnings} источникам: без доступа они не дают новых сообщений.` : 'Поддерживать текущий набор источников и добавлять новые темы по мере расширения мониторинга.',
+    avgScore < 75 ? 'Усилить минус-слова и поднять пороги для сценариев с низким средним скорингом.' : 'Скоринг выглядит рабочим: масштабируйте источники в темах, где уже есть совпадения.',
+    deliveryRate < 60 ? 'Проверить авторизацию в Vexa-боте и правила доставки, чтобы полезные совпадения не оставались только в ленте.' : 'Доставка через Vexa-бота работает стабильно, можно подключать ежедневные сводки.',
+  ];
+
+  const chartPalette = ['#6E3BB8', '#8B5CF6', '#BBA4FF', '#D8C7FF', '#EEE7FF'];
 
   return (
     <PageShell
@@ -1672,6 +1800,12 @@ export function VexaAnalyticsPage() {
         <Metric label="Источники" value={workspace.sources.length} delta={`${stats.onlineSources} онлайн · ${stats.sourceWarnings} проверить`} deltaKind={stats.sourceWarnings ? 'down' : 'up'} />
       </div>
 
+      <div className="vexa3-analytics-insights">
+        <Card className="vexa3-card vexa3-insight-card"><Icon name="filter" /><span><strong>Качество фильтров</strong><small>{avgScore >= 75 ? 'Поток достаточно точный для масштабирования.' : 'Нужно усилить минус-слова и пороги.'}</small></span></Card>
+        <Card className="vexa3-card vexa3-insight-card"><Icon name="send" /><span><strong>Доставка</strong><small>{deliveryRate}% совпадений дошло до пользователя через Vexa-бота или отмечено доставленным.</small></span></Card>
+        <Card className="vexa3-card vexa3-insight-card"><Icon name="users" /><span><strong>Покрытие источников</strong><small>{stats.onlineSources} онлайн из {workspace.sources.length}. Темы помогают не смешивать разные ниши.</small></span></Card>
+      </div>
+
       <div className="vexa3-analytics-dashboard">
         <Card className="vexa3-card vexa3-chart-card">
           <SectionTitle title="Поток новых совпадений" subtitle="Недельная динамика новых и доставленных сообщений." />
@@ -1680,20 +1814,20 @@ export function VexaAnalyticsPage() {
               <AreaChart data={trendData} margin={{ top: 12, right: 8, bottom: 0, left: -14 }}>
                 <defs>
                   <linearGradient id="vexaMatchesFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#7B61FF" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#7B61FF" stopOpacity="0.02" />
+                    <stop offset="0%" stopColor="#6E3BB8" stopOpacity="0.35" />
+                    <stop offset="100%" stopColor="#6E3BB8" stopOpacity="0.02" />
                   </linearGradient>
                   <linearGradient id="vexaDeliveredFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#A48BFF" stopOpacity="0.30" />
-                    <stop offset="100%" stopColor="#A48BFF" stopOpacity="0.02" />
+                    <stop offset="0%" stopColor="#9B6BFF" stopOpacity="0.30" />
+                    <stop offset="100%" stopColor="#9B6BFF" stopOpacity="0.02" />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(124, 113, 141, 0.18)" />
                 <XAxis dataKey="day" tickLine={false} axisLine={false} />
                 <YAxis tickLine={false} axisLine={false} width={28} />
                 <Tooltip contentStyle={{ borderRadius: 14, border: '1px solid rgba(124,113,141,.16)', background: 'var(--surface)', color: 'var(--text)' }} />
-                <Area type="monotone" dataKey="matches" stroke="#7B61FF" strokeWidth={2.4} fill="url(#vexaMatchesFill)" name="Совпадения" />
-                <Area type="monotone" dataKey="delivered" stroke="#A48BFF" strokeWidth={2.2} fill="url(#vexaDeliveredFill)" name="Доставлено" />
+                <Area type="monotone" dataKey="matches" stroke="#6E3BB8" strokeWidth={2.4} fill="url(#vexaMatchesFill)" name="Совпадения" />
+                <Area type="monotone" dataKey="delivered" stroke="#9B6BFF" strokeWidth={2.2} fill="url(#vexaDeliveredFill)" name="Доставлено" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -1708,8 +1842,8 @@ export function VexaAnalyticsPage() {
                 <XAxis dataKey="name" tickLine={false} axisLine={false} interval={0} angle={-10} textAnchor="end" height={56} />
                 <YAxis tickLine={false} axisLine={false} width={28} />
                 <Tooltip contentStyle={{ borderRadius: 14, border: '1px solid rgba(124,113,141,.16)', background: 'var(--surface)', color: 'var(--text)' }} />
-                <Bar dataKey="matches" radius={[8, 8, 0, 0]} fill="#7B61FF" name="Совпадения" />
-                <Bar dataKey="delivered" radius={[8, 8, 0, 0]} fill="#C3B5FF" name="Доставлено" />
+                <Bar dataKey="matches" radius={[8, 8, 0, 0]} fill="#6E3BB8" name="Совпадения" />
+                <Bar dataKey="delivered" radius={[8, 8, 0, 0]} fill="#CDBBFF" name="Доставлено" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -1743,7 +1877,7 @@ export function VexaAnalyticsPage() {
                 <XAxis dataKey="range" tickLine={false} axisLine={false} />
                 <YAxis tickLine={false} axisLine={false} width={28} />
                 <Tooltip contentStyle={{ borderRadius: 14, border: '1px solid rgba(124,113,141,.16)', background: 'var(--surface)', color: 'var(--text)' }} />
-                <Bar dataKey="value" radius={[8, 8, 0, 0]} fill="#8F78FF" name="Сообщения" />
+                <Bar dataKey="value" radius={[8, 8, 0, 0]} fill="#7D4FD6" name="Сообщения" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -1768,6 +1902,29 @@ export function VexaAnalyticsPage() {
           <div className="vexa3-analytics-list">
             {keywordRows.map((item) => <VexaAnalyticsBar key={`${item.search}-${item.keyword}`} label={item.keyword} value={item.count} max={maxKeyword} meta={item.search} tone="soft" />)}
             {!keywordRows.length ? <div className="vexa3-empty-line">Добавьте ключевые фразы в поиски, чтобы увидеть статистику.</div> : null}
+          </div>
+        </Card>
+
+        <Card className="vexa3-card vexa3-analytics-panel vexa3-analytics-wide">
+          <SectionTitle title="Рабочие сценарии" subtitle="Сравнение поисков по совпадениям, доставке, среднему скорингу и готовности." />
+          <div className="vexa3-analytics-table">
+            <div className="head"><span>Поиск</span><span>Совпадения</span><span>Доставка</span><span>Скоринг</span><span>Контур</span></div>
+            {searchPerformance.map((row) => (
+              <div key={row.id}>
+                <span><strong>{row.title}</strong><small>{row.keywords} фраз · {row.sources} источников · порог {row.minScore}%</small></span>
+                <span>{row.matches}</span>
+                <span>{row.delivered}</span>
+                <span>{row.avg || '—'}%</span>
+                <span><i style={{ width: `${row.quality}%` }} />{row.quality}%</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="vexa3-card vexa3-analytics-panel">
+          <SectionTitle title="Что улучшить" subtitle="Практические действия по текущей конфигурации." />
+          <div className="vexa3-roadmap">
+            {recommendations.map((item, index) => <div key={item}><span>{index + 1}</span><small><strong>{index === 0 ? 'Источники' : index === 1 ? 'Фильтры' : 'Доставка'}</strong>{item}</small></div>)}
           </div>
         </Card>
       </div>

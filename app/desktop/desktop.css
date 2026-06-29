@@ -15117,3 +15117,502 @@ body:has(.cb-desktop-html[data-theme='light']) .cb-record-popup,
     height: 220px;
   }
 }
+
+/* === Vexa v8 product UI corrections === */
+.cb-desktop-html:has(.vexa3-page) .desktop-mode-toggle {
+  display: none !important;
+}
+
+.cb-desktop-html .vexa3-page {
+  --vexa-brand-purple: #6e3bb8;
+  --vexa-brand-purple-2: #8b5cf6;
+  --vexa-brand-lavender: #dbc9ff;
+  --vexa-hover-soft: color-mix(in oklab, var(--vexa-brand-purple) 7%, var(--surface));
+  --vexa-hover-line: color-mix(in oklab, var(--vexa-brand-purple) 18%, var(--line));
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-page {
+  --vexa-hover-soft: color-mix(in oklab, var(--vexa-brand-lavender) 8%, var(--surface));
+  --vexa-hover-line: color-mix(in oklab, var(--vexa-brand-lavender) 18%, var(--line));
+}
+
+.cb-desktop-html .vexa3-page-actionbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 0;
+  margin: 0 0 4px;
+}
+
+.cb-desktop-html .vexa3-page-actionbar > div:first-child {
+  display: none;
+}
+
+.cb-desktop-html .vexa3-note {
+  position: relative;
+  align-items: center;
+  border-radius: 18px;
+  border: 1px solid color-mix(in oklab, #d59a31 30%, var(--line)) !important;
+  border-left: 4px solid #d59a31 !important;
+  background:
+    linear-gradient(90deg, color-mix(in oklab, #d59a31 9%, var(--surface)), var(--surface)) !important;
+  color: var(--text) !important;
+  box-shadow: 0 8px 22px rgba(94, 73, 27, .055) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-note {
+  border-color: color-mix(in oklab, #d59a31 28%, var(--line)) !important;
+  border-left-color: #d59a31 !important;
+  background:
+    linear-gradient(90deg, color-mix(in oklab, #d59a31 13%, var(--surface)), var(--surface)) !important;
+  box-shadow: none !important;
+}
+
+.cb-desktop-html .vexa3-note strong {
+  color: var(--text) !important;
+  font-weight: 650;
+}
+
+.cb-desktop-html .vexa3-note span {
+  color: var(--text-2) !important;
+}
+
+.cb-desktop-html .vexa3-inline-notice {
+  align-items: center;
+  border-radius: 18px;
+  border: 1px solid var(--vexa-hover-line) !important;
+  border-left: 4px solid var(--vexa-brand-purple) !important;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--vexa-brand-purple) 9%, var(--surface)), var(--surface)) !important;
+  color: var(--text) !important;
+}
+
+.cb-desktop-html .vexa3-test-notice {
+  min-height: 54px;
+  font-weight: 560;
+  box-shadow: 0 12px 30px color-mix(in oklab, var(--vexa-brand-purple) 12%, transparent) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-test-notice,
+.cb-desktop-html[data-theme="dark"] .vexa3-inline-notice {
+  background: linear-gradient(90deg, color-mix(in oklab, var(--vexa-brand-lavender) 9%, var(--surface)), var(--surface)) !important;
+  border-color: var(--vexa-hover-line) !important;
+  border-left-color: var(--vexa-brand-lavender) !important;
+}
+
+.cb-desktop-html .vexa3-page .btn,
+.cb-desktop-html .vexa2-auth-card .btn {
+  overflow: visible !important;
+  isolation: isolate;
+}
+
+.cb-desktop-html .vexa3-page .btn::after,
+.cb-desktop-html .vexa2-auth-card .btn::after {
+  display: none !important;
+}
+
+.cb-desktop-html .vexa3-page .btn-primary,
+.cb-desktop-html .vexa2-auth-card .btn-primary {
+  background: linear-gradient(135deg, var(--vexa-brand-purple), var(--vexa-brand-purple-2)) !important;
+  border-color: color-mix(in oklab, var(--vexa-brand-purple) 88%, #000) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 22px color-mix(in oklab, var(--vexa-brand-purple) 20%, transparent) !important;
+}
+
+.cb-desktop-html .vexa3-page .btn-primary:hover,
+.cb-desktop-html .vexa2-auth-card .btn-primary:hover {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--vexa-brand-purple) 88%, white), color-mix(in oklab, var(--vexa-brand-purple-2) 86%, white)) !important;
+  border-color: color-mix(in oklab, var(--vexa-brand-purple) 72%, #000) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px color-mix(in oklab, var(--vexa-brand-purple) 24%, transparent) !important;
+}
+
+.cb-desktop-html .vexa3-page .btn-secondary:hover,
+.cb-desktop-html .vexa2-auth-card .btn-secondary:hover,
+.cb-desktop-html .vexa3-page .btn-soft:hover {
+  background: var(--vexa-hover-soft) !important;
+  border-color: var(--vexa-hover-line) !important;
+  transform: translateY(-1px);
+}
+
+.cb-desktop-html .vexa3-page :is(button, [role="button"], .vexa3-template, .vexa3-search-row, .vexa3-source-row, .vexa3-match-row, .vexa3-simple-row, .vexa3-topic-tabs button) {
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease, color .18s ease;
+}
+
+.cb-desktop-html .vexa3-page :is(.vexa3-template, .vexa3-search-row, .vexa3-source-row, .vexa3-match-row, .vexa3-simple-row):hover {
+  background: var(--vexa-hover-soft) !important;
+  border-color: var(--vexa-hover-line) !important;
+}
+
+.cb-desktop-html .vexa3-layout-searches > .vexa3-card:first-child {
+  min-height: min(720px, calc(100vh - 240px));
+  display: flex;
+  flex-direction: column;
+}
+
+.cb-desktop-html .vexa3-search-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 515px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.cb-desktop-html .vexa3-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--line);
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.cb-desktop-html .vexa3-pagination.compact {
+  justify-content: flex-start;
+}
+
+.cb-desktop-html .vexa3-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cb-desktop-html .vexa3-pagination button {
+  min-width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.cb-desktop-html .vexa3-pagination button.active {
+  border-color: var(--vexa-brand-purple);
+  background: color-mix(in oklab, var(--vexa-brand-purple) 12%, var(--surface));
+  color: var(--vexa-brand-purple);
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-pagination button.active {
+  border-color: var(--vexa-brand-lavender);
+  color: var(--vexa-brand-lavender);
+  background: color-mix(in oklab, var(--vexa-brand-lavender) 10%, var(--surface));
+}
+
+.cb-desktop-html .vexa3-pagination button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.cb-desktop-html .vexa3-token-field {
+  gap: 8px;
+}
+
+.cb-desktop-html .vexa3-token-editor {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--surface) 94%, white);
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-token-editor {
+  background: color-mix(in oklab, var(--surface) 96%, #0f1115);
+}
+
+.cb-desktop-html .vexa3-token-cloud {
+  min-height: 34px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+}
+
+.cb-desktop-html .vexa3-token-cloud i,
+.cb-desktop-html .vexa3-keywords i {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: color-mix(in oklab, var(--vexa-brand-purple) 78%, var(--text)) !important;
+  background: color-mix(in oklab, var(--vexa-brand-purple) 10%, var(--surface)) !important;
+  border: 1px solid color-mix(in oklab, var(--vexa-brand-purple) 12%, transparent);
+  font-style: normal;
+  font-size: 12px;
+  line-height: 1.15;
+  font-weight: 540;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-token-cloud i,
+.cb-desktop-html[data-theme="dark"] .vexa3-keywords i {
+  color: color-mix(in oklab, var(--vexa-brand-lavender) 88%, var(--text)) !important;
+  background: color-mix(in oklab, var(--vexa-brand-lavender) 9%, var(--surface)) !important;
+  border-color: color-mix(in oklab, var(--vexa-brand-lavender) 14%, transparent);
+}
+
+.cb-desktop-html .vexa3-token-field.minus .vexa3-token-cloud i {
+  color: color-mix(in oklab, #a24b5c 78%, var(--text)) !important;
+  background: color-mix(in oklab, #a24b5c 9%, var(--surface)) !important;
+  border-color: color-mix(in oklab, #a24b5c 13%, transparent);
+}
+
+.cb-desktop-html .vexa3-token-cloud em {
+  color: var(--text-4);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.cb-desktop-html .vexa3-token-textarea {
+  min-height: 88px;
+  resize: vertical;
+  border-style: dashed !important;
+  font-size: 12px;
+  color: var(--text-3) !important;
+  -webkit-text-fill-color: var(--text-3) !important;
+}
+
+.cb-desktop-html .vexa3-quality {
+  border-color: var(--vexa-hover-line) !important;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--vexa-brand-purple) 5%, var(--surface)), var(--surface)) !important;
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-quality {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--vexa-brand-lavender) 7%, var(--surface)), var(--surface)) !important;
+  border-color: var(--vexa-hover-line) !important;
+}
+
+.cb-desktop-html .vexa3-quality .progress > span,
+.cb-desktop-html .vexa3-row-health .progress > span,
+.cb-desktop-html .vexa3-page .progress > span {
+  background: linear-gradient(90deg, var(--vexa-brand-purple), var(--vexa-brand-purple-2)) !important;
+}
+
+.cb-desktop-html .vexa3-checklist > div {
+  color: var(--text-3) !important;
+  background: color-mix(in oklab, var(--surface) 88%, var(--bg)) !important;
+  border: 1px solid var(--line);
+}
+
+.cb-desktop-html .vexa3-checklist > div.ok {
+  color: color-mix(in oklab, var(--vexa-brand-purple) 82%, var(--text)) !important;
+  background: color-mix(in oklab, var(--vexa-brand-purple) 10%, var(--surface)) !important;
+  border-color: color-mix(in oklab, var(--vexa-brand-purple) 15%, var(--line));
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-checklist > div.ok {
+  color: var(--vexa-brand-lavender) !important;
+  background: color-mix(in oklab, var(--vexa-brand-lavender) 8%, var(--surface)) !important;
+}
+
+.cb-desktop-html .vexa3-source-row {
+  cursor: pointer;
+  outline: none;
+}
+
+.cb-desktop-html .vexa3-source-row:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--vexa-brand-purple) 18%, transparent) !important;
+}
+
+.cb-desktop-html .vexa3-topic-card {
+  padding: 0 !important;
+}
+
+.cb-desktop-html .vexa3-topic-bar {
+  display: grid;
+  grid-template-columns: minmax(230px, .35fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px 18px;
+}
+
+.cb-desktop-html .vexa3-topic-bar strong,
+.cb-desktop-html .vexa3-topic-bar small {
+  display: block;
+}
+
+.cb-desktop-html .vexa3-topic-bar strong {
+  color: var(--text);
+  font-weight: 620;
+}
+
+.cb-desktop-html .vexa3-topic-bar small {
+  color: var(--text-3);
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.cb-desktop-html .vexa3-topic-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cb-desktop-html .vexa3-topic-tabs button {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-2);
+  padding: 6px 11px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 560;
+}
+
+.cb-desktop-html .vexa3-topic-tabs button.active {
+  color: var(--vexa-brand-purple);
+  border-color: color-mix(in oklab, var(--vexa-brand-purple) 24%, var(--line));
+  background: color-mix(in oklab, var(--vexa-brand-purple) 10%, var(--surface));
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-topic-tabs button.active {
+  color: var(--vexa-brand-lavender);
+  border-color: color-mix(in oklab, var(--vexa-brand-lavender) 22%, var(--line));
+  background: color-mix(in oklab, var(--vexa-brand-lavender) 8%, var(--surface));
+}
+
+.cb-desktop-html .vexa3-topic-tabs button.create {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cb-desktop-html .vexa3-analytics-insights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.cb-desktop-html .vexa3-insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px !important;
+}
+
+.cb-desktop-html .vexa3-insight-card > svg {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  border-radius: 12px;
+  color: var(--vexa-brand-purple);
+  background: color-mix(in oklab, var(--vexa-brand-purple) 10%, var(--surface));
+}
+
+.cb-desktop-html[data-theme="dark"] .vexa3-insight-card > svg {
+  color: var(--vexa-brand-lavender);
+  background: color-mix(in oklab, var(--vexa-brand-lavender) 8%, var(--surface));
+}
+
+.cb-desktop-html .vexa3-insight-card strong,
+.cb-desktop-html .vexa3-insight-card small {
+  display: block;
+}
+
+.cb-desktop-html .vexa3-insight-card strong {
+  color: var(--text);
+  font-weight: 620;
+}
+
+.cb-desktop-html .vexa3-insight-card small {
+  margin-top: 4px;
+  color: var(--text-3);
+  line-height: 1.45;
+}
+
+.cb-desktop-html .vexa3-analytics-wide {
+  grid-column: 1 / -1;
+}
+
+.cb-desktop-html .vexa3-analytics-table {
+  display: grid;
+  padding: 0 18px 18px;
+}
+
+.cb-desktop-html .vexa3-analytics-table > div {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.2fr) 110px 110px 110px minmax(140px, .7fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.cb-desktop-html .vexa3-analytics-table > div.head {
+  color: var(--text-3);
+  font-weight: 620;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+.cb-desktop-html .vexa3-analytics-table strong,
+.cb-desktop-html .vexa3-analytics-table small {
+  display: block;
+}
+
+.cb-desktop-html .vexa3-analytics-table strong {
+  color: var(--text);
+  font-weight: 620;
+}
+
+.cb-desktop-html .vexa3-analytics-table small {
+  margin-top: 3px;
+  color: var(--text-3);
+}
+
+.cb-desktop-html .vexa3-analytics-table span:last-child {
+  position: relative;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--vexa-brand-purple) 8%, var(--surface));
+  color: var(--text);
+  font-weight: 620;
+}
+
+.cb-desktop-html .vexa3-analytics-table span:last-child i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in oklab, var(--vexa-brand-purple) 18%, transparent);
+  z-index: -1;
+}
+
+.cb-desktop-html .vexa3-chart-shell,
+.cb-desktop-html .vexa3-chart-shell-compact {
+  color: var(--text-3);
+}
+
+@media (max-width: 1440px) {
+  .cb-desktop-html .vexa3-topic-bar,
+  .cb-desktop-html .vexa3-analytics-insights {
+    grid-template-columns: 1fr;
+  }
+  .cb-desktop-html .vexa3-topic-tabs {
+    justify-content: flex-start;
+  }
+  .cb-desktop-html .vexa3-layout-searches > .vexa3-card:first-child {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 980px) {
+  .cb-desktop-html .vexa3-analytics-table > div {
+    grid-template-columns: 1fr 64px 64px;
+  }
+  .cb-desktop-html .vexa3-analytics-table > div > span:nth-child(4),
+  .cb-desktop-html .vexa3-analytics-table > div > span:nth-child(5) {
+    display: none;
+  }
+}
